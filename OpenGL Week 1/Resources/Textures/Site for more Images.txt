@@ -1,0 +1,3 @@
+https://www.gameart2d.com/freebies.html
+
+They are all separate images, but you can create your own spritesheets such as they ones provided.
