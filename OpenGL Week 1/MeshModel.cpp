@@ -1,5 +1,8 @@
 #include "MeshModel.h"
 #include "tinyObjImplementation.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 MeshModel::MeshModel(std::string FilePath)
 {
     std::vector<VertexStandard> Vertices;
@@ -38,7 +41,7 @@ MeshModel::MeshModel(std::string FilePath)
                 if (TinyObjVertex.texcoord_index >= 0) { // Negative states no TexCoord data
                     Vertex.texcoord = {
                         Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 0],
-                        Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 1]
+                        Attrib.texcoords[2 * size_t(  TinyObjVertex.texcoord_index) + 1]
                     };
                 }
                 /*if (TinyObjVertex.normal_index >= 0) { // Negative states no Normal data
@@ -81,15 +84,64 @@ MeshModel::~MeshModel()
 void MeshModel::Update(float DeltaTime)
 {
 }
-
+void MeshModel::SetShader(GLuint _Shader)
+{
+    shaderProgram = _Shader;
+    glUseProgram(shaderProgram);
+}
 void MeshModel::Render()
 {
 
+    glUseProgram(shaderProgram);
+    SetTexture();
+    glUniform1i(glGetUniformLocation(shaderProgram, "Texture0"), 0);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "ModelMat"), 1, GL_FALSE, &ModelMat[0][0]);
+
     glBindVertexArray(VAO);
-    glDrawArrays(DrawType, 0, DrawCount);
+    glDrawElements(GL_TRIANGLES, sizeof(VertexStandard) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+
 void MeshModel::LoadModel()
 {
 
+}
+
+void MeshModel::DefineModelMatrix(glm::vec3 _pos, float _rot, glm::vec3 _scl)
+{
+    // Calculate the translation, rotation, and scale matrices.
+    TranslationMat = glm::translate(glm::identity<glm::mat4>(), _pos);
+    RotationMat = glm::rotate(glm::identity<glm::mat4>(), glm::radians(_rot), glm::vec3(0.0f, 0.0f, 1.0f));
+    ScaleMat = glm::scale(glm::identity<glm::mat4>(), _scl);
+    // Combine the matrices to form the model matrix.
+    ModelMat = ScaleMat * TranslationMat * RotationMat;
+}
+
+void MeshModel::InitTexture(std::string _filePath)
+{
+    stbi_set_flip_vertically_on_load(true);
+    imageData = stbi_load(_filePath.c_str(), &imageWidth, &imageHeight, &imageComponents, 0);
+    if (imageData == nullptr) {
+        std::cerr << "Failed to load image: " << _filePath << std::endl;
+        return;
+    }
+
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    GLint LoadedComponents = (imageComponents == 4) ? GL_RGBA : GL_RGB;
+    glTexImage2D(GL_TEXTURE_2D, 0, LoadedComponents, imageWidth, imageHeight, 0, LoadedComponents, GL_UNSIGNED_BYTE, imageData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void MeshModel::SetTexture()
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 }
