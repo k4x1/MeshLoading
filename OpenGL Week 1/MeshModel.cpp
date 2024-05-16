@@ -1,15 +1,18 @@
 #include "MeshModel.h"
-#include "tinyObjImplementation.h"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-MeshModel::MeshModel(std::string FilePath)
+
+MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath) :  m_position(Position), m_rotation(Rotation), m_scale(Scale)
 {
     std::vector<VertexStandard> Vertices;
     tinyobj::ObjReaderConfig ReaderConfig;
     tinyobj::ObjReader Reader;
 
-    if (!Reader.ParseFromFile(FilePath, ReaderConfig)) {
+    if (!Reader.ParseFromFile(ModelFilePath, ReaderConfig)) {
         if (!Reader.Error().empty()) {
             std::cerr << "TinyObjReader: " << Reader.Error();
         }
@@ -70,82 +73,86 @@ MeshModel::MeshModel(std::string FilePath)
     // Create the VertexAttribPointers for both Position and Texture coordinates
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, position));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, texcoord));
+    glVertexAttribPointer(1, 2
+        , GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, texcoord));
     glEnableVertexAttribArray(1);
 
     // Unbind the VAO
     glBindVertexArray(0);
-}
 
+    m_ModelMatrix = CalculateModelMatrix();
+}
 
 MeshModel::~MeshModel()
 {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    stbi_image_free(imageData);
 }
+
 void MeshModel::Update(float DeltaTime)
 {
 }
-void MeshModel::SetShader(GLuint _Shader)
-{
-    shaderProgram = _Shader;
 
-}
 void MeshModel::Render()
 {
-
-
-    glUniform1i(glGetUniformLocation(shaderProgram, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "ModelMat"), 1, GL_FALSE, &ModelMat[0][0]);
+    glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_ModelMatrix[0][0]);
 
     glBindVertexArray(VAO);
     glDrawArrays(DrawType, 0, DrawCount);
     glBindVertexArray(0);
 }
-
 void MeshModel::LoadModel()
 {
 
 }
 
-void MeshModel::DefineModelMatrix(glm::vec3 _pos, float _rot, glm::vec3 _scl)
-{
-    // Calculate the translation, rotation, and scale matrices.
-    TranslationMat = glm::translate(glm::identity<glm::mat4>(), _pos);
-    RotationMat = glm::rotate(glm::identity<glm::mat4>(), glm::radians(_rot), glm::vec3(0.0f, 0.0f, 1.0f));
-    ScaleMat = glm::scale(glm::identity<glm::mat4>(), _scl);
-    // Combine the matrices to form the model matrix.
-    ModelMat = ScaleMat * TranslationMat * RotationMat;
-}
-
 void MeshModel::InitTexture(std::string _filePath)
 {
+    int imageWidth = 0;
+    int imageHeight = 0;
+    int imageComponents = 0;
     stbi_set_flip_vertically_on_load(true);
-    imageData = stbi_load(_filePath.c_str(), &imageWidth, &imageHeight, &imageComponents, 0);
+    imageData = stbi_load("Textures/PolygonAncientWorlds_Statue_01.png", &imageWidth, &imageHeight, &imageComponents, 0);
     if (imageData == nullptr) {
-        std::cerr << "Failed to load image: " << _filePath << std::endl;
-        return;
+        std::cerr << "Failed to load image: " << std::endl;
+        // Handle the error or return from the function.
     }
-
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    stbi_image_free(imageData);
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
     GLint LoadedComponents = (imageComponents == 4) ? GL_RGBA : GL_RGB;
     glTexImage2D(GL_TEXTURE_2D, 0, LoadedComponents, imageWidth, imageHeight, 0, LoadedComponents, GL_UNSIGNED_BYTE, imageData);
     glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(imageData);
     glBindTexture(GL_TEXTURE_2D, 0);
     glEnable(GL_BLEND);
+
+    // Set texture filtering parameters.
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Set texture wrapping mode based on the specified mode.
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
 }
 
-void MeshModel::SetTexture()
+void MeshModel::BindTexture()
 {
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    // Bind the texture.
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+}
+
+void MeshModel::SetShader(GLuint _shader)
+{
+    m_shader = _shader;
+}
+
+glm::mat4 MeshModel::CalculateModelMatrix()
+{ // Calculate the translation, rotation, and scale matrices.
+    glm::mat4 TranslationMat = glm::translate(glm::identity<glm::mat4>(), m_position);
+    glm::mat4 RotationMat = glm::rotate(glm::identity<glm::mat4>(), glm::radians(m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+              RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+              RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 ScaleMat = glm::scale(glm::identity<glm::mat4>(), m_scale);
+    // Combine the matrices to form the model matrix.
+    return ScaleMat * TranslationMat * RotationMat;
 }

@@ -159,7 +159,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="MeshModel.h" />
     <ClInclude Include="ShaderLoader.h" />
-    <ClInclude Include="tinyObjImplementation.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="VertexObject.h" />
     <ClInclude Include="VertexStandard.h" />

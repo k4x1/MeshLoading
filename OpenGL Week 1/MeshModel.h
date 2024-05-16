@@ -3,39 +3,38 @@
 #include <iostream>
 #include <glew.h>
 #include <glm.hpp>
-#include <glfw3.h>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
+#include <ext/matrix_transform.hpp>
 #include "VertexStandard.h"
 
 class MeshModel
 {
 public:
-    MeshModel(std::string FilePath);
+    MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath);
     ~MeshModel();
 
     void Update(float DeltaTime);
     void Render();
     void LoadModel();
     void InitTexture(std::string _filePath);
-    void SetTexture();
+    void BindTexture();
     void SetShader(GLuint _shader);
-    void DefineModelMatrix(glm::vec3 _pos, float _rot, glm::vec3 _scl);
-
+    glm::mat4 CalculateModelMatrix();
 protected:
+    //vao and rendering
     GLuint VAO;
-    GLuint VBO;
-    GLuint EBO;
-    GLuint texture;
-    GLuint shaderProgram;
     GLuint DrawCount;
-    glm::mat4 TranslationMat;
-    glm::mat4 RotationMat;
-    glm::mat4 ScaleMat;
     int DrawType;
-    glm::mat4 ModelMat;
+
+    //shader
+    GLuint m_shader;
+
+    //texture and data
+    GLuint m_texture;
     unsigned char* imageData;
-    int imageWidth;
-    int imageHeight;
-    int imageComponents;
+
+    //other
+    glm::vec3 m_position;
+    glm::vec3 m_rotation;
+    glm::vec3 m_scale;
+    glm::mat4 m_ModelMatrix;
 };

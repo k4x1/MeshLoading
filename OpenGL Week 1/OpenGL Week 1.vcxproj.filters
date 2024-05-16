@@ -76,8 +76,5 @@
     <ClInclude Include="MeshModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tinyObjImplementation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

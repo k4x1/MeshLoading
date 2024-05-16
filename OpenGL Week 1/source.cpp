@@ -6,10 +6,8 @@
 #include <gtc/type_ptr.hpp>
 #include <iostream>
 #include "ShaderLoader.h"
-//#include "VertexObject.h"
 #include "Camera.h"
 #include "MeshModel.h"
-
 
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
@@ -25,12 +23,6 @@ int imageComponents;
 // Define a camera object
 Camera camera;
 
-// Define properties for the first quad model
-glm::vec3 quadModelPos1 = glm::vec3(-2.0f, -100.0f, -20.0f);
-float quadModelRot1 = 0.0f;
-glm::vec3 quadModelScl1 = glm::vec3(0.05f, 0.05f, 0.05f);
-
-
 // Define program IDs for shaders
 GLuint Program_VertexColor = 0;
 GLuint Program_Texture = 0;
@@ -40,38 +32,6 @@ glm::mat4 ModelMat;
 
 // Define variables for camera movement and animation
 float CameraMovement = 0;
-GLfloat quadPositionList1[] = { -0.5f, 0.5f, 0.0f, /**/ 1.0f, 0.0f, 0.0f, /**/ 0.0f, 4.0f,
-                                0.5f, 0.5f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, /**/ 0.0f, 0.0f,
-                                0.5f, -0.5f, 0.0f, /**/ 1.0f, 0.0f, 1.0f, /**/ 4.0f, 0.0f,
-                                -0.5f, -0.5f, 0.0f, /**/ 0.0f, 1.0f, 1.0f, /**/ 4.0f, 4.0f,
-                                -0.5f, 0.5f, 1.0f, /**/ 1.0f, 0.0f, 0.0f, /**/ 0.0f, 4.0f,
-                                0.5f, 0.5f, 1.0f, /**/ 0.0f, 1.0f, 0.0f, /**/ 0.0f, 0.0f,
-                                0.5f, -0.5f, 1.0f, /**/ 1.0f, 0.0f, 1.0f, /**/ 4.0f, 0.0f,
-                                -0.5f, -0.5f, 1.0f, /**/ 0.0f, 1.0f, 1.0f, /**/ 4.0f, 4.0f,
-};
-
-
-GLuint quadIndexesList[] = {
-        //front
-        2, 1, 0,
-        0, 3, 2,
-        //back
-        4, 5, 6,
-        6, 7, 4,
-        //top
-        5, 4, 0,
-        0, 1, 5,
-        //bot
-        3, 7, 6,
-        6, 2, 3,
-        //right
-        6, 5, 1,
-        1, 2, 6,
-        //left
-        0, 4, 7,
-        7, 3, 0       
-};
-
 
 float CurrentTime = 0;
 
@@ -95,23 +55,21 @@ void InitialSetup()
     Program_AnimatedTexture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/AnimatedTexture.frag");
     Program_VertexColor = ShaderLoader::CreateProgram("Resources/Shaders/VertexColor.vert", "Resources/Shaders/VertexColor.frag");
 
-
-    model = new MeshModel("Models/AncientEmpire/SM_Prop_Statue_01.obj");
+    glm::vec3 position(0.0f);
+    glm::vec3 rotation(0.0f);
+    glm::vec3 scale(0.05f);
+    model = new MeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Prop_Statue_01.obj");
     model->InitTexture("Textures/PolygonAncientWorlds_Statue_01.png");
     model->SetShader(Program_Texture);
-    model->SetTexture();
-    model->DefineModelMatrix(quadModelPos1, quadModelRot1, quadModelScl1);
 }
 
 // Function to update the scene
 void Update()
 { 
-  
     // Calculate delta time
     currentFrame = glfwGetTime();
     deltaTime = (currentFrame - lastFrame) * SpinSpeed;
     lastFrame = currentFrame;
-
     const float radius = 10.0f;
     float camX = sin(glfwGetTime()) * radius;
     float camZ = cos(glfwGetTime()) * radius;
@@ -128,9 +86,14 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Activate and Bind the first texture unit.
+    model->BindTexture();
+   
+    // Set the uniform for the texture in the shader program.
     glUseProgram(Program_Texture);
-    model->SetTexture();
+
     camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
+    
     model->Render();
 
 
@@ -147,9 +110,7 @@ void Render()
 int main()
 {
     // Initialize GLFW
-  
     glfwInit();
-
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
