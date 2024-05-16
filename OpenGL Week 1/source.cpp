@@ -10,8 +10,6 @@
 #include "Camera.h"
 #include "MeshModel.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
@@ -97,59 +95,23 @@ void InitialSetup()
     Program_AnimatedTexture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/AnimatedTexture.frag");
     Program_VertexColor = ShaderLoader::CreateProgram("Resources/Shaders/VertexColor.vert", "Resources/Shaders/VertexColor.frag");
 
-/*
-    Quad1.InitTexture("Resources/Textures/Alien.png");
-    Quad1.setVBO(quadPositionList1, sizeof(quadPositionList1));
-    Quad1.setVAO();
-    Quad1.setEBO(quadIndexesList, sizeof(quadIndexesList));   
-    
-    
-    Quad2.InitTexture("Resources/Textures/Coconut.png");
-    Quad2.setVBO(quadPositionList1, sizeof(quadPositionList1));
-    Quad2.setVAO();
-    Quad2.setEBO(quadIndexesList, sizeof(quadIndexesList));
-*/
-    stbi_set_flip_vertically_on_load(true);
-    imageData = stbi_load("Textures/PolygonAncientWorlds_Statue_01.png", &imageWidth, &imageHeight, &imageComponents, 0);
-    if (imageData == nullptr) {
-        std::cerr << "Failed to load image: " << std::endl;
-        // Handle the error or return from the function.
-    }
-    // Generate a new texture and bind it.
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // Determine the number of color components in the image.
-    GLint LoadedComponents = (imageComponents == 4) ? GL_RGBA : GL_RGB;
-    // Load the image data into the texture.
-    glTexImage2D(GL_TEXTURE_2D, 0, LoadedComponents, imageWidth, imageHeight, 0, LoadedComponents, GL_UNSIGNED_BYTE, imageData);
-    // Generate mipmaps for the texture.
-    glGenerateMipmap(GL_TEXTURE_2D);
-    // Free the image data and unbind the texture.
-    stbi_image_free(imageData);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Enable blending for the texture.
-    glEnable(GL_BLEND);
+
     model = new MeshModel("Models/AncientEmpire/SM_Prop_Statue_01.obj");
-   // model->InitTexture("Textures/PolygonAncientWorlds_Statue_01.png");
-   // model->setShader(Program_Texture);
-    
-    // Combine the matrices to form the model matrix.
-    ModelMat = glm::scale(glm::identity<glm::mat4>(), quadModelScl1) * glm::translate(glm::identity<glm::mat4>(), quadModelPos1) * glm::rotate(glm::identity<glm::mat4>(), glm::radians(quadModelRot1), glm::vec3(0.0f, 0.0f, 1.0f));;
-   
+    model->InitTexture("Textures/PolygonAncientWorlds_Statue_01.png");
+    model->SetShader(Program_Texture);
+    model->SetTexture();
+    model->DefineModelMatrix(quadModelPos1, quadModelRot1, quadModelScl1);
 }
 
 // Function to update the scene
 void Update()
 { 
+  
     // Calculate delta time
     currentFrame = glfwGetTime();
     deltaTime = (currentFrame - lastFrame) * SpinSpeed;
     lastFrame = currentFrame;
-/*
- 
-    Quad1.defineModelMatrix(quadModelPos1, quadModelRot1, quadModelScl1);
-    Quad2.defineModelMatrix(quadModelPos2, quadModelRot2, quadModelScl2);
-    */
+
     const float radius = 10.0f;
     float camX = sin(glfwGetTime()) * radius;
     float camZ = cos(glfwGetTime()) * radius;
@@ -166,44 +128,8 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  /*  // Render Quad1
-    Quad1.setShader(Program_Texture);
-    Quad1.setTexture(MIRRORED);
-    glUniform1i(glGetUniformLocation(Program_Texture, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "ModelMat"), 1, GL_FALSE, &Quad1.ModelMat[0][0]);
-    camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
-    Quad1.draw(sizeof(quadIndexesList));
-
-    // Render Quad2
-    Quad2.setShader(Program_Texture);
-    Quad2.setTexture(MIRRORED);
-    glUniform1i(glGetUniformLocation(Program_Texture, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "ModelMat"), 1, GL_FALSE, &Quad2.ModelMat[0][0]);
-    camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
-    Quad2.draw(sizeof(quadIndexesList));*/
-
-
-    // Activate the first texture unit.
-    glActiveTexture(GL_TEXTURE0);
-    // Bind the texture.
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // Set texture filtering parameters.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // Set texture wrapping mode based on the specified mode.
-    
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-   
-    // Set the uniform for the texture in the shader program.
-    glUniform1i(glGetUniformLocation(Program_Texture, "Texture0"), 0);
-
-
-
     glUseProgram(Program_Texture);
-    glUniform1i(glGetUniformLocation(Program_Texture, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "ModelMat"), 1, GL_FALSE, &ModelMat[0][0]);
+    model->SetTexture();
     camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
     model->Render();
 
@@ -221,7 +147,9 @@ void Render()
 int main()
 {
     // Initialize GLFW
+  
     glfwInit();
+
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);

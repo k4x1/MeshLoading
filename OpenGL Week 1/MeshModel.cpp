@@ -41,7 +41,7 @@ MeshModel::MeshModel(std::string FilePath)
                 if (TinyObjVertex.texcoord_index >= 0) { // Negative states no TexCoord data
                     Vertex.texcoord = {
                         Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 0],
-                        Attrib.texcoords[2 * size_t(  TinyObjVertex.texcoord_index) + 1]
+                        Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 1]
                     };
                 }
                 /*if (TinyObjVertex.normal_index >= 0) { // Negative states no Normal data
@@ -77,28 +77,31 @@ MeshModel::MeshModel(std::string FilePath)
     glBindVertexArray(0);
 }
 
+
 MeshModel::~MeshModel()
 {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    stbi_image_free(imageData);
 }
-
 void MeshModel::Update(float DeltaTime)
 {
 }
 void MeshModel::SetShader(GLuint _Shader)
 {
     shaderProgram = _Shader;
-    glUseProgram(shaderProgram);
+
 }
 void MeshModel::Render()
 {
 
-    glUseProgram(shaderProgram);
-    SetTexture();
+
     glUniform1i(glGetUniformLocation(shaderProgram, "Texture0"), 0);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "ModelMat"), 1, GL_FALSE, &ModelMat[0][0]);
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, sizeof(VertexStandard) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
+    glDrawArrays(DrawType, 0, DrawCount);
     glBindVertexArray(0);
 }
 
@@ -128,20 +131,21 @@ void MeshModel::InitTexture(std::string _filePath)
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-
+    stbi_image_free(imageData);
     GLint LoadedComponents = (imageComponents == 4) ? GL_RGBA : GL_RGB;
     glTexImage2D(GL_TEXTURE_2D, 0, LoadedComponents, imageWidth, imageHeight, 0, LoadedComponents, GL_UNSIGNED_BYTE, imageData);
     glGenerateMipmap(GL_TEXTURE_2D);
-
     glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_BLEND);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
 }
 
 void MeshModel::SetTexture()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 }
