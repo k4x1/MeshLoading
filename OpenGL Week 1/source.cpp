@@ -1,4 +1,4 @@
-
+ 
 #include <glew.h>
 #include <glfw3.h>
 #include <glm.hpp>
@@ -7,28 +7,24 @@
 #include <iostream>
 #include "ShaderLoader.h"
 #include "Camera.h"
-#include "MeshModel.h"
-
+//#include "MeshModel.h"
+#include "InstanceMeshModel.h"
+#include "InputManager.h"
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
 
-MeshModel* model;
+MeshModel* model = nullptr;
+InstanceMeshModel* instanceModel = nullptr;
+InputManager* inputs = nullptr;
 
-GLuint texture;
-unsigned char* imageData;
-int imageWidth = 1024;
-int imageHeight = 512;
-int imageComponents;
 
 // Define a camera object
 Camera camera;
 
 // Define program IDs for shaders
-GLuint Program_VertexColor = 0;
 GLuint Program_Texture = 0;
-GLuint Program_AnimatedTexture = 0;
+GLuint Program_instanceTexture = 0;
 
-glm::mat4 ModelMat;
 
 // Define variables for camera movement and animation
 float CameraMovement = 0;
@@ -38,12 +34,14 @@ float CurrentTime = 0;
 double currentFrame = 0;
 double lastFrame = currentFrame;
 double deltaTime;
+
 float SpinSpeed = 100;
 
-// Function to set up initial OpenGL settings and load shaders
+
 void InitialSetup()
 {
     // Set clear color and viewport
+    inputs = new InputManager(&camera);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
 
@@ -52,32 +50,36 @@ void InitialSetup()
 
     // Load shaders
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
-    Program_AnimatedTexture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/AnimatedTexture.frag");
-    Program_VertexColor = ShaderLoader::CreateProgram("Resources/Shaders/VertexColor.vert", "Resources/Shaders/VertexColor.frag");
+    Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
 
-    glm::vec3 position(0.0f);
+    glm::vec3 position(0.0f, -100.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
+
     model = new MeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Prop_Statue_01.obj");
-    model->InitTexture("Textures/PolygonAncientWorlds_Statue_01.png");
+    model->LoadModel();
+    model->InitTexture("Textures/PolygonAncientWorlds_Texture_01_A.png");
     model->SetShader(Program_Texture);
+
+    instanceModel = new InstanceMeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
+    instanceModel->InitTexture("Textures/PolygonAncientWorlds_Texture_01_B.png");
+    instanceModel->SetShader(Program_instanceTexture);
+
+    // Add instances at random positions
+    for (int i = 0; i < 100; i++) {
+        glm::vec3 randomPosition = glm::vec3(rand() % 200 - 100, -5.0f, rand() % 200 - 100);
+        instanceModel->AddInstance(randomPosition, rotation, glm::vec3(0.025));
+    }
 }
 
 // Function to update the scene
 void Update()
 { 
-    // Calculate delta time
     currentFrame = glfwGetTime();
-    deltaTime = (currentFrame - lastFrame) * SpinSpeed;
+    deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-    const float radius = 10.0f;
-    float camX = sin(glfwGetTime()) * radius;
-    float camZ = cos(glfwGetTime()) * radius;
-    // Update camera movement
-    CameraMovement += deltaTime;
-   //camera.MoveCamera(glm::vec3(camera.Position.x + glm::sign(glm::sin(CameraMovement / 100)) / 10, camera.Position.y, camera.Position.z));
-    camera.view = glm::lookAt(glm::vec3(camX, 0, camZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     model->Update(deltaTime);
+    instanceModel->Update(deltaTime);
    
 }
 
@@ -88,14 +90,16 @@ void Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Activate and Bind the first texture unit.
     model->BindTexture();
-   
+    instanceModel->BindTexture();
+
     // Set the uniform for the texture in the shader program.
     glUseProgram(Program_Texture);
-
     camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
-    
     model->Render();
 
+    glUseProgram(Program_instanceTexture);
+    camera.Matrix(0.01f, 1000.0f, Program_instanceTexture, "CameraMatrix");
+    instanceModel->Render();
 
     // Check for OpenGL errors
     GLenum error = glGetError();
@@ -134,15 +138,25 @@ int main()
         glfwTerminate();
         return -1;
     }
+    inputs->SetCursorPosCallback(Window);
+
+    // Set cursor mode
+    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
     // Perform initial setup
     InitialSetup();
+   
+
 
     // Run the main loop
     while (glfwWindowShouldClose(Window) == false)
     {
         // Process events
         glfwPollEvents();
+
+        // Process input
+         inputs->ProcessInput(Window);
 
         // Update the scene
         Update();
@@ -151,6 +165,8 @@ int main()
         Render();
     }
     delete model;
+    delete instanceModel;
+    delete inputs;
     // Terminate GLFW
     glfwTerminate();
     return 0;

@@ -21,47 +21,35 @@
     <ClCompile Include="ShaderLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertexObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MeshModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceMeshModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\FixedColor.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\FixedTriangle.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\VertexColor.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\VertexColor.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\VertexColorFade.frag">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Resources\Shaders\Texture.vert">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Shaders\Texture.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shaders\AnimatedTexture.frag">
+    <None Include="Resources\Shaders\InstanceTexture.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\InstanceTexture.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -74,6 +62,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeshModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InstanceMeshModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

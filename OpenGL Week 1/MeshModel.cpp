@@ -59,8 +59,8 @@ MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, st
             ReadIndexOffset += FaceVertexCount;
         }
     }
-    DrawType = GL_TRIANGLES;
-    DrawCount = (GLuint)Vertices.size();
+    m_drawType = GL_TRIANGLES;
+    m_drawCount = (GLuint)Vertices.size();
 
     // Create the Vertex Array and associated buffers
     GLuint VBO;
@@ -73,14 +73,12 @@ MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, st
     // Create the VertexAttribPointers for both Position and Texture coordinates
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, position));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2
-        , GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, texcoord));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, texcoord));
     glEnableVertexAttribArray(1);
 
-    // Unbind the VAO
     glBindVertexArray(0);
-
     m_ModelMatrix = CalculateModelMatrix();
+
 }
 
 MeshModel::~MeshModel()
@@ -97,21 +95,22 @@ void MeshModel::Render()
     glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_ModelMatrix[0][0]);
 
     glBindVertexArray(VAO);
-    glDrawArrays(DrawType, 0, DrawCount);
+    glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 }
 void MeshModel::LoadModel()
 {
-
+   
+    
 }
 
-void MeshModel::InitTexture(std::string _filePath)
+void MeshModel::InitTexture(const char* _filePath)
 {
     int imageWidth = 0;
     int imageHeight = 0;
     int imageComponents = 0;
     stbi_set_flip_vertically_on_load(true);
-    imageData = stbi_load("Textures/PolygonAncientWorlds_Statue_01.png", &imageWidth, &imageHeight, &imageComponents, 0);
+    imageData = stbi_load(_filePath, &imageWidth, &imageHeight, &imageComponents, 0);
     if (imageData == nullptr) {
         std::cerr << "Failed to load image: " << std::endl;
         // Handle the error or return from the function.
