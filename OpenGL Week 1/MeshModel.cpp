@@ -5,13 +5,13 @@
 
 
 
-MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath) :  m_position(Position), m_rotation(Rotation), m_scale(Scale)
+MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath) :  m_position(_position), m_rotation(_rotation), m_scale(_scale)
 {
     std::vector<VertexStandard> Vertices;
     tinyobj::ObjReaderConfig ReaderConfig;
     tinyobj::ObjReader Reader;
 
-    if (!Reader.ParseFromFile(ModelFilePath, ReaderConfig)) {
+    if (!Reader.ParseFromFile(_modelFilePath, ReaderConfig)) {
         if (!Reader.Error().empty()) {
             std::cerr << "TinyObjReader: " << Reader.Error();
         }
@@ -77,7 +77,7 @@ MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, st
 
     glBindVertexArray(0);
  
-    m_ModelMatrix = CalculateModelMatrix();
+    m_modelMatrix = CalculateModelMatrix();
 }
 
 MeshModel::~MeshModel()
@@ -93,7 +93,7 @@ void MeshModel::Update(float DeltaTime)
 void MeshModel::Render()
 {
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_ModelMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
 
     glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);
@@ -154,7 +154,7 @@ void MeshModel::SetShader(GLuint _shader)
 void MeshModel::SetPosition(glm::vec3 _newPos)
 {
     m_position = _newPos;
-    m_ModelMatrix = CalculateModelMatrix();
+    m_modelMatrix = CalculateModelMatrix();
 }
 
 glm::vec3 MeshModel::GetPosition()

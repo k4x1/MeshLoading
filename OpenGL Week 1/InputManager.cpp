@@ -1,10 +1,10 @@
 #include "InputManager.h"
-InputManager* InputManager::instance = nullptr;
+InputManager* InputManager::m_instance = nullptr;
 
 InputManager::InputManager(Camera* _camRef)
 {
     m_camera = _camRef;
-    instance = this;
+    m_instance = this;
 }
 
 void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
@@ -143,15 +143,15 @@ void InputManager::SetKeyCallback(GLFWwindow* _window)
 
 void InputManager::StaticMouseCallback(GLFWwindow* _window, double _xpos, double _ypos)
 {
-    if (instance)
+    if (m_instance)
     {
-        instance->MouseCallback(_window, _xpos, _ypos);
+        m_instance->MouseCallback(_window, _xpos, _ypos);
     }
 }
 void InputManager::StaticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (instance)
+    if (m_instance)
     {
-        instance->KeyCallback(window, key, scancode, action, mods);
+        m_instance->KeyCallback(window, key, scancode, action, mods);
     }
 }

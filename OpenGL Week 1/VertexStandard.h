@@ -12,9 +12,9 @@ public:
         texcoord = glm::vec2(0.0f);
     }
 
-    VertexStandard(glm::vec3 pos, glm::vec2 texc)
+    VertexStandard(glm::vec3 _pos, glm::vec2 _texc)
     {
-        position = pos;
-        texcoord = texc;
+        position = _pos;
+        texcoord = _texc;
     }
 };

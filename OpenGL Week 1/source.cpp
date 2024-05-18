@@ -60,23 +60,23 @@ void InitialSetup()
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
  
-    ancientTex.InitTexture("Textures/PolygonAncientWorlds_Texture_01_A.png");
-    scifiTex.InitTexture("Textures/PolygonScifiWorlds_Texture_01_B.png");
-    skyboxTex.InitTexture("Textures/fakerRomance.png");
+    ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
+    scifiTex.InitTexture("Resources/Textures/PolygonScifiWorlds_Texture_01_B.png");
+    skyboxTex.InitTexture("Resources/Textures/fakerRomance.png");
 
     glm::vec3 position(0.0f, -100.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
 
-    model = new MeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Prop_Statue_01.obj");
+    model = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
     model->SetTexture(ancientTex.GetId());
     model->SetShader(Program_Texture);  
     
-    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Models/Sphere.obj");
+    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/Sphere.obj");
     skybox->SetTexture(skyboxTex.GetId());
     skybox->SetShader(Program_Texture);
 
-    instanceModel = new InstanceMeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
+    instanceModel = new InstanceMeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
     instanceModel->SetTexture(ancientTex.GetId());
     instanceModel->SetShader(Program_instanceTexture);
 
@@ -107,14 +107,14 @@ void Update()
 
     // Forward and backward movement
     if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) {
-        moveDir += camera.Orientation;
+        moveDir += camera.m_orientation;
     }
     if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) {
-        moveDir -= camera.Orientation;
+        moveDir -= camera.m_orientation;
     }
 
     // Left and right movement
-    glm::vec3 right = glm::normalize(glm::cross(camera.Orientation, camera.Up));
+    glm::vec3 right = glm::normalize(glm::cross(camera.m_orientation, camera.m_up));
     if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) {
         moveDir -= right;
     }

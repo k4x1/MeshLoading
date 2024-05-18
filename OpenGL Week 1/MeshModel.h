@@ -10,13 +10,12 @@
 class MeshModel
 {
 public:
-    MeshModel(glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(0), std::string ModelFilePath = "");
+    MeshModel(glm::vec3 _position = glm::vec3(0), glm::vec3 _rotation = glm::vec3(0), glm::vec3 _scale = glm::vec3(0), std::string _modelFilePath = "");
     ~MeshModel();
 
-    void Update(float DeltaTime);
+    void Update(float _deltaTime);
     virtual void Render();
     virtual void LoadModel();
-    void InitTexture(const char* _filePath);
     void BindTexture();
     void SetTexture(GLuint _textureID);
     void SetShader(GLuint _shader);
@@ -41,5 +40,5 @@ protected:
     glm::vec3 m_position;
     glm::vec3 m_rotation;
     glm::vec3 m_scale;
-    glm::mat4 m_ModelMatrix;
+    glm::mat4 m_modelMatrix;
 };

@@ -17,7 +17,7 @@ private:
     double m_lastFrame = m_currentFrame;
     double m_deltaTime;
     Camera* m_camera;
-    static InputManager* instance;
+    static InputManager* m_instance;
     static void StaticMouseCallback(GLFWwindow* _window, double _xpos, double _ypos);
     static void StaticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

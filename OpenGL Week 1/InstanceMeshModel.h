@@ -8,7 +8,7 @@ class InstanceMeshModel : public MeshModel
 {
 public:
     // Constructor
-    InstanceMeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath);
+    InstanceMeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath);
     ~InstanceMeshModel();
     // Member variables
     GLsizei m_countInstanced;
@@ -21,5 +21,5 @@ public:
     
 
 private:
-    GLuint instanceVBO;
+    GLuint m_instanceVBO;
 };

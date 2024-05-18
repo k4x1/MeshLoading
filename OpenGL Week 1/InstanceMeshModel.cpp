@@ -1,15 +1,15 @@
 #include "InstanceMeshModel.h"
 
-InstanceMeshModel::InstanceMeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath)
-    : MeshModel(Position, Rotation, Scale, ModelFilePath), m_countInstanced(0)
+InstanceMeshModel::InstanceMeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath)
+    : MeshModel(_position, _rotation, _scale, _modelFilePath), m_countInstanced(0)
 {
     // Initialize instance VBO
-    glGenBuffers(1, &instanceVBO);
+    glGenBuffers(1, &m_instanceVBO);
 }
 
 InstanceMeshModel::~InstanceMeshModel()
 {
-    glDeleteBuffers(1, &instanceVBO);
+    glDeleteBuffers(1, &m_instanceVBO);
 }
 
 void InstanceMeshModel::LoadModel()
@@ -22,7 +22,7 @@ void InstanceMeshModel::Render()
     glBindVertexArray(VAO);
 
     // Update instance VBO
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, m_instancedMVPs.size() * sizeof(glm::mat4), m_instancedMVPs.data(), GL_STATIC_DRAW);
 
     // Set instance attribute pointers
@@ -33,7 +33,7 @@ void InstanceMeshModel::Render()
     }
 
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_ModelMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
 
     glDrawArraysInstanced(m_drawType, 0, m_drawCount, m_countInstanced);
 
