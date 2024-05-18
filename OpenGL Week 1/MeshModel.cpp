@@ -1,16 +1,29 @@
+/*
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2024 Media Design School
+File Name : MeshModel.cpp
+Description : Implementation file for the MeshModel class, which manages the loading, updating, and rendering of a 3D mesh model.
+Author : Kazuo Reis de Andrade
+Mail : kazuo.andrade@mds.ac.nz
+*/
+
 #include "MeshModel.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-
-
-MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath) :  m_position(_position), m_rotation(_rotation), m_scale(_scale)
+// Constructor for MeshModel
+MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath)
+    : m_position(_position), m_rotation(_rotation), m_scale(_scale)
 {
     std::vector<VertexStandard> Vertices;
     tinyobj::ObjReaderConfig ReaderConfig;
     tinyobj::ObjReader Reader;
 
+    // Parse the OBJ file
     if (!Reader.ParseFromFile(_modelFilePath, ReaderConfig)) {
         if (!Reader.Error().empty()) {
             std::cerr << "TinyObjReader: " << Reader.Error();
@@ -18,6 +31,7 @@ MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale,
         exit(1);
     }
 
+    // Print warnings if any
     if (!Reader.Warning().empty()) {
         std::cout << "TinyObjReader: " << Reader.Warning();
     }
@@ -27,39 +41,39 @@ MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale,
 
     // Loop through the shapes of the object
     for (size_t ShapeIndex = 0; ShapeIndex < Shapes.size(); ShapeIndex++) {
-        // Loop through the faces of the shape
         size_t ReadIndexOffset = 0;
+        // Loop through the faces of the shape
         for (size_t FaceIndex = 0; FaceIndex < Shapes[ShapeIndex].mesh.num_face_vertices.size(); FaceIndex++) {
             size_t FaceVertexCount = size_t(Shapes[ShapeIndex].mesh.num_face_vertices[FaceIndex]);
             // Loop through the vertices of the face
             for (size_t VertexIndex = 0; VertexIndex < FaceVertexCount; VertexIndex++) {
                 VertexStandard Vertex{};
                 tinyobj::index_t TinyObjVertex = Shapes[ShapeIndex].mesh.indices[ReadIndexOffset + VertexIndex];
+
+                // Set vertex position
                 Vertex.position = {
                     Attrib.vertices[3 * size_t(TinyObjVertex.vertex_index) + 0],
                     Attrib.vertices[3 * size_t(TinyObjVertex.vertex_index) + 1],
                     Attrib.vertices[3 * size_t(TinyObjVertex.vertex_index) + 2]
                 };
-                if (TinyObjVertex.texcoord_index >= 0) { // Negative states no TexCoord data
+
+                // Set vertex texture coordinates if available
+                if (TinyObjVertex.texcoord_index >= 0) {
                     Vertex.texcoord = {
                         Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 0],
                         Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 1]
                     };
                 }
-                /*if (TinyObjVertex.normal_index >= 0) { // Negative states no Normal data
-                    Vertex.Normal = {
-                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 0],
-                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 1],
-                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 2]
-                    };
-                }*/
+
+                // Add vertex to the list
                 Vertices.push_back(Vertex);
             }
             ReadIndexOffset += FaceVertexCount;
         }
     }
+
     m_drawType = GL_TRIANGLES;
-    m_drawCount = (GLuint)Vertices.size();
+    m_drawCount = static_cast<GLuint>(Vertices.size());
 
     // Create the Vertex Array and associated buffers
     GLuint VBO;
@@ -76,20 +90,22 @@ MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale,
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
- 
+
+    // Calculate the initial model matrix
     m_modelMatrix = CalculateModelMatrix();
 }
 
+// Destructor for MeshModel
 MeshModel::~MeshModel()
 {
 }
 
+// Update function (currently empty)
 void MeshModel::Update(float DeltaTime)
 {
-
-
 }
 
+// Render function
 void MeshModel::Render()
 {
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
@@ -99,76 +115,46 @@ void MeshModel::Render()
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 }
-void MeshModel::LoadModel()
-{
-   
-    
-}
-/*
-void MeshModel::InitTexture(const char* _filePath)
-{
-    int imageWidth = 0;
-    int imageHeight = 0;
-    int imageComponents = 0;
-    stbi_set_flip_vertically_on_load(true);
-    imageData = stbi_load(_filePath, &imageWidth, &imageHeight, &imageComponents, 0);
-    if (imageData == nullptr) {
-        std::cerr << "Failed to load image: " << std::endl;
-        // Handle the error or return from the function.
-    }
-    glGenTextures(1, &m_texture);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    GLint LoadedComponents = (imageComponents == 4) ? GL_RGBA : GL_RGB;
-    glTexImage2D(GL_TEXTURE_2D, 0, LoadedComponents, imageWidth, imageHeight, 0, LoadedComponents, GL_UNSIGNED_BYTE, imageData);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(imageData);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glEnable(GL_BLEND);
 
-    // Set texture filtering parameters.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // Set texture wrapping mode based on the specified mode.
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-}
-*/
+// Bind the texture
 void MeshModel::BindTexture()
 {
     glActiveTexture(GL_TEXTURE0);
-    // Bind the texture.
     glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
+// Set the texture ID
 void MeshModel::SetTexture(GLuint _textureID)
 {
     m_texture = _textureID;
 }
 
+// Set the shader program
 void MeshModel::SetShader(GLuint _shader)
 {
     m_shader = _shader;
 }
 
+// Set the position and update the model matrix
 void MeshModel::SetPosition(glm::vec3 _newPos)
 {
     m_position = _newPos;
     m_modelMatrix = CalculateModelMatrix();
 }
 
+// Get the current position
 glm::vec3 MeshModel::GetPosition()
 {
     return m_position;
 }
 
+// Calculate the model matrix based on position, rotation, and scale
 glm::mat4 MeshModel::CalculateModelMatrix()
-{ // Calculate the translation, rotation, and scale matrices.
+{
     glm::mat4 TranslationMat = glm::translate(glm::identity<glm::mat4>(), m_position);
     glm::mat4 RotationMat = glm::rotate(glm::identity<glm::mat4>(), glm::radians(m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-              RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-              RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    RotationMat = glm::rotate(RotationMat, glm::radians(m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 ScaleMat = glm::scale(glm::identity<glm::mat4>(), m_scale);
-    // Combine the matrices to form the model matrix.
     return ScaleMat * TranslationMat * RotationMat;
 }

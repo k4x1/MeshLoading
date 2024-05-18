@@ -1,3 +1,17 @@
+/*
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2024 Media Design School
+File Name : Camera.h
+Description : Header file for the Camera class, which manages the camera's position, orientation, and view/projection matrices.
+Author : Kazuo Reis de Andrade
+Mail : kazuo.andrade@mds.ac.nz
+*/
+
+
+
 #ifndef CAMERA_CLASS_H
 #define CAMERA_CLASS_H
 
@@ -32,7 +46,7 @@ public:
     // Yaw and pitch angles for camera orientation
     float m_yaw = -90.0f; // Initialized to -90.0 degrees to look forward
     float m_pitch = 0.0f;
-    float m_radius = 100.0f;
+    float m_radius = 80.0f;
 
     void MoveCamera(glm::vec3 _position);
     // Camera constructor to set up initial values
