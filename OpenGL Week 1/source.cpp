@@ -72,7 +72,7 @@ void InitialSetup()
     model->SetTexture(ancientTex.GetId());
     model->SetShader(Program_Texture);  
     
-    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(100), "Models/Sphere.obj");
+    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Models/Sphere.obj");
     skybox->SetTexture(skyboxTex.GetId());
     skybox->SetShader(Program_Texture);
 
@@ -152,7 +152,10 @@ void Render()
     skybox->BindTexture();
     glUseProgram(Program_Texture);
     camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
+
+    glCullFace(GL_FRONT);
     skybox->Render();
+    glCullFace(GL_BACK);
 
     model->BindTexture();
     glUseProgram(Program_Texture);
