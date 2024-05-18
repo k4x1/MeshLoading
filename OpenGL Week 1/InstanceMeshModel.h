@@ -18,6 +18,7 @@ public:
     void LoadModel() override;
     void Render() override;
     void AddInstance(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale);
+    
 
 private:
     GLuint instanceVBO;

@@ -24,13 +24,15 @@ public:
     float Width;
     float Height;
 
+
     // Adjust the speed of the camera and its sensitivity when looking around
-    float speed = 10.0f;
-    float sensitivity = 100.0f;
+    float speed = 50.0f;
+    float sensitivity = 10.0f;
 
     // Yaw and pitch angles for camera orientation
     float yaw = -90.0f; // Initialized to -90.0 degrees to look forward
     float pitch = 0.0f;
+    float radius = 100.0f;
 
     void MoveCamera(glm::vec3 _position);
     // Camera constructor to set up initial values

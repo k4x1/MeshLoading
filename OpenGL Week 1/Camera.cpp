@@ -22,7 +22,8 @@ void Camera::Matrix(float nearPlane, float farPlane, GLuint shaderID, const char
     glm::mat4 projection = glm::mat4(1.0f);
 
     // Makes camera look in the right direction from the right position
-	view = glm::lookAt(Position, Position + Orientation, Up);
+	//view = glm::lookAt(Position, Position + Orientation, Up);
+	view = glm::lookAt(Position, glm::vec3(0), Up);
 
     // Adds perspective to the scene
     projection = glm::perspective(glm::radians(45.0f), (Width / Height), nearPlane, farPlane);

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "ShaderLoader.h"
 #include "Camera.h"
+#include "Texture.h"
 //#include "MeshModel.h"
 #include "InstanceMeshModel.h"
 #include "InputManager.h"
@@ -14,6 +15,7 @@
 GLFWwindow* Window = nullptr;
 
 MeshModel* model = nullptr;
+MeshModel* skybox = nullptr;
 InstanceMeshModel* instanceModel = nullptr;
 InputManager* inputs = nullptr;
 
@@ -36,10 +38,16 @@ double lastFrame = currentFrame;
 double deltaTime;
 
 float SpinSpeed = 100;
+float modelSpeed = 100.0f;
+
+Texture ancientTex;
+Texture scifiTex;
+Texture skyboxTex;
 
 
 void InitialSetup()
 {
+    glEnable(GL_BLEND);
     // Set clear color and viewport
     inputs = new InputManager(&camera);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -51,37 +59,88 @@ void InitialSetup()
     // Load shaders
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
+ 
+    ancientTex.InitTexture("Textures/PolygonAncientWorlds_Texture_01_A.png");
+    scifiTex.InitTexture("Textures/PolygonScifiWorlds_Texture_01_B.png");
+    skyboxTex.InitTexture("Textures/fakerRomance.png");
 
     glm::vec3 position(0.0f, -100.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
 
     model = new MeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Prop_Statue_01.obj");
-    model->LoadModel();
-    model->InitTexture("Textures/PolygonAncientWorlds_Texture_01_A.png");
-    model->SetShader(Program_Texture);
+    model->SetTexture(ancientTex.GetId());
+    model->SetShader(Program_Texture);  
+    
+    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(100), "Models/Sphere.obj");
+    skybox->SetTexture(skyboxTex.GetId());
+    skybox->SetShader(Program_Texture);
 
     instanceModel = new InstanceMeshModel(position, rotation, scale, "Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
-    instanceModel->InitTexture("Textures/PolygonAncientWorlds_Texture_01_B.png");
+    instanceModel->SetTexture(ancientTex.GetId());
     instanceModel->SetShader(Program_instanceTexture);
 
     // Add instances at random positions
-    for (int i = 0; i < 100; i++) {
-        glm::vec3 randomPosition = glm::vec3(rand() % 200 - 100, -5.0f, rand() % 200 - 100);
-        instanceModel->AddInstance(randomPosition, rotation, glm::vec3(0.025));
+    for (int i = 0; i < 1000; i++) {
+        glm::vec3 randomPosition = glm::vec3(
+            rand() % 1000 - 100,
+            -5.0f,
+            rand() % 1000 - 100);
+
+        glm::vec3 randomRotation = glm::vec3((rand() % 21) - 10);
+        glm::vec3 randomScale = glm::vec3(((rand() % 10 + 5)/200.0f));
+
+        instanceModel->AddInstance(randomPosition, randomRotation, randomScale);
     }
 }
 
 // Function to update the scene
 void Update()
-{ 
+{
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     model->Update(deltaTime);
-    instanceModel->Update(deltaTime);
-   
+
+    // Player movement
+    glm::vec3 moveDir(0.0f);
+
+    // Forward and backward movement
+    if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) {
+        moveDir += camera.Orientation;
+    }
+    if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) {
+        moveDir -= camera.Orientation;
+    }
+
+    // Left and right movement
+    glm::vec3 right = glm::normalize(glm::cross(camera.Orientation, camera.Up));
+    if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) {
+        moveDir -= right;
+    }
+    if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS) {
+        moveDir += right;
+    }
+
+    // Up and down movement
+    glm::vec3 up(0.0f, 1.0f, 0.0f);
+    if (glfwGetKey(Window, GLFW_KEY_Q) == GLFW_PRESS) {
+        moveDir += up;
+    }
+    if (glfwGetKey(Window, GLFW_KEY_E) == GLFW_PRESS) {
+        moveDir -= up;
+    }
+
+    // Normalize the movement direction
+    if (glm::length(moveDir) > 0.0f) {
+        moveDir = glm::normalize(moveDir);
+    }
+
+    // Apply movement to the model
+    model->SetPosition(model->GetPosition() + moveDir * modelSpeed * float(deltaTime));
+    
 }
+
 
 // Function to render the scene
 void Render()
@@ -89,14 +148,18 @@ void Render()
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Activate and Bind the first texture unit.
-    model->BindTexture();
-    instanceModel->BindTexture();
+ 
+    skybox->BindTexture();
+    glUseProgram(Program_Texture);
+    camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
+    skybox->Render();
 
-    // Set the uniform for the texture in the shader program.
+    model->BindTexture();
     glUseProgram(Program_Texture);
     camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
     model->Render();
 
+    instanceModel->BindTexture();
     glUseProgram(Program_instanceTexture);
     camera.Matrix(0.01f, 1000.0f, Program_instanceTexture, "CameraMatrix");
     instanceModel->Render();
@@ -121,6 +184,7 @@ int main()
 
     // Create a window
     Window = glfwCreateWindow(800, 800, "First OpenGL Window", NULL, NULL);
+
     if (Window == NULL)
     {
         std::cout << "GLFW failed to initialize properly. Terminating program." << std::endl;
@@ -138,7 +202,8 @@ int main()
         glfwTerminate();
         return -1;
     }
-    inputs->SetCursorPosCallback(Window);
+    inputs->SetKeyCallback(Window);
+  //  inputs->SetCursorPosCallback(Window);  :( this code is really cool 
 
     // Set cursor mode
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -165,6 +230,7 @@ int main()
         Render();
     }
     delete model;
+    delete skybox;
     delete instanceModel;
     delete inputs;
     // Terminate GLFW

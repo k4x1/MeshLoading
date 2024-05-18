@@ -3,8 +3,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+
 
 MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, std::string ModelFilePath) :  m_position(Position), m_rotation(Rotation), m_scale(Scale)
 {
@@ -77,8 +76,8 @@ MeshModel::MeshModel(glm::vec3 Position, glm::vec3 Rotation, glm::vec3 Scale, st
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+ 
     m_ModelMatrix = CalculateModelMatrix();
-
 }
 
 MeshModel::~MeshModel()
@@ -87,6 +86,8 @@ MeshModel::~MeshModel()
 
 void MeshModel::Update(float DeltaTime)
 {
+
+
 }
 
 void MeshModel::Render()
@@ -103,7 +104,7 @@ void MeshModel::LoadModel()
    
     
 }
-
+/*
 void MeshModel::InitTexture(const char* _filePath)
 {
     int imageWidth = 0;
@@ -132,7 +133,7 @@ void MeshModel::InitTexture(const char* _filePath)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 }
-
+*/
 void MeshModel::BindTexture()
 {
     glActiveTexture(GL_TEXTURE0);
@@ -140,9 +141,25 @@ void MeshModel::BindTexture()
     glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
+void MeshModel::SetTexture(GLuint _textureID)
+{
+    m_texture = _textureID;
+}
+
 void MeshModel::SetShader(GLuint _shader)
 {
     m_shader = _shader;
+}
+
+void MeshModel::SetPosition(glm::vec3 _newPos)
+{
+    m_position = _newPos;
+    m_ModelMatrix = CalculateModelMatrix();
+}
+
+glm::vec3 MeshModel::GetPosition()
+{
+    return m_position;
 }
 
 glm::mat4 MeshModel::CalculateModelMatrix()

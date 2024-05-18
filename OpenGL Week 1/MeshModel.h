@@ -18,7 +18,11 @@ public:
     virtual void LoadModel();
     void InitTexture(const char* _filePath);
     void BindTexture();
+    void SetTexture(GLuint _textureID);
     void SetShader(GLuint _shader);
+    void SetPosition(glm::vec3 _newPos);
+
+    glm::vec3 GetPosition();
     glm::mat4 CalculateModelMatrix();
 protected:
     //vao and rendering
@@ -31,7 +35,7 @@ protected:
 
     //texture and data
     GLuint m_texture;
-    unsigned char* imageData;
+   // unsigned char* imageData;
 
     //other
     glm::vec3 m_position;

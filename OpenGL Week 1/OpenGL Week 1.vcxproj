@@ -145,6 +145,7 @@
     <ClCompile Include="MeshModel.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="source.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\InstanceTexture.frag" />
@@ -158,6 +159,7 @@
     <ClInclude Include="InstanceMeshModel.h" />
     <ClInclude Include="MeshModel.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="VertexStandard.h" />
   </ItemGroup>
