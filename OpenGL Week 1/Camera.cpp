@@ -40,11 +40,13 @@ void Camera::Matrix(float _nearPlane, float _farPlane, GLuint _shaderID, const c
     glm::mat4 projection = glm::mat4(1.0f);
 
     // Make the camera look in the right direction from the right position
-    m_view = glm::lookAt(m_position, glm::vec3(0), m_up);
+    m_view = glm::lookAt(m_position, m_position+m_orientation, m_up);
 
     // Add perspective to the scene
-    projection = glm::perspective(glm::radians(45.0f), (m_width / m_height), _nearPlane, _farPlane);
-
+    projection = glm::perspective(glm::radians(m_FOV), (m_width / m_height), _nearPlane, _farPlane);
+    
     // Export the camera matrix to the vertex shader
     glUniformMatrix4fv(glGetUniformLocation(_shaderID, _uniform), 1, GL_FALSE, glm::value_ptr(projection * m_view));
+
+    
 }

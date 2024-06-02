@@ -144,12 +144,15 @@
     <ClCompile Include="InstanceMeshModel.cpp" />
     <ClCompile Include="MeshModel.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="source.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\InstanceTexture.frag" />
     <None Include="Resources\Shaders\InstanceTexture.vert" />
+    <None Include="Resources\Shaders\Skybox.frag" />
+    <None Include="Resources\Shaders\Skybox.vert" />
     <None Include="Resources\Shaders\Texture.frag" />
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
@@ -157,8 +160,11 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InstanceMeshModel.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="MeshModel.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="VertexStandard.h" />

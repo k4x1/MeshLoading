@@ -19,6 +19,8 @@ Mail : kazuo.andrade@mds.ac.nz
 #include <gtc/type_ptr.hpp>
 #include <ext/matrix_transform.hpp>
 #include "VertexStandard.h"
+#include "Camera.h"
+#include "Light.h"
 
 // Manages the loading, updating, and rendering of a 3D mesh model.
 class MeshModel
@@ -47,6 +49,8 @@ public:
 
     // Sets the position of the model.
     void SetPosition(glm::vec3 _newPos);
+
+    void PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsigned int _lightCount);
 
     // Gets the position of the model.
     glm::vec3 GetPosition();

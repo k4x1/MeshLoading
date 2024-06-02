@@ -34,7 +34,7 @@ private:
     // Static callback functions for GLFW
     static void StaticMouseCallback(GLFWwindow* _window, double _xpos, double _ypos);
     static void StaticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
+    static void StaticScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset);
     bool autoRotate = false; // Flag for automatic rotation
 
 public:
@@ -46,6 +46,9 @@ public:
 
     // Mouse callback function
     void MouseCallback(GLFWwindow* _window, double _xpos, double _ypos);
+
+    // Scroll callback function
+    void ScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset);
 
     // Processes input for the current frame
     void ProcessInput(GLFWwindow* _window);

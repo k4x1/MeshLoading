@@ -64,7 +64,13 @@ MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale,
                         Attrib.texcoords[2 * size_t(TinyObjVertex.texcoord_index) + 1]
                     };
                 }
-
+                if (TinyObjVertex.normal_index >= 0) { // Negative states no Normal data
+                    Vertex.normal = {
+                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 0],
+                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 1],
+                        Attrib.normals[3 * size_t(TinyObjVertex.normal_index) + 2]
+                    };
+                }
                 // Add vertex to the list
                 Vertices.push_back(Vertex);
             }
@@ -88,7 +94,8 @@ MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale,
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, texcoord));
     glEnableVertexAttribArray(1);
-
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, normal));
+    glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 
     // Calculate the initial model matrix
@@ -140,6 +147,27 @@ void MeshModel::SetPosition(glm::vec3 _newPos)
 {
     m_position = _newPos;
     m_modelMatrix = CalculateModelMatrix();
+}
+
+void MeshModel::PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsigned int _lightCount)
+{
+
+    glUseProgram(m_shader);
+    _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
+    glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
+    for (unsigned int i = 0; i < _lightCount; ++i)
+    {
+        std::string uniformName = "PointLightArray[" + std::to_string(i) + "].position";
+        glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_lightArr[i].position));
+
+        uniformName = "PointLightArray[" + std::to_string(i) + "].color";
+        glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_lightArr[i].color));
+
+        uniformName = "PointLightArray[" + std::to_string(i) + "].specularStrength";
+        glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _lightArr[i].specularStrength);
+    }
+
+    glUniform1ui(glGetUniformLocation(m_shader, "PointLightCount"), _lightCount);
 }
 
 // Get the current position

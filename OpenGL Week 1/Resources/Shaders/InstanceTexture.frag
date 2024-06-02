@@ -1,14 +1,72 @@
 #version 460 core
+#define MAX_POINT_LIGHTS 4
+
+
+
+
+struct PointLight {
+    vec3 position;
+    vec3 color;
+    float specularStrength;
+};
+
 
 
 in vec2 FragTexCoords;
+in vec3 FragNormal;
+in vec3 FragPos;
 
 uniform sampler2D Texture0;
 
+uniform vec3 CameraPos;
+uniform float LightSpecularStrength = 1.0f;
+uniform float ObjectShininess = 32.0f;
+
+uniform float AmbientStrength = 0.15f;
+uniform vec3 AmbientColor = vec3(1.0f, 1.0f, 1.0f);
+
+
+uniform vec3 LightColor = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3 LightPos = vec3(-300.0f, 0.0f, 100.0f);
+uniform PointLight PointLightArray[MAX_POINT_LIGHTS];
+uniform uint PointLightCount;
+
 out vec4 FinalColor;
+
+vec3 CalculateLightPoint(uint index){
+
+	vec3 Normal = normalize(FragNormal);
+	vec3 LightDir = normalize(FragPos - PointLightArray[index].position);
+
+	float DiffuseStrength = max(dot(Normal, - LightDir), 0.0f);
+	vec3 Diffuse = (DiffuseStrength) * PointLightArray[index].color;
+
+	vec3 ReverseViewDir = normalize(CameraPos - FragPos);
+	vec3 HalfwayVector = normalize(-LightDir + ReverseViewDir);
+
+	float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
+	vec3 Specular = PointLightArray[index].specularStrength * SpecularReflectivity * PointLightArray[index].color;
+	return Specular + Diffuse;
+}
 
 
 void main()
 {
-	FinalColor = texture(Texture0, FragTexCoords);
+
+
+	vec3 Ambient = AmbientStrength * AmbientColor;
+
+	// Specular Component
+	
+
+	vec3 TotalLightOutput = vec3(0.0f);
+	for (uint i = 0; i < PointLightCount; ++i)
+	{
+		TotalLightOutput += CalculateLightPoint(i);
+	}
+	// Combine the lighting components
+	vec4 Light = vec4(Ambient + TotalLightOutput, 1.0f);
+
+
+    FinalColor = Light * texture(Texture0, FragTexCoords);
 }

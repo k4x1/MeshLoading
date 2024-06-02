@@ -24,7 +24,8 @@ Mail : kazuo.andrade@mds.ac.nz
 #include "Texture.h"
 #include "InstanceMeshModel.h"
 #include "InputManager.h"
-
+#include "PointLight.h"
+#include <string> 
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
 
@@ -40,6 +41,8 @@ Camera camera;
 // Define program IDs for shaders
 GLuint Program_Texture = 0;
 GLuint Program_instanceTexture = 0;
+GLuint ProgramArray[2];
+
 
 // Define variables for movement
 double currentFrame = 0;
@@ -51,6 +54,16 @@ float modelSpeed = 100.0f;
 Texture ancientTex;
 Texture scifiTex;
 Texture skyboxTex;
+
+
+
+
+float AmbientStrength;
+glm::vec3 AmbientColor;
+static const int MAX_POINT_LIGHTS = 4;
+PointLight PointLightArray[MAX_POINT_LIGHTS];
+unsigned int PointLightCount;
+
 
 // Function prototypes
 void InitialSetup();
@@ -91,7 +104,7 @@ int main()
 
     // Set input callbacks
     inputs = new InputManager(&camera);
-    inputs->SetKeyCallback(Window);
+ //   inputs->SetKeyCallback(Window);
     inputs->SetCursorPosCallback(Window);
 
     // Set cursor mode
@@ -138,8 +151,12 @@ void InitialSetup()
     camera.InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 10.0f));
 
     // Load shaders
+
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
+    
+    ProgramArray[0] = Program_Texture;
+    ProgramArray[1] = Program_instanceTexture;
 
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
@@ -150,11 +167,11 @@ void InitialSetup()
     glm::vec3 position(0.0f, -100.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
-
+   
     model = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
     model->SetTexture(ancientTex.GetId());
     model->SetShader(Program_Texture);
-
+    
     skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/Sphere.obj");
     skybox->SetTexture(skyboxTex.GetId());
     skybox->SetShader(Program_Texture);
@@ -170,6 +187,17 @@ void InitialSetup()
         glm::vec3 randomScale = glm::vec3(((rand() % 10 + 5) / 200.0f));
         instanceModel->AddInstance(randomPosition, randomRotation, randomScale);
     }
+    instanceModel->initBuffer();
+
+    PointLightArray[0].position = glm::vec3(25.0f, 15.0f, 0.0f);
+    PointLightArray[0].color = glm::vec3(0.0f, 0.0f, 1.0f);
+    PointLightArray[0].specularStrength = 1.0f;
+
+    PointLightArray[1].position = glm::vec3(-25.0f, 15.0f, 0.0f);
+    PointLightArray[1].color = glm::vec3(1.0f, 0.0f, 0.0f);
+    PointLightArray[1].specularStrength = 1.0f;
+
+    PointLightCount = 2;
 }
 
 // Function to update the scene
@@ -179,43 +207,10 @@ void Update()
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     model->Update(deltaTime);
+    
+    
 
-    // Player movement
-    glm::vec3 moveDir(0.0f);
-
-    // Forward and backward movement
-    if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) {
-        moveDir += camera.m_orientation;
-    }
-    if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) {
-        moveDir -= camera.m_orientation;
-    }
-
-    // Left and right movement
-    glm::vec3 right = glm::normalize(glm::cross(camera.m_orientation, camera.m_up));
-    if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) {
-        moveDir -= right;
-    }
-    if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS) {
-        moveDir += right;
-    }
-
-    // Up and down movement
-    glm::vec3 up(0.0f, 1.0f, 0.0f);
-    if (glfwGetKey(Window, GLFW_KEY_Q) == GLFW_PRESS) {
-        moveDir += up;
-    }
-    if (glfwGetKey(Window, GLFW_KEY_E) == GLFW_PRESS) {
-        moveDir -= up;
-    }
-
-    // Normalize the movement direction
-    if (glm::length(moveDir) > 0.0f) {
-        moveDir = glm::normalize(moveDir);
-    }
-
-    // Apply movement to the model
-    model->SetPosition(model->GetPosition() + moveDir * modelSpeed * float(deltaTime));
+    
 }
 
 // Function to render the scene
@@ -223,25 +218,27 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Render skybox
+    /**/
+    // Render skybox 
+    /*
     skybox->BindTexture();
     glUseProgram(Program_Texture);
-    camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
+    camera.Matrix(0.01f, 1000.0f, Program_Texture, "VPMatrix");
+    glUniform3fv(glGetUniformLocation(Program_Texture, "CameraPos"), 1, &camera.m_position[0]);
     glCullFace(GL_FRONT);
     skybox->Render();
     glCullFace(GL_BACK);
-
+    */
     // Render model
-    model->BindTexture();
-    glUseProgram(Program_Texture);
-    camera.Matrix(0.01f, 1000.0f, Program_Texture, "CameraMatrix");
-    model->Render();
 
+   
+    model->BindTexture();
+    model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    model->Render();
+    
     // Render instance model
-    instanceModel->BindTexture();
-    glUseProgram(Program_instanceTexture);
-    camera.Matrix(0.01f, 1000.0f, Program_instanceTexture, "CameraMatrix");
+    instanceModel->BindTexture();   
+    instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     instanceModel->Render();
 
     // Check for OpenGL errors

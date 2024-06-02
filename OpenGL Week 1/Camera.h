@@ -37,7 +37,7 @@ public:
     // Stores the width and height of the window
     float m_width;
     float m_height;
-
+    float m_FOV = 45.0f;
 
     // Adjust the speed of the camera and its sensitivity when looking around
     float m_speed = 50.0f;
@@ -54,6 +54,8 @@ public:
 
     // Updates and exports the camera matrix to the Vertex Shader
     void Matrix(float _nearPlane, float _farPlane, GLuint _shaderID, const char* _uniform);
+
+   
 };
 
 #endif

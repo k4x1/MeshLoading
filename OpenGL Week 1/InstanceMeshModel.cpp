@@ -18,8 +18,7 @@ Mail : kazuo.andrade@mds.ac.nz
 InstanceMeshModel::InstanceMeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath)
     : MeshModel(_position, _rotation, _scale, _modelFilePath), m_countInstanced(0)
 {
-    // Initialize instance VBO
-    glGenBuffers(1, &m_instanceVBO);
+
 }
 
 // Destructor for InstanceMeshModel
@@ -32,26 +31,9 @@ InstanceMeshModel::~InstanceMeshModel()
 // Render function for instanced rendering
 void InstanceMeshModel::Render()
 {
-    glBindVertexArray(VAO);
-
-    // Update instance VBO with model-view-projection matrices
-    glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, m_instancedMVPs.size() * sizeof(glm::mat4), m_instancedMVPs.data(), GL_STATIC_DRAW);
-
-    // Set instance attribute pointers for the matrices
-    for (int i = 0; i < 4; i++) {
-        glEnableVertexAttribArray(2 + i);
-        glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i));
-        glVertexAttribDivisor(2 + i, 1);
-    }
-
-    // Set shader uniforms
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
-    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
-
-    // Draw the instanced arrays
+    glBindVertexArray(VAO);
     glDrawArraysInstanced(m_drawType, 0, m_drawCount, m_countInstanced);
-
     glBindVertexArray(0);
 }
 
@@ -68,4 +50,21 @@ void InstanceMeshModel::AddInstance(glm::vec3 _position, glm::vec3 _rotation, gl
     // Combine the matrices to form the model-view-projection matrix
     m_instancedMVPs.push_back(TranslationMat * RotationMat * ScaleMat);
     m_countInstanced++;
+}
+
+void InstanceMeshModel::initBuffer()
+{
+    // Initialize instance VBO
+    glBindVertexArray(VAO);
+    glGenBuffers(1, &m_instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, m_instancedMVPs.size() * sizeof(glm::mat4), m_instancedMVPs.data(), GL_STATIC_DRAW); // needs to happen once
+
+    // Set instance attribute pointers for the matrices
+    for (int i = 0; i < 4; i++) {
+        glEnableVertexAttribArray(3 + i);
+        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * i));
+        glVertexAttribDivisor(3 + i, 1);
+    }
+    glBindVertexArray(0);
 }
