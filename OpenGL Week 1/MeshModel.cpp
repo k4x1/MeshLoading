@@ -115,7 +115,9 @@ void MeshModel::Update(float DeltaTime)
 // Render function
 void MeshModel::Render()
 {
-    glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+    if(m_texture!= NULL){
+        glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+    }
     glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
 
     glBindVertexArray(VAO);
@@ -152,8 +154,7 @@ void MeshModel::SetPosition(glm::vec3 _newPos)
 void MeshModel::PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsigned int _lightCount)
 {
 
-    glUseProgram(m_shader);
-    _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
+    
     glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
     for (unsigned int i = 0; i < _lightCount; ++i)
     {
@@ -165,9 +166,30 @@ void MeshModel::PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsign
 
         uniformName = "PointLightArray[" + std::to_string(i) + "].specularStrength";
         glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _lightArr[i].specularStrength);
+
+        uniformName = "PointLightArray[" + std::to_string(i) + "].attenuationConstant";
+        glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _lightArr[i].attenuationConstant);
+        
+        uniformName = "PointLightArray[" + std::to_string(i) + "].attenuationLinear";
+        glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _lightArr[i].attenuationLinear);
+
+        uniformName = "PointLightArray[" + std::to_string(i) + "].attenuationExponent";
+        glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _lightArr[i].attenuationExponent);
     }
 
     glUniform1ui(glGetUniformLocation(m_shader, "PointLightCount"), _lightCount);
+}
+
+void MeshModel::PassColorUniforms(float _r, float _g, float _b, float _a)
+{
+    GLint colorLocation = glGetUniformLocation(m_shader, "Color");
+    glUniform4f(colorLocation, _r, _g, _b, _a);
+}
+
+void MeshModel::PassUniforms(Camera* _camRef)
+{
+    glUseProgram(m_shader);
+    _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
 }
 
 // Get the current position

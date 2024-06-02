@@ -151,6 +151,8 @@
   <ItemGroup>
     <None Include="Resources\Shaders\InstanceTexture.frag" />
     <None Include="Resources\Shaders\InstanceTexture.vert" />
+    <None Include="Resources\Shaders\Color.frag" />
+    <None Include="Resources\Shaders\Color.vert" />
     <None Include="Resources\Shaders\Skybox.frag" />
     <None Include="Resources\Shaders\Skybox.vert" />
     <None Include="Resources\Shaders\Texture.frag" />
@@ -162,7 +164,6 @@
     <ClInclude Include="InstanceMeshModel.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MeshModel.h" />
-    <ClInclude Include="PointLight.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture.h" />

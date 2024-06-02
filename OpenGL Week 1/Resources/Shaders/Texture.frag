@@ -8,6 +8,16 @@ struct PointLight {
     vec3 position;
     vec3 color;
     float specularStrength;
+
+	float attenuationConstant;
+    float attenuationLinear;
+    float attenuationExponent;
+};
+struct DirectionalLight {
+    glm::vec3 Direction;
+	 vec3 color;
+    float specularStrength;
+
 };
 
 
@@ -46,7 +56,13 @@ vec3 CalculateLightPoint(uint index){
 
 	float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
 	vec3 Specular = PointLightArray[index].specularStrength * SpecularReflectivity * PointLightArray[index].color;
-	return Specular + Diffuse;
+
+	vec3 Light = Diffuse + Specular;
+
+	float Distance = length(PointLightArray[index].position - FragPos);
+	float Attenuation = PointLightArray[index].attenuationConstant + (PointLightArray[index].attenuationLinear * Distance) + (PointLightArray[index].attenuationExponent * pow(Distance, 2));
+	Light /= Attenuation;
+	return Light;
 }
 
 
@@ -66,7 +82,9 @@ void main()
 	}
 	// Combine the lighting components
 	vec4 Light = vec4(Ambient + TotalLightOutput, 1.0f);
-
+	
+	
+	
 
     FinalColor = Light * texture(Texture0, FragTexCoords);
 }

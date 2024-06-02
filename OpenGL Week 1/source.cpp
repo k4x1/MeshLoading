@@ -24,7 +24,7 @@ Mail : kazuo.andrade@mds.ac.nz
 #include "Texture.h"
 #include "InstanceMeshModel.h"
 #include "InputManager.h"
-#include "PointLight.h"
+#include "Light.h"
 #include <string> 
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
@@ -32,6 +32,8 @@ GLFWwindow* Window = nullptr;
 // Define model pointers
 MeshModel* model = nullptr;
 MeshModel* skybox = nullptr;
+MeshModel* pointLight1 = nullptr;
+MeshModel* pointLight2 = nullptr;
 InstanceMeshModel* instanceModel = nullptr;
 InputManager* inputs = nullptr;
 
@@ -41,6 +43,7 @@ Camera camera;
 // Define program IDs for shaders
 GLuint Program_Texture = 0;
 GLuint Program_instanceTexture = 0;
+GLuint Program_color = 0;
 GLuint ProgramArray[2];
 
 
@@ -54,6 +57,7 @@ float modelSpeed = 100.0f;
 Texture ancientTex;
 Texture scifiTex;
 Texture skyboxTex;
+Texture blankTex;
 
 
 
@@ -133,6 +137,8 @@ int main()
     delete model;
     delete skybox;
     delete instanceModel;
+    delete pointLight1;
+    delete pointLight2;
     delete inputs;
 
     // Terminate GLFW
@@ -152,16 +158,15 @@ void InitialSetup()
 
     // Load shaders
 
-    Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
+    Program_Texture =         ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
+    Program_color =           ShaderLoader::CreateProgram("Resources/Shaders/Color.vert", "Resources/Shaders/Color.frag");
     
-    ProgramArray[0] = Program_Texture;
-    ProgramArray[1] = Program_instanceTexture;
-
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
     scifiTex.InitTexture("Resources/Textures/PolygonScifiWorlds_Texture_01_B.png");
     skyboxTex.InitTexture("Resources/Textures/fakerRomance.png");
+    blankTex.InitTexture("Resources/Textures/blankTex.png");
 
     // Initialize models
     glm::vec3 position(0.0f, -100.0f, 0.0f);
@@ -172,11 +177,13 @@ void InitialSetup()
     model->SetTexture(ancientTex.GetId());
     model->SetShader(Program_Texture);
     
+    
+    
     skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/Sphere.obj");
     skybox->SetTexture(skyboxTex.GetId());
     skybox->SetShader(Program_Texture);
 
-    instanceModel = new InstanceMeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
+    instanceModel = new InstanceMeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
     instanceModel->SetTexture(ancientTex.GetId());
     instanceModel->SetShader(Program_instanceTexture);
 
@@ -189,15 +196,37 @@ void InitialSetup()
     }
     instanceModel->initBuffer();
 
+
+
     PointLightArray[0].position = glm::vec3(25.0f, 15.0f, 0.0f);
     PointLightArray[0].color = glm::vec3(0.0f, 0.0f, 1.0f);
     PointLightArray[0].specularStrength = 1.0f;
+    PointLightArray[0].attenuationConstant = 1.0f;
+    PointLightArray[0].attenuationLinear = 0.045f;
+    PointLightArray[0].attenuationExponent = 0.0075f;
+
+
 
     PointLightArray[1].position = glm::vec3(-25.0f, 15.0f, 0.0f);
     PointLightArray[1].color = glm::vec3(1.0f, 0.0f, 0.0f);
     PointLightArray[1].specularStrength = 1.0f;
+    PointLightArray[1].attenuationConstant = 1.0f;
+    PointLightArray[1].attenuationLinear = 0.045f;
+    PointLightArray[1].attenuationExponent = 0.0075f;
 
     PointLightCount = 2;
+
+
+    pointLight1 = new MeshModel(PointLightArray[0].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
+    pointLight1->SetTexture(blankTex.GetId());
+    pointLight1->SetShader(Program_color);
+
+    pointLight2 = new MeshModel(PointLightArray[1].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
+    pointLight2->SetTexture(blankTex.GetId());
+    pointLight2->SetShader(Program_color);
+
+   
+   
 }
 
 // Function to update the scene
@@ -233,11 +262,24 @@ void Render()
 
    
     model->BindTexture();
+    model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     model->Render();
+        // Render instance model
+    pointLight1->BindTexture();
+    pointLight1->PassUniforms(&camera);
+    pointLight1->PassColorUniforms(PointLightArray[0].color.r, PointLightArray[0].color.g, PointLightArray[0].color.b, 1.0f);
+    pointLight1->Render();
+ 
+
+    pointLight2->BindTexture();
+    pointLight2->PassUniforms(&camera);
+    pointLight2->PassColorUniforms(PointLightArray[1].color.r, PointLightArray[1].color.g, PointLightArray[1].color.b, 1.0f);
+    pointLight2->Render();
     
     // Render instance model
     instanceModel->BindTexture();   
+    instanceModel->PassUniforms(&camera);
     instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     instanceModel->Render();
 

@@ -50,7 +50,15 @@ public:
     // Sets the position of the model.
     void SetPosition(glm::vec3 _newPos);
 
+   
+    // Pass base uniforms every mesh would need
+    void PassUniforms(Camera* _camRef);
+
+    // Pass uniforms for point light
     void PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsigned int _lightCount);
+
+    // Pass uniforms for no texture and non light dependent models
+    void PassColorUniforms(float _r, float _g, float _b, float _a);
 
     // Gets the position of the model.
     glm::vec3 GetPosition();
@@ -68,7 +76,7 @@ protected:
     GLuint m_shader;
 
     // Texture ID
-    GLuint m_texture;
+    GLuint m_texture = NULL;
 
     // Model transformation data
     glm::vec3 m_position;
