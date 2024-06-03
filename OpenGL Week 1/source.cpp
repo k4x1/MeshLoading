@@ -65,10 +65,11 @@ Texture blankTex;
 float AmbientStrength;
 glm::vec3 AmbientColor;
 static const int MAX_POINT_LIGHTS = 4;
-PointLight PointLightArray[MAX_POINT_LIGHTS];
-DirectionalLight dirLight;
 unsigned int PointLightCount;
 
+PointLight PointLightArray[MAX_POINT_LIGHTS];
+DirectionalLight dirLight;
+SpotLight spotLight;
 
 // Function prototypes
 void InitialSetup();
@@ -230,7 +231,15 @@ void InitialSetup()
     pointLight2->SetTexture(blankTex.GetId());
     pointLight2->SetShader(Program_color);
 
-   
+    spotLight.position = camera.m_position;
+    spotLight.direction = camera.m_orientation;
+    spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    spotLight.specularStrength = 100.0f;
+    spotLight.attenuationConstant = 1.0f;
+    spotLight.attenuationLinear = 0.09f;
+    spotLight.attenuationExponent = 0.032f;
+    spotLight.innerCutoff = glm::cos(glm::radians(12.5f));
+    spotLight.outerCutoff = glm::cos(glm::radians(460.0f));
    
 }
 
@@ -243,8 +252,9 @@ void Update()
     model->Update(deltaTime);
     
     
+    spotLight.position = camera.m_position;
+    spotLight.direction = camera.m_orientation;
 
-    
 }
 
 // Function to render the scene
@@ -270,6 +280,7 @@ void Render()
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     model->PassDirectionalUniforms(dirLight);
+    model->PassSpotLightUniforms(spotLight);
     model->Render();
         // Render instance model
     pointLight1->BindTexture();
@@ -288,6 +299,7 @@ void Render()
     instanceModel->PassUniforms(&camera);
     instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     instanceModel->PassDirectionalUniforms(dirLight);
+    instanceModel->PassSpotLightUniforms(spotLight);
     instanceModel->Render();
 
     // Check for OpenGL errors

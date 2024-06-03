@@ -201,6 +201,27 @@ void MeshModel::PassUniforms(Camera* _camRef)
     glUseProgram(m_shader);
     _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
 }
+void MeshModel::PassSpotLightUniforms(SpotLight _spotLight)
+{
+    std::string uniformName = "SptLight.position";
+    glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_spotLight.position));
+    uniformName = "SptLight.direction";
+    glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_spotLight.direction));
+    uniformName = "SptLight.color";
+    glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_spotLight.color));
+    uniformName = "SptLight.specularStrength";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.specularStrength);
+    uniformName = "SptLight.attenuationConstant";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.attenuationConstant);
+    uniformName = "SptLight.attenuationLinear";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.attenuationLinear);
+    uniformName = "SptLight.attenuationExponent";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.attenuationExponent);
+    uniformName = "SptLight.innerCutoff";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.innerCutoff);
+    uniformName = "SptLight.outerCutoff";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _spotLight.outerCutoff);
+}
 
 // Get the current position
 glm::vec3 MeshModel::GetPosition()

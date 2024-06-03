@@ -61,7 +61,8 @@ public:
     void PassColorUniforms(float _r, float _g, float _b, float _a);
 
     void PassDirectionalUniforms(DirectionalLight _light);
-
+    
+    void PassSpotLightUniforms(SpotLight _spotLight);
     // Gets the position of the model.
     glm::vec3 GetPosition();
 
