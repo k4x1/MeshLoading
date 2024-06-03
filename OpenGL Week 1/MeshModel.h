@@ -60,6 +60,8 @@ public:
     // Pass uniforms for no texture and non light dependent models
     void PassColorUniforms(float _r, float _g, float _b, float _a);
 
+    void PassDirectionalUniforms(DirectionalLight _light);
+
     // Gets the position of the model.
     glm::vec3 GetPosition();
 

@@ -14,8 +14,8 @@ struct PointLight {
     float attenuationExponent;
 };
 struct DirectionalLight {
-    glm::vec3 Direction;
-	 vec3 color;
+    vec3 direction;
+	vec3 color;
     float specularStrength;
 
 };
@@ -40,6 +40,7 @@ uniform vec3 LightColor = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 LightPos = vec3(-300.0f, 0.0f, 100.0f);
 uniform PointLight PointLightArray[MAX_POINT_LIGHTS];
 uniform uint PointLightCount;
+uniform DirectionalLight DirLight;
 
 out vec4 FinalColor;
 
@@ -66,6 +67,21 @@ vec3 CalculateLightPoint(uint index){
 }
 
 
+vec3 CalculateLightDirection() {
+    vec3 Normal = normalize(FragNormal);
+    vec3 LightDir = normalize(DirLight.direction);
+
+    float DiffuseStrength = max(dot(Normal, LightDir), 0.0f);
+    vec3 Diffuse = DiffuseStrength * DirLight.color;
+
+    vec3 ReverseViewDir = normalize(CameraPos - FragPos);
+    vec3 HalfwayVector = normalize(LightDir + ReverseViewDir);
+
+    float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
+    vec3 Specular = DirLight.specularStrength * SpecularReflectivity * DirLight.color;
+
+    return Specular + Diffuse;
+}
 void main()
 {
 
@@ -80,6 +96,7 @@ void main()
 	{
 		TotalLightOutput += CalculateLightPoint(i);
 	}
+	TotalLightOutput += CalculateLightDirection();
 	// Combine the lighting components
 	vec4 Light = vec4(Ambient + TotalLightOutput, 1.0f);
 	

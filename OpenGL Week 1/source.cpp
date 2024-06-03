@@ -66,6 +66,7 @@ float AmbientStrength;
 glm::vec3 AmbientColor;
 static const int MAX_POINT_LIGHTS = 4;
 PointLight PointLightArray[MAX_POINT_LIGHTS];
+DirectionalLight dirLight;
 unsigned int PointLightCount;
 
 
@@ -200,7 +201,7 @@ void InitialSetup()
 
     PointLightArray[0].position = glm::vec3(25.0f, 15.0f, 0.0f);
     PointLightArray[0].color = glm::vec3(0.0f, 0.0f, 1.0f);
-    PointLightArray[0].specularStrength = 1.0f;
+    PointLightArray[0].specularStrength = 10.0f;
     PointLightArray[0].attenuationConstant = 1.0f;
     PointLightArray[0].attenuationLinear = 0.045f;
     PointLightArray[0].attenuationExponent = 0.0075f;
@@ -209,12 +210,16 @@ void InitialSetup()
 
     PointLightArray[1].position = glm::vec3(-25.0f, 15.0f, 0.0f);
     PointLightArray[1].color = glm::vec3(1.0f, 0.0f, 0.0f);
-    PointLightArray[1].specularStrength = 1.0f;
+    PointLightArray[1].specularStrength = 10.0f;
     PointLightArray[1].attenuationConstant = 1.0f;
     PointLightArray[1].attenuationLinear = 0.045f;
     PointLightArray[1].attenuationExponent = 0.0075f;
 
     PointLightCount = 2;
+    // Directional light
+    dirLight.direction = glm::vec3(-1.0f, -1.0f, 0.0f);
+    dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    dirLight.specularStrength = 0.5f;
 
 
     pointLight1 = new MeshModel(PointLightArray[0].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
@@ -264,6 +269,7 @@ void Render()
     model->BindTexture();
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    model->PassDirectionalUniforms(dirLight);
     model->Render();
         // Render instance model
     pointLight1->BindTexture();
@@ -281,6 +287,7 @@ void Render()
     instanceModel->BindTexture();   
     instanceModel->PassUniforms(&camera);
     instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    instanceModel->PassDirectionalUniforms(dirLight);
     instanceModel->Render();
 
     // Check for OpenGL errors

@@ -186,6 +186,16 @@ void MeshModel::PassColorUniforms(float _r, float _g, float _b, float _a)
     glUniform4f(colorLocation, _r, _g, _b, _a);
 }
 
+void MeshModel::PassDirectionalUniforms(DirectionalLight _light)
+{
+    std::string uniformName = "DirLight.direction";
+    glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_light.direction));
+    uniformName = "DirLight.color";
+    glUniform3fv(glGetUniformLocation(m_shader, uniformName.c_str()), 1, glm::value_ptr(_light.color));
+    uniformName = "DirLight.specularStrength";
+    glUniform1f(glGetUniformLocation(m_shader, uniformName.c_str()), _light.specularStrength);
+}
+
 void MeshModel::PassUniforms(Camera* _camRef)
 {
     glUseProgram(m_shader);

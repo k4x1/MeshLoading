@@ -17,5 +17,5 @@ struct PointLight : public Light {
 };
 
 struct DirectionalLight : public Light {
-    glm::vec3 Direction;
+    glm::vec3 direction;
 };
