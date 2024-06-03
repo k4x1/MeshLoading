@@ -202,7 +202,7 @@ void InitialSetup()
 
     PointLightArray[0].position = glm::vec3(25.0f, 15.0f, 0.0f);
     PointLightArray[0].color = glm::vec3(0.0f, 0.0f, 1.0f);
-    PointLightArray[0].specularStrength = 10.0f;
+    PointLightArray[0].specularStrength = 2.0f;
     PointLightArray[0].attenuationConstant = 1.0f;
     PointLightArray[0].attenuationLinear = 0.045f;
     PointLightArray[0].attenuationExponent = 0.0075f;
@@ -211,7 +211,7 @@ void InitialSetup()
 
     PointLightArray[1].position = glm::vec3(-25.0f, 15.0f, 0.0f);
     PointLightArray[1].color = glm::vec3(1.0f, 0.0f, 0.0f);
-    PointLightArray[1].specularStrength = 10.0f;
+    PointLightArray[1].specularStrength = 2.0f;
     PointLightArray[1].attenuationConstant = 1.0f;
     PointLightArray[1].attenuationLinear = 0.045f;
     PointLightArray[1].attenuationExponent = 0.0075f;
@@ -219,8 +219,8 @@ void InitialSetup()
     PointLightCount = 2;
     // Directional light
     dirLight.direction = glm::vec3(-1.0f, -1.0f, 0.0f);
-    dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    dirLight.specularStrength = 0.5f;
+    dirLight.color = glm::vec3(0.5f, 0.5f, 0.5f);
+    dirLight.specularStrength = 1.0f;
 
 
     pointLight1 = new MeshModel(PointLightArray[0].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
@@ -233,12 +233,12 @@ void InitialSetup()
 
     spotLight.position = camera.m_position;
     spotLight.direction = camera.m_orientation;
-    spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    spotLight.specularStrength = 10.0f;
+    spotLight.color = glm::vec3(10.0f, 10.0f, 10.0f);
+    spotLight.specularStrength = 1.0f;
     spotLight.attenuationConstant = 1.0f;
-    spotLight.attenuationLinear = 0.09f;
-    spotLight.attenuationExponent = 0.032f;
-    spotLight.innerCutoff = glm::cos(glm::radians(12.5f));
+    spotLight.attenuationLinear = 0.5f;
+    spotLight.attenuationExponent = 0.32f;
+    spotLight.innerCutoff = glm::cos(glm::radians(13.0f));
     spotLight.outerCutoff = glm::cos(glm::radians(15.0f));
    
 }

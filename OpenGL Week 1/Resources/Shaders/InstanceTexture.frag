@@ -80,31 +80,42 @@ vec3 CalculateLightPoint(uint index){
 	return Light;
 }
 
-
 vec3 CalculateLightSpot() {
     vec3 Normal = normalize(FragNormal);
     vec3 LightDir = normalize(SptLight.position - FragPos);
 
+    // Spotlight intensity calculation
     float Theta = dot(LightDir, normalize(-SptLight.direction));
     float Epsilon = SptLight.innerCutoff - SptLight.outerCutoff;
     float Intensity = clamp((Theta - SptLight.outerCutoff) / Epsilon, 0.0, 1.0);
 
+    // Diffuse component
     float DiffuseStrength = max(dot(Normal, -LightDir), 0.0f);
-    vec3 Diffuse = (DiffuseStrength) * SptLight.color;
+    vec3 Diffuse = DiffuseStrength * SptLight.color;
 
-    vec3 ReverseViewDir = normalize(CameraPos - FragPos);
-    vec3 HalfwayVector = normalize(-LightDir + ReverseViewDir);
-
+    // Specular component
+    vec3 ViewDir = normalize(  FragPos - CameraPos);
+    vec3 HalfwayVector = normalize(LightDir - ViewDir);
     float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
     vec3 Specular = SptLight.specularStrength * SpecularReflectivity * SptLight.color;
 
-    vec3 Light = (Diffuse + Specular) * Intensity;
+    // Apply spotlight intensity
+    Diffuse *= Intensity;
+    Specular *= Intensity;
 
+    // Combine diffuse and specular components
+    vec3 Light = Diffuse + Specular;
+
+    // Attenuation calculation
     float Distance = length(SptLight.position - FragPos);
-    float Attenuation = SptLight.attenuationConstant + (SptLight.attenuationLinear * Distance) + (SptLight.attenuationExponent * pow(Distance, 2));
+    float Attenuation = SptLight.attenuationConstant + 
+                        (SptLight.attenuationLinear * Distance) + 
+                        (SptLight.attenuationExponent * (Distance * Distance));
     Light /= Attenuation;
+
     return Light;
 }
+
 vec3 CalculateLightDirection() {
     vec3 Normal = normalize(FragNormal);
     vec3 LightDir = normalize(-DirLight.direction);
