@@ -42,7 +42,7 @@ uniform vec3 CameraPos;
 uniform float LightSpecularStrength = 1.0f;
 uniform float ObjectShininess = 32.0f;
 
-uniform float AmbientStrength = 0.0f;
+uniform float AmbientStrength = 0.15f;
 uniform vec3 AmbientColor = vec3(1.0f, 1.0f, 1.0f);
 
 
@@ -134,7 +134,7 @@ void main()
 	{
 		TotalLightOutput += CalculateLightPoint(i);
 	}
-	//TotalLightOutput += CalculateLightDirection();
+	TotalLightOutput += CalculateLightDirection();
 	TotalLightOutput += CalculateLightSpot();
 
 	// Combine the lighting components
@@ -143,5 +143,5 @@ void main()
 	
 	
 
-    FinalColor = Light; //* texture(Texture0, FragTexCoords);
+    FinalColor = Light * texture(Texture0, FragTexCoords);
 }

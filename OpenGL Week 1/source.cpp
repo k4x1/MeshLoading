@@ -234,12 +234,12 @@ void InitialSetup()
     spotLight.position = camera.m_position;
     spotLight.direction = camera.m_orientation;
     spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    spotLight.specularStrength = 100.0f;
+    spotLight.specularStrength = 10.0f;
     spotLight.attenuationConstant = 1.0f;
     spotLight.attenuationLinear = 0.09f;
     spotLight.attenuationExponent = 0.032f;
     spotLight.innerCutoff = glm::cos(glm::radians(12.5f));
-    spotLight.outerCutoff = glm::cos(glm::radians(460.0f));
+    spotLight.outerCutoff = glm::cos(glm::radians(15.0f));
    
 }
 
