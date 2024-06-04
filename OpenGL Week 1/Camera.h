@@ -37,7 +37,7 @@ public:
     // Stores the width and height of the window
     float m_width;
     float m_height;
-    float m_FOV = 45.0f;
+    float m_FOV = 90.0f;
 
     // Adjust the speed of the camera and its sensitivity when looking around
     float m_speed = 50.0f;

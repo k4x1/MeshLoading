@@ -155,7 +155,6 @@ void MeshModel::PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsign
 {
 
     
-    glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
     for (unsigned int i = 0; i < _lightCount; ++i)
     {
         std::string uniformName = "PointLightArray[" + std::to_string(i) + "].position";
@@ -200,6 +199,7 @@ void MeshModel::PassUniforms(Camera* _camRef)
 {
     glUseProgram(m_shader);
     _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
+    glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
 }
 void MeshModel::PassSpotLightUniforms(SpotLight _spotLight)
 {

@@ -219,7 +219,7 @@ void InitialSetup()
     PointLightCount = 2;
     // Directional light
     dirLight.direction = glm::vec3(-1.0f, -1.0f, 0.0f);
-    dirLight.color = glm::vec3(0.5f, 0.5f, 0.5f);
+    dirLight.color = glm::vec3(0.1f, 0.1f, 0.1f);
     dirLight.specularStrength = 1.0f;
 
 
@@ -236,8 +236,8 @@ void InitialSetup()
     spotLight.color = glm::vec3(10.0f, 10.0f, 10.0f);
     spotLight.specularStrength = 1.0f;
     spotLight.attenuationConstant = 1.0f;
-    spotLight.attenuationLinear = 0.5f;
-    spotLight.attenuationExponent = 0.32f;
+    spotLight.attenuationLinear = 0.014f;
+    spotLight.attenuationExponent = 0.0007f;
     spotLight.innerCutoff = glm::cos(glm::radians(13.0f));
     spotLight.outerCutoff = glm::cos(glm::radians(15.0f));
    

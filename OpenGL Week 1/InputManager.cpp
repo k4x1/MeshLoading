@@ -131,7 +131,7 @@ void InputManager::ScrollCallback(GLFWwindow* _window, double _xoffset, double _
     if (m_camera->m_FOV < 1.0f){
         m_camera->m_FOV = 1.0f;
     }
-    if (m_camera->m_FOV > 90.0f){
-        m_camera->m_FOV = 90.0f;
+    if (m_camera->m_FOV > 180.0f){
+        m_camera->m_FOV = 180.0f;
     }
 }
