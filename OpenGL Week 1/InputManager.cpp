@@ -112,6 +112,7 @@ void InputManager::SetCursorPosCallback(GLFWwindow* _window)
     glfwSetCursorPosCallback(_window, StaticMouseCallback);
     glfwSetScrollCallback(_window, StaticScrollCallback);
 }
+
 void InputManager::StaticScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset) {
     if (m_instance) {
         m_instance->ScrollCallback(_window, _xoffset, _yoffset);
@@ -131,7 +132,7 @@ void InputManager::ScrollCallback(GLFWwindow* _window, double _xoffset, double _
     if (m_camera->m_FOV < 1.0f){
         m_camera->m_FOV = 1.0f;
     }
-    if (m_camera->m_FOV > 180.0f){
-        m_camera->m_FOV = 180.0f;
+    if (m_camera->m_FOV > 179.0f){
+        m_camera->m_FOV = 179.0f;
     }
 }
