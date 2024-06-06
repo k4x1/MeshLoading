@@ -9,27 +9,26 @@ Description : Header file for the Skybox class, which manages the loading, updat
 Author : Kazuo Reis de Andrade
 Mail : kazuo.andrade@mds.ac.nz
 */
+
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include <glew.h>
+#include "MeshModel.h"
 #include <vector>
 #include <string>
 #include <glm.hpp>
 
-class Skybox {
+class Skybox : public MeshModel {
 public:
-    Skybox(const std::vector<std::string>& faces);
+    Skybox(const std::string& objFilePath, const std::vector<std::string>& faces);
     void Render(const glm::mat4& view, const glm::mat4& projection);
     GLuint GetCubemapTexture() const { return cubemapTexture; }
 
 private:
     GLuint cubemapTexture;
-    GLuint skyboxVAO, skyboxVBO;
     GLuint shaderProgram;
 
     void loadCubemap(const std::vector<std::string>& faces);
-    void setupSkybox();
     void setupShader();
 };
 

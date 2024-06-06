@@ -115,6 +115,8 @@ void MeshModel::Update(float DeltaTime)
 // Render function
 void MeshModel::Render()
 {
+    glCullFace(GL_BACK);
+    glDepthFunc(GL_LESS);
     if(m_texture!= NULL){
         glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
     }
@@ -123,6 +125,7 @@ void MeshModel::Render()
     glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
+
 }
 
 // Bind the texture

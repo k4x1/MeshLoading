@@ -18,7 +18,7 @@ Mail : kazuo.andrade@mds.ac.nz
 InstanceMeshModel::InstanceMeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath)
     : MeshModel(_position, _rotation, _scale, _modelFilePath), m_countInstanced(0)
 {
-
+    m_instanceVBO = NULL;
 }
 
 // Destructor for InstanceMeshModel
@@ -31,6 +31,8 @@ InstanceMeshModel::~InstanceMeshModel()
 // Render function for instanced rendering
 void InstanceMeshModel::Render()
 {
+    glCullFace(GL_BACK);
+    glDepthFunc(GL_LESS);
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
     glBindVertexArray(VAO);
     glDrawArraysInstanced(m_drawType, 0, m_drawCount, m_countInstanced);

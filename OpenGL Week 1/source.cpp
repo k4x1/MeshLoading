@@ -145,7 +145,6 @@ int main()
     delete pointLight1;
     delete pointLight2;
     delete inputs;
-    delete skybox;
     // Terminate GLFW
     glfwTerminate();
     return 0;
@@ -192,7 +191,7 @@ void InitialSetup()
            "Resources/Textures/skybox/Back.png",
            "Resources/Textures/skybox/Front.png"
      };
-     skybox = new Skybox(faces);
+     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
     instanceModel = new InstanceMeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
     instanceModel->SetTexture(ancientTex.GetId());
@@ -285,6 +284,8 @@ void Render()
     model->PassDirectionalUniforms(dirLight);
     model->PassSpotLightUniforms(spotLight);
     model->Render();
+
+   
         // Render instance model
     pointLight1->BindTexture();
     pointLight1->PassUniforms(&camera);
@@ -312,5 +313,5 @@ void Render()
     }
 
     // Swap buffers
-    glfwSwapBuffers(Window);
+     glfwSwapBuffers(Window);
 }

@@ -9,6 +9,7 @@ Description : Implementation file for the Skybox class, which manages the loadin
 Author : Kazuo Reis de Andrade
 Mail : kazuo.andrade@mds.ac.nz
 */
+
 #include "Skybox.h"
 #include <stb_image.h>
 #include <gtc/matrix_transform.hpp>
@@ -16,9 +17,9 @@ Mail : kazuo.andrade@mds.ac.nz
 #include <iostream>
 #include "ShaderLoader.h"
 
-Skybox::Skybox(const std::vector<std::string>& faces) {
+Skybox::Skybox(const std::string& objFilePath, const std::vector<std::string>& faces)
+    : MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(1), objFilePath) {
     loadCubemap(faces);
-    setupSkybox();
     setupShader();
 }
 
@@ -46,81 +47,26 @@ void Skybox::loadCubemap(const std::vector<std::string>& faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void Skybox::setupSkybox() {
-    float skyboxVertices[] = {
-        // positions          
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f
-    };
-
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glBindVertexArray(0);
-}
-
 void Skybox::setupShader() {
     // Load and compile skybox shaders (vertex and fragment)
-    // Assume ShaderLoader::CreateProgram is a utility function to create shader programs
     shaderProgram = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
 }
 
 void Skybox::Render(const glm::mat4& view, const glm::mat4& projection) {
+
+
+    glCullFace(GL_FRONT);
     glDepthFunc(GL_LEQUAL);
     glUseProgram(shaderProgram);
 
-    glm::mat4 viewMatrix = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
+    glm::mat4 viewMatrix = glm::mat4(glm::mat3(view)); 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-    glBindVertexArray(skyboxVAO);
+    glBindVertexArray(VAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 
-    glDepthFunc(GL_LESS);
 }
