@@ -43,6 +43,20 @@ void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int
         glfwGetCursorPos(_window, &xpos, &ypos);
         std::cout << "Cursor Position: (" << xpos << ", " << ypos << ")" << std::endl;
     }
+    if (_key == GLFW_KEY_1 && _action == GLFW_PRESS) {
+        m_updateLight = true;
+        m_pointlight = m_pointlight == 0 ? 1 : 0;
+        std::cout << m_pointlight << std::endl;
+        
+    }
+    if (_key == GLFW_KEY_2 && _action == GLFW_PRESS) {
+        m_updateLight = true;
+        m_dirlight = m_dirlight == 0 ? 1 : 0;
+    }
+    if (_key == GLFW_KEY_3 && _action == GLFW_PRESS) {
+        m_updateLight = true;
+        m_spotlight = m_spotlight == 0 ? 1 : 0;
+    }
 }
 
 void InputManager::MouseCallback(GLFWwindow* _window, double _xpos, double _ypos)
@@ -111,6 +125,7 @@ void InputManager::SetCursorPosCallback(GLFWwindow* _window)
 {
     glfwSetCursorPosCallback(_window, StaticMouseCallback);
     glfwSetScrollCallback(_window, StaticScrollCallback);
+    glfwSetKeyCallback(_window, StaticKeyCallback);
 }
 
 void InputManager::StaticScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset) {
@@ -124,6 +139,13 @@ void InputManager::StaticMouseCallback(GLFWwindow* _window, double _xpos, double
     if (m_instance)
     {
         m_instance->MouseCallback(_window, _xpos, _ypos);
+    }
+}
+void InputManager::StaticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (m_instance)
+    {
+        m_instance->KeyCallback(window,  key,  scancode,  action,  mods);
     }
 }
 void InputManager::ScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset) {

@@ -113,7 +113,7 @@ int main()
 
     // Set input callbacks
     inputs = new InputManager(&camera);
- //   inputs->SetKeyCallback(Window);
+    
     inputs->SetCursorPosCallback(Window);
 
     // Set cursor mode
@@ -227,7 +227,7 @@ void InitialSetup()
     PointLightCount = 2;
     // Directional light
     dirLight.direction = glm::vec3(-1.0f, -1.0f, 0.0f);
-    dirLight.color = glm::vec3(0.1f, 0.1f, 0.1f);
+    dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     dirLight.specularStrength = 1.0f;
 
 
@@ -241,7 +241,7 @@ void InitialSetup()
 
     spotLight.position = camera.m_position;
     spotLight.direction = camera.m_orientation;
-    spotLight.color = glm::vec3(10.0f, 10.0f, 10.0f);
+    spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     spotLight.specularStrength = 1.0f;
     spotLight.attenuationConstant = 1.0f;
     spotLight.attenuationLinear = 0.014f;
@@ -263,6 +263,15 @@ void Update()
     spotLight.position = camera.m_position;
     spotLight.direction = camera.m_orientation;
 
+    if(inputs->m_updateLight){
+        spotLight.color = glm::vec3(inputs->m_spotlight);
+        PointLightArray[0].color = glm::vec3(0, 0, inputs->m_pointlight);
+        PointLightArray[1].color = glm::vec3(inputs->m_pointlight, 0, 0);
+        dirLight.color = glm::vec3(inputs->m_dirlight);
+        inputs->m_updateLight = false;
+    }
+
+
 }
 
 // Function to render the scene
@@ -272,11 +281,14 @@ void Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render the skybox
-    glm::mat4 view = glm::mat4(glm::mat3(camera.m_view)); // Remove translation from the view matrix
+    glm::mat4 view = glm::mat4(glm::mat3(camera.m_view));
     camera.Matrix(0.01f, 1000.0f);
     glm::mat4 projection = camera.m_projection;
     skybox->Render(view, projection);
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
+    glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
 
     model->BindTexture();
     model->PassUniforms(&camera);

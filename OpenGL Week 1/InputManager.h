@@ -38,6 +38,11 @@ private:
     bool autoRotate = false; // Flag for automatic rotation
 
 public:
+    bool m_updateLight = false;
+    float m_spotlight = 1;
+    float m_pointlight = 1;
+    float m_dirlight = 1;
+
     // Constructor that takes a camera reference
     InputManager(Camera* _camRef);
 

@@ -48,7 +48,6 @@ void Skybox::loadCubemap(const std::vector<std::string>& faces) {
 }
 
 void Skybox::setupShader() {
-    // Load and compile skybox shaders (vertex and fragment)
     shaderProgram = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
 }
 
@@ -69,4 +68,9 @@ void Skybox::Render(const glm::mat4& view, const glm::mat4& projection) {
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 
+}
+
+GLuint Skybox::GetCubemapTexture()
+{
+    return cubemapTexture; 
 }
