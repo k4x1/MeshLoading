@@ -26,12 +26,13 @@ Mail : kazuo.andrade@mds.ac.nz
 #include "InputManager.h"
 #include "Light.h"
 #include <string> 
+#include "Skybox.h"
+
 // Define a GLFW window pointer
 GLFWwindow* Window = nullptr;
 
 // Define model pointers
 MeshModel* model = nullptr;
-MeshModel* skybox = nullptr;
 MeshModel* pointLight1 = nullptr;
 MeshModel* pointLight2 = nullptr;
 InstanceMeshModel* instanceModel = nullptr;
@@ -59,7 +60,9 @@ Texture scifiTex;
 Texture skyboxTex;
 Texture blankTex;
 
-
+// Define a Skybox object
+Skybox* skybox = nullptr;
+std::vector<std::string> faces;
 
 
 float AmbientStrength;
@@ -142,7 +145,7 @@ int main()
     delete pointLight1;
     delete pointLight2;
     delete inputs;
-
+    delete skybox;
     // Terminate GLFW
     glfwTerminate();
     return 0;
@@ -181,9 +184,15 @@ void InitialSetup()
     
     
     
-    skybox = new MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/Sphere.obj");
-    skybox->SetTexture(skyboxTex.GetId());
-    skybox->SetShader(Program_Texture);
+     faces = {
+           "Resources/Textures/skybox/Right.png",
+           "Resources/Textures/skybox/Left.png",
+           "Resources/Textures/skybox/Bottom.png",
+           "Resources/Textures/skybox/Top.png",
+           "Resources/Textures/skybox/Back.png",
+           "Resources/Textures/skybox/Front.png"
+     };
+     skybox = new Skybox(faces);
 
     instanceModel = new InstanceMeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
     instanceModel->SetTexture(ancientTex.GetId());
@@ -262,20 +271,14 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /**/
-    // Render skybox 
-    /*
-    skybox->BindTexture();
-    glUseProgram(Program_Texture);
-    camera.Matrix(0.01f, 1000.0f, Program_Texture, "VPMatrix");
-    glUniform3fv(glGetUniformLocation(Program_Texture, "CameraPos"), 1, &camera.m_position[0]);
-    glCullFace(GL_FRONT);
-    skybox->Render();
-    glCullFace(GL_BACK);
-    */
-    // Render model
 
-   
+    // Render the skybox
+    glm::mat4 view = glm::mat4(glm::mat3(camera.m_view)); // Remove translation from the view matrix
+    camera.Matrix(0.01f, 1000.0f);
+    glm::mat4 projection = camera.m_projection;
+    skybox->Render(view, projection);
+
+
     model->BindTexture();
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);

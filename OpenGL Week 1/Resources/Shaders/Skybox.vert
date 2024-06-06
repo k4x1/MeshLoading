@@ -1,11 +1,14 @@
-
 #version 460 core
-layout (location = 0) in vec3 aPos;
-out vec3 TexCoords;
-uniform mat4 VPMatrix;
+layout (location = 0) in vec3 position;
 
-void main() {
-    TexCoords = aPos;
-    vec4 pos = VPMatrix * vec4(aPos, 1.0);
-    gl_Position = pos.xyww;
+out vec3 TexCoords;
+
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    TexCoords = position;
+    vec4 pos = projection * view * vec4(position, 1.0);
+    gl_Position = pos.xyww; // Perspective division to set z-component to 1.0
 }

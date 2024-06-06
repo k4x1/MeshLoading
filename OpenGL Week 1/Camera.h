@@ -31,6 +31,7 @@ public:
     glm::vec3 m_orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 m_view = glm::mat4(1.0f);
+    glm::mat4 m_projection = glm::mat4(1.0f);
     // Prevents the camera from jumping around when first clicking left click
     bool m_firstClick = true;
 
@@ -53,7 +54,7 @@ public:
     void InitCamera(int _width, int _height, glm::vec3 _position);
 
     // Updates and exports the camera matrix to the Vertex Shader
-    void Matrix(float _nearPlane, float _farPlane, GLuint _shaderID, const char* _uniform);
+    void Matrix(float _nearPlane, float _farPlane, GLuint _shaderID = NULL, const char* _uniform = nullptr);
 
    
 };
