@@ -115,16 +115,27 @@ void MeshModel::Update(float DeltaTime)
 // Render function
 void MeshModel::Render()
 {
+    
     glCullFace(GL_BACK);
     glDepthFunc(GL_LESS);
+
+
+
     if(m_texture!= NULL){
         glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
     }
     glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
-
+   
     glBindVertexArray(VAO);
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL Errfsdsfor: " << error << std::endl;
+    }
     glDrawArrays(m_drawType, 0, m_drawCount);
+ 
     glBindVertexArray(0);
+    
+
 
 }
 

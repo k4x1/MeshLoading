@@ -279,25 +279,31 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  //  GLenum error = glGetError();
     // Render the skybox
     glm::mat4 view = glm::mat4(glm::mat3(camera.m_view));
     camera.Matrix(0.01f, 1000.0f);
     glm::mat4 projection = camera.m_projection;
     skybox->Render(view, projection);
 
+   
+ 
     glActiveTexture(GL_TEXTURE1);
+   
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
-    glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
+   
 
     model->BindTexture();
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     model->PassDirectionalUniforms(dirLight);
     model->PassSpotLightUniforms(spotLight);
+ 
+  
     model->Render();
 
    
+     
         // Render instance model
     pointLight1->BindTexture();
     pointLight1->PassUniforms(&camera);
@@ -319,10 +325,10 @@ void Render()
     instanceModel->Render();
 
     // Check for OpenGL errors
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        std::cerr << "OpenGL Error: " << error << std::endl;
-    }
+    //error = glGetError();
+   // if (error != GL_NO_ERROR) {
+    //    std::cerr << "OpenGL Error: " << error << std::endl;
+   // }
 
     // Swap buffers
      glfwSwapBuffers(Window);

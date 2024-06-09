@@ -155,7 +155,9 @@ void main()
 	vec3 Normal = normalize(FragNormal);
     vec3 ViewDir = normalize(FragPos - CameraPos);
     vec3 ReflectDir = reflect(ViewDir, Normal);
+    
+    vec4 BaseTexture = texture(Texture0, FragTexCoords);
     vec4 ReflectionTexture = texture(skybox, ReflectDir);
-
-    FinalColor = Light * texture(Texture0, FragTexCoords);
+    
+    FinalColor = Light * mix(BaseTexture, ReflectionTexture, 0.5);
 }
