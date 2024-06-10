@@ -115,24 +115,17 @@ void MeshModel::Update(float DeltaTime)
 // Render function
 void MeshModel::Render()
 {
-    
+ 
+
     glCullFace(GL_BACK);
     glDepthFunc(GL_LESS);
 
 
 
-    if(m_texture!= NULL){
-        glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
-    }
     glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
    
     glBindVertexArray(VAO);
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        std::cerr << "OpenGL Errfsdsfor: " << error << std::endl;
-    }
     glDrawArrays(m_drawType, 0, m_drawCount);
- 
     glBindVertexArray(0);
     
 
@@ -144,6 +137,11 @@ void MeshModel::BindTexture()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture);
+
+    if (m_texture != NULL) {
+        glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+    }
+
 }
 
 // Set the texture ID
@@ -156,6 +154,12 @@ void MeshModel::SetTexture(GLuint _textureID)
 void MeshModel::SetShader(GLuint _shader)
 {
     m_shader = _shader;
+}
+
+// Returns shader id
+GLuint MeshModel::GetShader()
+{
+    return m_shader;
 }
 
 // Set the position and update the model matrix
@@ -211,7 +215,7 @@ void MeshModel::PassDirectionalUniforms(DirectionalLight _light)
 
 void MeshModel::PassUniforms(Camera* _camRef)
 {
-    glUseProgram(m_shader);
+  
     _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
     glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
 }

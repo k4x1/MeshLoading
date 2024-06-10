@@ -34,6 +34,7 @@ void InstanceMeshModel::Render()
     glCullFace(GL_BACK);
     glDepthFunc(GL_LESS);
     glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+  
     glBindVertexArray(VAO);
     glDrawArraysInstanced(m_drawType, 0, m_drawCount, m_countInstanced);
     glBindVertexArray(0);

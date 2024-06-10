@@ -47,6 +47,9 @@ public:
     // Sets the shader program for the model.
     void SetShader(GLuint _shader);
 
+
+    GLuint GetShader();
+
     // Sets the position of the model.
     void SetPosition(glm::vec3 _newPos);
 

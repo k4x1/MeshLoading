@@ -92,6 +92,8 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glEnable(GL_MULTISAMPLE);
 
     // Create a window
     Window = glfwCreateWindow(800, 800, "First OpenGL Window", NULL, NULL);
@@ -288,40 +290,51 @@ void Render()
 
    
  
-    glActiveTexture(GL_TEXTURE1);
-   
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
-   
+
+
+    glUseProgram(model->GetShader());
+
+  
 
     model->BindTexture();
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     model->PassDirectionalUniforms(dirLight);
     model->PassSpotLightUniforms(spotLight);
- 
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
+    glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
   
     model->Render();
 
    
      
         // Render instance model
+    glUseProgram(pointLight1->GetShader());
     pointLight1->BindTexture();
     pointLight1->PassUniforms(&camera);
     pointLight1->PassColorUniforms(PointLightArray[0].color.r, PointLightArray[0].color.g, PointLightArray[0].color.b, 1.0f);
     pointLight1->Render();
  
-
+    glUseProgram(pointLight2->GetShader());
     pointLight2->BindTexture();
     pointLight2->PassUniforms(&camera);
     pointLight2->PassColorUniforms(PointLightArray[1].color.r, PointLightArray[1].color.g, PointLightArray[1].color.b, 1.0f);
     pointLight2->Render();
     
     // Render instance model
+    glUseProgram(instanceModel->GetShader());
     instanceModel->BindTexture();   
     instanceModel->PassUniforms(&camera);
     instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
     instanceModel->PassDirectionalUniforms(dirLight);
     instanceModel->PassSpotLightUniforms(spotLight);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
+    glUniform1i(glGetUniformLocation(Program_instanceTexture, "skybox"), 1);
+
     instanceModel->Render();
 
     // Check for OpenGL errors

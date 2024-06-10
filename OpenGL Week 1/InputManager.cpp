@@ -46,7 +46,6 @@ void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int
     if (_key == GLFW_KEY_1 && _action == GLFW_PRESS) {
         m_updateLight = true;
         m_pointlight = m_pointlight == 0 ? 1 : 0;
-        std::cout << m_pointlight << std::endl;
         
     }
     if (_key == GLFW_KEY_2 && _action == GLFW_PRESS) {
