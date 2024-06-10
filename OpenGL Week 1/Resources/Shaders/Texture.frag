@@ -159,5 +159,5 @@ void main()
     vec4 BaseTexture = texture(Texture0, FragTexCoords);
     vec4 ReflectionTexture = texture(skybox, ReflectDir);
     
-    FinalColor = Light * mix(BaseTexture, ReflectionTexture, 0.5);
+    FinalColor = Light * mix(BaseTexture, ReflectionTexture, 0.5f);
 }

@@ -279,7 +279,7 @@ void Render()
 {
     // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  //  GLenum error = glGetError();
+    GLenum error = glGetError();
     // Render the skybox
     glm::mat4 view = glm::mat4(glm::mat3(camera.m_view));
     camera.Matrix(0.01f, 1000.0f);
@@ -325,10 +325,10 @@ void Render()
     instanceModel->Render();
 
     // Check for OpenGL errors
-    //error = glGetError();
-   // if (error != GL_NO_ERROR) {
-    //    std::cerr << "OpenGL Error: " << error << std::endl;
-   // }
+    error = glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL Error: " << error << std::endl;
+    }
 
     // Swap buffers
      glfwSwapBuffers(Window);
