@@ -1,3 +1,18 @@
+/*
+Bachelor of Software Engineering
+Media Design School
+Auckland
+New Zealand
+(c) 2024 Media Design School
+File Name :  InstanceTexture.frag
+Description : Fragment shader for handling multiple light sources including point lights, directional light, and a spotlight. 
+              Calculates lighting effects and combines them with texture and reflection.
+Author : Kazuo Reis de Andrade
+Mail : kazuo.andrade@mds.ac.nz
+*/
+
+
+
 #version 460 core
 #define MAX_POINT_LIGHTS 4
 
