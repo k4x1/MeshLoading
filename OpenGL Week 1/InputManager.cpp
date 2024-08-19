@@ -102,6 +102,18 @@ void InputManager::ProcessInput(GLFWwindow* _window)
         m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
 
     }
+    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) {
+    
+    }    
+    if (glfwGetKey(_window, GLFW_KEY_2) == GLFW_PRESS) {
+    
+    }  
+    if (glfwGetKey(_window, GLFW_KEY_3) == GLFW_PRESS) {
+    
+    } 
+    if (glfwGetKey(_window, GLFW_KEY_4) == GLFW_PRESS) {
+    
+    }
     if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS) {
         m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
     }
