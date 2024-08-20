@@ -29,7 +29,7 @@ public:
     std::vector<glm::mat4> m_instancedMVPs;
 
     // Member functions
-    void Render() override;
+    void Render(GLuint _shader) override;
     void AddInstance(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale);
     void initBuffer();
 

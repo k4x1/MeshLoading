@@ -113,7 +113,7 @@ void MeshModel::Update(float DeltaTime)
 }
 
 // Render function
-void MeshModel::Render()
+void MeshModel::Render(GLuint _shader)
 {
  
 
@@ -122,7 +122,7 @@ void MeshModel::Render()
 
 
 
-    glUniformMatrix4fv(glGetUniformLocation(m_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
    
     glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);

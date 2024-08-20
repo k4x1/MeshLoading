@@ -36,7 +36,7 @@ public:
     void Update(float _deltaTime);
 
     // Renders the model.
-    virtual void Render();
+    virtual void Render(GLuint _shader);
 
     // Binds the texture for rendering.
     void BindTexture();

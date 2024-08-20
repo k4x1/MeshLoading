@@ -10,7 +10,9 @@ uniform float OutlineScale = 1.05; // Scale factor for the outline
 
 void main()
 {
-    // Scale the model matrix to create the outline effect
-    mat4 scaledModelMat = ModelMat * OutlineScale;
+    mat4 scaledModelMat = ModelMat;
+    scaledModelMat[0][0] *= OutlineScale;
+    scaledModelMat[1][1] *= OutlineScale;
+    scaledModelMat[2][2] *= OutlineScale;
     gl_Position = VPMatrix * scaledModelMat * vec4(Position, 1.0);
 }

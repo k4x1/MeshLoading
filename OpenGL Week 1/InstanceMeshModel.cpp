@@ -29,11 +29,11 @@ InstanceMeshModel::~InstanceMeshModel()
 }
 
 // Render function for instanced rendering
-void InstanceMeshModel::Render()
+void InstanceMeshModel::Render(GLuint _shader)
 {
     glCullFace(GL_BACK);
     glDepthFunc(GL_LESS);
-    glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+    glUniform1i(glGetUniformLocation(_shader, "Texture0"), 0);
   
     glBindVertexArray(VAO);
     glDrawArraysInstanced(m_drawType, 0, m_drawCount, m_countInstanced);
