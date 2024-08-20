@@ -147,10 +147,12 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SkyboxScene.cpp" />
     <ClCompile Include="source.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\InstanceOutline.vert" />
     <None Include="Resources\Shaders\InstanceTexture.frag" />
     <None Include="Resources\Shaders\InstanceTexture.vert" />
     <None Include="Resources\Shaders\Color.frag" />
@@ -159,12 +161,15 @@
     <None Include="Resources\Shaders\Outline.vert" />
     <None Include="Resources\Shaders\Skybox.frag" />
     <None Include="Resources\Shaders\Skybox.vert" />
+    <None Include="Resources\Shaders\Terrain.frag" />
+    <None Include="Resources\Shaders\Terrain.vert" />
     <None Include="Resources\Shaders\Texture.frag" />
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="HeightMapInfo.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InstanceMeshModel.h" />
     <ClInclude Include="Light.h" />
@@ -173,6 +178,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SkyboxScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="VertexStandard.h" />

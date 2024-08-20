@@ -11,6 +11,7 @@ Mail : kazuo.andrade@mds.ac.nz
 */
 #include <memory>
 #include "GameScene.h"
+#include "SkyboxScene.h"
 
 
 // Function prototypes
@@ -19,7 +20,7 @@ std::unique_ptr<Scene> CurrentScene;
 
 int main()
 {
-    CurrentScene = std::make_unique<GameScene>();
+    CurrentScene = std::make_unique<SkyboxScene>();
 
 
     // Run the main loop

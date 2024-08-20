@@ -19,6 +19,7 @@ void GameScene::InitialSetup()
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
     Program_color = ShaderLoader::CreateProgram("Resources/Shaders/Color.vert", "Resources/Shaders/Color.frag");
     Program_outline = ShaderLoader::CreateProgram("Resources/Shaders/Outline.vert", "Resources/Shaders/Outline.frag");
+    Program_instanceOutline = ShaderLoader::CreateProgram("Resources/Shaders/InstanceOutline.vert", "Resources/Shaders/Outline.frag");
 
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
@@ -144,11 +145,11 @@ void GameScene::Render()
 
 
 
-
-    glUseProgram(model->GetShader());
-
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
+
+
+    glUseProgram(model->GetShader());
     model->BindTexture();
     model->PassUniforms(&camera);
     model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
@@ -160,20 +161,25 @@ void GameScene::Render()
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
 
     model->Render(model->GetShader());
+    glUseProgram(instanceModel->GetShader()); 
+
+    instanceModel->BindTexture();
+    instanceModel->PassUniforms(&camera);
+    instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    instanceModel->PassDirectionalUniforms(dirLight);
+    instanceModel->PassSpotLightUniforms(spotLight);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
+    glUniform1i(glGetUniformLocation(Program_instanceTexture, "skybox"), 1);
+    glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "Texture0"), 0);
+    instanceModel->Render(instanceModel->GetShader());
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
 
 
-
-    glUseProgram(Program_outline);
-    glUniformMatrix4fv(glGetUniformLocation(Program_outline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera.m_projection * camera.m_view));
-    model->Render(Program_outline);
-
-    glStencilMask(0xFF);
-    glStencilFunc(GL_ALWAYS, 0, 0xFF);
-    glEnable(GL_DEPTH_TEST);
 
     // Render instance model
     glUseProgram(pointLight1->GetShader());
@@ -189,27 +195,26 @@ void GameScene::Render()
     pointLight2->Render(pointLight2->GetShader());
 
     // Render instance model
-    glUseProgram(instanceModel->GetShader()); 
 
-    instanceModel->BindTexture();
-    instanceModel->PassUniforms(&camera);
-    instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
-    instanceModel->PassDirectionalUniforms(dirLight);
-    instanceModel->PassSpotLightUniforms(spotLight);
+    glUseProgram(Program_outline);
+    glUniformMatrix4fv(glGetUniformLocation(Program_outline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera.m_projection * camera.m_view));
+    model->Render(Program_outline);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
-    glUniform1i(glGetUniformLocation(Program_instanceTexture, "skybox"), 1);
+    glUseProgram(Program_instanceOutline);
+    glUniformMatrix4fv(glGetUniformLocation(Program_instanceOutline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera.m_projection * camera.m_view));
+    instanceModel->Render(Program_instanceOutline);
 
-    instanceModel->Render(instanceModel->GetShader());
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glEnable(GL_DEPTH_TEST);
 
-    // Check for OpenGL errors
-    // Swap buffers
-    glfwSwapBuffers(Window);
     error = glGetError();
     if (error != GL_NO_ERROR) {
          std::cerr << "OpenGL Error: " << error << std::endl;
     }
+    // Check for OpenGL errors
+    // Swap buffers
+    glfwSwapBuffers(Window);
 }
 int GameScene::MainLoop() {
     if (!glfwInit())

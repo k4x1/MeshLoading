@@ -1,5 +1,3 @@
-#version 460 core
-#define MAX_POINT_LIGHTS 4
 
 
 /*
@@ -15,6 +13,8 @@ Author : Kazuo Reis de Andrade
 Mail : kazuo.andrade@mds.ac.nz
 */
 
+#version 460 core
+#define MAX_POINT_LIGHTS 4
 
 struct PointLight {
     vec3 position;

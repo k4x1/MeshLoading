@@ -36,6 +36,7 @@ private:
     // Define program IDs for shaders
     GLuint Program_Texture = 0;
     GLuint Program_outline = 0;
+    GLuint Program_instanceOutline = 0;
     GLuint Program_instanceTexture = 0;
     GLuint Program_color = 0;
 
