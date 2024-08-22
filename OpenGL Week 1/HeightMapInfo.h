@@ -1,19 +1,20 @@
 #pragma once
 #include <iostream>
 #include "SkyboxScene.h"
-#include <iostream>
 #include <fstream>
 #include <vector>
 #include <glm.hpp>
 #include <glew.h>
 #include <glfw3.h>
 #include "VertexStandard.h"
+
 struct HeightMapInfo {
     std::string FilePath = "";
     unsigned int Width = 0;
     unsigned int Depth = 0;
     float CellSpacing = 1.0f;
 };
+
 bool LoadHeightMap(HeightMapInfo& BuildInfo, std::vector<float>& HeightMap) {
     unsigned int VertexCount = BuildInfo.Width * BuildInfo.Depth;
     std::vector<unsigned char> HeightValue(VertexCount);
@@ -23,8 +24,7 @@ bool LoadHeightMap(HeightMapInfo& BuildInfo, std::vector<float>& HeightMap) {
     if (File) {
         File.read((char*)&HeightValue[0], (std::streamsize)HeightValue.size());
         File.close();
-    }
-    else {
+    } else {
         std::cout << "Error: Height map failed to load: " << BuildInfo.FilePath << std::endl;
         return false;
     }
@@ -35,18 +35,19 @@ bool LoadHeightMap(HeightMapInfo& BuildInfo, std::vector<float>& HeightMap) {
     }
     return true;
 }
+
 void BuildVertexData(const HeightMapInfo& BuildInfo, const std::vector<float>& HeightMap, std::vector<VertexStandard>& Vertices) {
     unsigned int VertexCount = BuildInfo.Width * BuildInfo.Depth;
     Vertices.resize(VertexCount);
 
     float HalfWidth = (BuildInfo.Width - 1) * BuildInfo.CellSpacing * 0.5f;
     float HalfDepth = (BuildInfo.Depth - 1) * BuildInfo.CellSpacing * 0.5f;
-    float TexU = 1.0f / (float)(BuildInfo.Width - 1);
-    float TexV = 1.0f / (float)(BuildInfo.Depth - 1);
+    float TexU = 1.0f / (BuildInfo.Width - 1);
+    float TexV = 1.0f / (BuildInfo.Depth - 1);
 
-    for (unsigned int Row = 0; Row < BuildInfo.Width; Row++) {
+    for (unsigned int Row = 0; Row < BuildInfo.Depth; Row++) {
         float PosZ = HalfDepth - (Row * BuildInfo.CellSpacing);
-        for (unsigned int Col = 0; Col < BuildInfo.Depth; Col++) {
+        for (unsigned int Col = 0; Col < BuildInfo.Width; Col++) {
             int Index = Row * BuildInfo.Width + Col;
             float PosX = -HalfWidth + (Col * BuildInfo.CellSpacing);
             float PosY = HeightMap[Index];

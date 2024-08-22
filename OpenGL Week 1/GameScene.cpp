@@ -2,16 +2,20 @@
 #include "GameScene.h"
 #include <iostream>
 
-void GameScene::InitialSetup()
+void GameScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 {
+    Window = _window;
+    camera = _camera;
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
+  //  inputs = new InputManager(camera);
 
+   // inputs->SetCursorPosCallback(Window);
     // Initialize camera
-    camera.InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 10.0f));
+    camera->InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 10.0f));
 
     // Load shaders
 
@@ -94,8 +98,8 @@ void GameScene::InitialSetup()
     pointLight2->SetTexture(blankTex.GetId());
     pointLight2->SetShader(Program_color);
 
-    spotLight.position = camera.m_position;
-    spotLight.direction = camera.m_orientation;
+    spotLight.position = camera->m_position;
+    spotLight.direction = camera->m_orientation;
     spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     spotLight.specularStrength = 1.0f;
     spotLight.attenuationConstant = 1.0f;
@@ -108,15 +112,16 @@ void GameScene::InitialSetup()
 
 void GameScene::Update()
 {
+  //  inputs->ProcessInput(Window);
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     model->Update(deltaTime);
 
 
-    spotLight.position = camera.m_position;
-    spotLight.direction = camera.m_orientation;
-
+    spotLight.position = camera->m_position;
+    spotLight.direction = camera->m_orientation;
+    /*
     if (inputs->m_updateLight) {
         spotLight.color = glm::vec3(inputs->m_spotlight);
         PointLightArray[0].color = glm::vec3(0, 0, inputs->m_pointlight);
@@ -124,7 +129,7 @@ void GameScene::Update()
         dirLight.color = glm::vec3(inputs->m_dirlight);
         inputs->m_updateLight = false;
     }
-
+    */
 
 }
 
@@ -136,9 +141,9 @@ void GameScene::Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |GL_STENCIL_BUFFER_BIT);
     GLenum error = glGetError();
     // Render the skybox
-    glm::mat4 view = glm::mat4(glm::mat3(camera.m_view));
-    camera.Matrix(0.01f, 1000.0f);
-    glm::mat4 projection = camera.m_projection;
+    glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
+    camera->Matrix(0.01f, 1000.0f);
+    glm::mat4 projection = camera->m_projection;
     skybox->Render(view, projection);
 
 
@@ -151,8 +156,8 @@ void GameScene::Render()
 
     glUseProgram(model->GetShader());
     model->BindTexture();
-    model->PassUniforms(&camera);
-    model->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    model->PassUniforms(camera);
+    model->PassPointUniforms(camera, PointLightArray, PointLightCount);
     model->PassDirectionalUniforms(dirLight);
     model->PassSpotLightUniforms(spotLight);
 
@@ -164,8 +169,8 @@ void GameScene::Render()
     glUseProgram(instanceModel->GetShader()); 
 
     instanceModel->BindTexture();
-    instanceModel->PassUniforms(&camera);
-    instanceModel->PassPointUniforms(&camera, PointLightArray, PointLightCount);
+    instanceModel->PassUniforms(camera);
+    instanceModel->PassPointUniforms(camera, PointLightArray, PointLightCount);
     instanceModel->PassDirectionalUniforms(dirLight);
     instanceModel->PassSpotLightUniforms(spotLight);
 
@@ -184,24 +189,24 @@ void GameScene::Render()
     // Render instance model
     glUseProgram(pointLight1->GetShader());
     pointLight1->BindTexture();
-    pointLight1->PassUniforms(&camera);
+    pointLight1->PassUniforms(camera);
     pointLight1->PassColorUniforms(PointLightArray[0].color.r, PointLightArray[0].color.g, PointLightArray[0].color.b, 1.0f);
     pointLight1->Render(pointLight1->GetShader());
 
     glUseProgram(pointLight2->GetShader());
     pointLight2->BindTexture();
-    pointLight2->PassUniforms(&camera);
+    pointLight2->PassUniforms(camera);
     pointLight2->PassColorUniforms(PointLightArray[1].color.r, PointLightArray[1].color.g, PointLightArray[1].color.b, 1.0f);
     pointLight2->Render(pointLight2->GetShader());
 
     // Render instance model
-
+   
     glUseProgram(Program_outline);
-    glUniformMatrix4fv(glGetUniformLocation(Program_outline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera.m_projection * camera.m_view));
+    glUniformMatrix4fv(glGetUniformLocation(Program_outline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera->m_projection * camera->m_view));
     model->Render(Program_outline);
 
     glUseProgram(Program_instanceOutline);
-    glUniformMatrix4fv(glGetUniformLocation(Program_instanceOutline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera.m_projection * camera.m_view));
+    glUniformMatrix4fv(glGetUniformLocation(Program_instanceOutline, "VPMatrix"), 1, GL_FALSE, glm::value_ptr(camera->m_projection * camera->m_view));
     instanceModel->Render(Program_instanceOutline);
 
     glStencilMask(0xFF);
@@ -217,68 +222,66 @@ void GameScene::Render()
     glfwSwapBuffers(Window);
 }
 int GameScene::MainLoop() {
-    if (!glfwInit())
-    {
-        std::cerr << "GLFW initialization failed. Terminating program." << std::endl;
-        return -1;
-    }
+    //if (!glfwInit())
+    //{
+    //    std::cerr << "GLFW initialization failed. Terminating program." << std::endl;
+    //    return -1;
+    //}
 
-    // Set GLFW window hints
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glEnable(GL_MULTISAMPLE);
+    //// Set GLFW window hints
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
+    //glEnable(GL_MULTISAMPLE);
 
-    // Create a window
-    Window = glfwCreateWindow(800, 800, "First OpenGL Window", NULL, NULL);
-    if (Window == NULL)
-    {
-        std::cerr << "GLFW window creation failed. Terminating program." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(Window);
+    //// Create a window
+    //Window = glfwCreateWindow(800, 800, "First OpenGL Window", NULL, NULL);
+    //if (Window == NULL)
+    //{
+    //    std::cerr << "GLFW window creation failed. Terminating program." << std::endl;
+    //    glfwTerminate();
+    //    return -1;
+    //}
+    //glfwMakeContextCurrent(Window);
 
-    // Initialize GLEW
-    if (glewInit() != GLEW_OK)
-    {
-        std::cerr << "GLEW initialization failed. Terminating program." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    //// Initialize GLEW
+    //if (glewInit() != GLEW_OK)
+    //{
+    //    std::cerr << "GLEW initialization failed. Terminating program." << std::endl;
+    //    glfwTerminate();
+    //    return -1;
+    //}
 
-    // Set input callbacks
-    inputs = new InputManager(&camera);
+    //// Set input callbacks
 
-    inputs->SetCursorPosCallback(Window);
 
-    // Set cursor mode
-    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //// Set cursor mode
+    //glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Perform initial setup
-    InitialSetup();
+    //// Perform initial setup
+    //InitialSetup();
 
-    // Run the main loop
-    while (!glfwWindowShouldClose(Window))
-    {
-        // Process events
-        glfwPollEvents();
+    //// Run the main loop
+    //while (!glfwWindowShouldClose(Window))
+    //{
+    //    // Process events
+    //    glfwPollEvents();
 
-        // Process input
-        inputs->ProcessInput(Window);
+    //    // Process input
+  
 
-        // Update the scene
-        Update();
+    //    // Update the scene
+    //    Update();
 
-        // Render the scene
-        Render();
-    }
+    //    // Render the scene
+    //    Render();
+    //}
 
-    // Clean up
+    //// Clean up
 
-    // Terminate GLFW
-    glfwTerminate();
+    //// Terminate GLFW
+    //glfwTerminate();
     return 0;
 }
 GameScene::~GameScene() {

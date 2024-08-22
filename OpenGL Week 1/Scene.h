@@ -15,7 +15,10 @@
 #include "Skybox.h"
 class Scene {
 public:
-    virtual void InitialSetup() {}
+    GLFWwindow* Window;
+    // Define a camera object
+    Camera* camera;
+    virtual void InitialSetup(GLFWwindow* _window, Camera* _camera) {}
     virtual void Update() {}
     virtual void Render() {}
     virtual int MainLoop() { return 0; }

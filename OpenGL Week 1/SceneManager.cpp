@@ -15,7 +15,7 @@ void SceneManager::SwitchScene(int sceneNumber) {
     default:
         return;
     }
-    currentScene->InitialSetup();
+    currentScene->InitialSetup(this->window, this->camera);
 }
 
 void SceneManager::Update() {

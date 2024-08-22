@@ -1,17 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : InputManager.cpp
-Description : Implementation file for the InputManager class, which handles keyboard and mouse input for the application.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
-
-
-
 #include "InputManager.h"
 InputManager* InputManager::m_instance = nullptr;
 
@@ -46,7 +32,6 @@ void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int
     if (_key == GLFW_KEY_1 && _action == GLFW_PRESS) {
         m_updateLight = true;
         m_pointlight = m_pointlight == 0 ? 1 : 0;
-        
     }
     if (_key == GLFW_KEY_2 && _action == GLFW_PRESS) {
         m_updateLight = true;
@@ -95,29 +80,17 @@ void InputManager::MouseCallback(GLFWwindow* _window, double _xpos, double _ypos
 
 void InputManager::ProcessInput(GLFWwindow* _window)
 {
+    
     m_currentFrame = glfwGetTime();
     m_deltaTime = m_currentFrame - m_lastFrame;
     m_lastFrame = m_currentFrame;
     if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS) {
+   
         m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
-
-    }
-    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) {
-    
-    }    
-    if (glfwGetKey(_window, GLFW_KEY_2) == GLFW_PRESS) {
-    
-    }  
-    if (glfwGetKey(_window, GLFW_KEY_3) == GLFW_PRESS) {
-    
-    } 
-    if (glfwGetKey(_window, GLFW_KEY_4) == GLFW_PRESS) {
-    
     }
     if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS) {
         m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
     }
-
     if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS) {
         m_camera->m_position -= glm::normalize(glm::cross(m_camera->m_orientation, m_camera->m_up)) * (m_camera->m_speed * float(m_deltaTime));
     }
@@ -156,16 +129,16 @@ void InputManager::StaticKeyCallback(GLFWwindow* window, int key, int scancode, 
 {
     if (m_instance)
     {
-        m_instance->KeyCallback(window,  key,  scancode,  action,  mods);
+        m_instance->KeyCallback(window, key, scancode, action, mods);
     }
 }
 void InputManager::ScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset) {
     m_camera->m_FOV -= (float)_yoffset;
 
-    if (m_camera->m_FOV < 1.0f){
+    if (m_camera->m_FOV < 1.0f) {
         m_camera->m_FOV = 1.0f;
     }
-    if (m_camera->m_FOV > 179.0f){
+    if (m_camera->m_FOV > 179.0f) {
         m_camera->m_FOV = 179.0f;
     }
 }

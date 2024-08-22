@@ -13,7 +13,7 @@
 
 class SkyboxScene : public Scene {
 public:
-    void InitialSetup() override;
+    void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
     void Update() override;
     void Render() override;
     int MainLoop() override;
@@ -21,8 +21,8 @@ public:
 
 private:
     // Define a camera object
-    Camera camera;
 
+    GLuint Program_Texture = 0;
     // Define program ID for skybox shader
     GLuint Program_skybox = 0;
     // Load terrain shader

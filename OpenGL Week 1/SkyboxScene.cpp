@@ -1,13 +1,17 @@
 #include "SkyboxScene.h"
 #include "HeightMapInfo.h"
+#include "Texture.h"
 #include <iostream>
-void SkyboxScene::InitialSetup() {
+
+void SkyboxScene::InitialSetup(GLFWwindow* _window, Camera* _camera) {
+    Window = _window;
+    camera = _camera;
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
 
     // Initialize camera
-    camera.InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 10.0f));
+    camera->InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 10.0f));
 
     // Load skybox shader
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
@@ -26,10 +30,10 @@ void SkyboxScene::InitialSetup() {
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
     // Initialize input manager
-    inputs = new InputManager(&camera);
+    glDisable(GL_CULL_FACE);
 
     // Initialize terrain
-    HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 256, 256, 1.0f };
+    HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
     std::vector<float> heightMap;
     if (LoadHeightMap(heightMapInfo, heightMap)) {
         std::vector<VertexStandard> vertices;
@@ -40,7 +44,15 @@ void SkyboxScene::InitialSetup() {
 
         GLuint VAO, VBO, EBO;
         BuildEBO(vertices, indices, VAO, VBO, EBO);
-        // Store VAO, VBO, EBO for rendering later
+        terrainVAO = VAO;
+        terrainVBO = VBO;
+        terrainEBO = EBO;
+        this->indices = indices; // Store indices for rendering
+
+        // Load terrain texture
+        Texture terrainTexture;
+        terrainTexture.InitTexture("Resources/Heightmaps/heightmap.jpg");
+        this->terrainTexture = terrainTexture.GetId();
     }
 }
 
@@ -50,7 +62,7 @@ void SkyboxScene::Update() {
     lastFrame = currentFrame;
 
     // Process input
-    inputs->ProcessInput(Window);
+
 }
 void SkyboxScene::Render() {
     // Clear the color buffer
@@ -58,9 +70,9 @@ void SkyboxScene::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render the skybox
-    glm::mat4 view = glm::mat4(glm::mat3(camera.m_view));
-    camera.Matrix(0.01f, 1000.0f);
-    glm::mat4 projection = camera.m_projection;
+    glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
+    camera->Matrix(0.01f, 1000.0f);
+    glm::mat4 projection = camera->m_projection;
     skybox->Render(view, projection);
 
     // Render the terrain
@@ -68,13 +80,13 @@ void SkyboxScene::Render() {
     glBindVertexArray(terrainVAO);
 
     // Set uniforms for the terrain shader
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(camera->m_view));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
     // Set light and view position
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 10.0f, 10.0f)));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera.m_position));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(0.6f, 0.6f, 0.6f)));
 
@@ -83,6 +95,7 @@ void SkyboxScene::Render() {
     glBindTexture(GL_TEXTURE_2D, terrainTexture);
     glUniform1i(glGetUniformLocation(Program_terrain, "texture1"), 0);
 
+    // Draw the terrain
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
@@ -98,62 +111,64 @@ void SkyboxScene::Render() {
     glfwSwapBuffers(Window);
 }
 
-
 int SkyboxScene::MainLoop() {
-    if (!glfwInit()) {
-        std::cerr << "GLFW initialization failed. Terminating program." << std::endl;
-        return -1;
-    }
+    //if (!glfwInit()) {
+    //    std::cerr << "GLFW initialization failed. Terminating program." << std::endl;
+    //    return -1;
+    //}
 
-    // Set GLFW window hints
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glEnable(GL_MULTISAMPLE);
+    //// Set GLFW window hints
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
+    //glEnable(GL_MULTISAMPLE);
 
-    // Create a window
-    Window = glfwCreateWindow(800, 800, "Skybox Scene", NULL, NULL);
-    if (Window == NULL) {
-        std::cerr << "GLFW window creation failed. Terminating program." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(Window);
+    //// Create a window
+    //Window = glfwCreateWindow(800, 800, "Skybox Scene", NULL, NULL);
+    //if (Window == NULL) {
+    //    std::cerr << "GLFW window creation failed. Terminating program." << std::endl;
+    //    glfwTerminate();
+    //    return -1;
+    //}
+    //glfwMakeContextCurrent(Window);
 
-    // Initialize GLEW
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "GLEW initialization failed. Terminating program." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    //// Initialize GLEW
+    //if (glewInit() != GLEW_OK) {
+    //    std::cerr << "GLEW initialization failed. Terminating program." << std::endl;
+    //    glfwTerminate();
+    //    return -1;
+    //}
 
-    // Set input callbacks
-    inputs->SetCursorPosCallback(Window);
+    //inputs = new InputManager(camera);
 
-    // Set cursor mode
-    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //inputs->SetCursorPosCallback(Window);
 
-    // Perform initial setup
-    InitialSetup();
+    //// Set cursor mode
+    //glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Run the main loop
-    while (!glfwWindowShouldClose(Window)) {
-        // Process events
-        glfwPollEvents();
+    //// Perform initial setup
+    //InitialSetup();
 
-        // Update the scene
-        Update();
+    //// Run the main loop
+    //while (!glfwWindowShouldClose(Window)) {
+    //    // Process events
+    //    glfwPollEvents();
 
-        // Render the scene
-        Render();
-    }
+    //    // Update the scene
+    //    inputs->ProcessInput(Window);
 
-    // Clean up
-    delete skybox;
+    //    Update();
 
-    // Terminate GLFW
-    glfwTerminate();
+    //    // Render the scene
+    //    Render();
+    //}
+
+    //// Clean up
+    //delete skybox;
+
+    //// Terminate GLFW
+    //glfwTerminate();
     return 0;
 }
 

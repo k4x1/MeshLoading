@@ -16,7 +16,7 @@
 #include "Skybox.h"
 class GameScene : public Scene {
 public:
-    void InitialSetup() override;
+    void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
     void Update() override;
     void Render() override;
     int MainLoop() override;
@@ -28,12 +28,12 @@ private:
     MeshModel* pointLight1 = nullptr;
     MeshModel* pointLight2 = nullptr;
     InstanceMeshModel* instanceModel = nullptr;
-    InputManager* inputs = nullptr;
+  //  InputManager* inputs = nullptr;
 
-    // Define a camera object
-    Camera camera;
+
 
     // Define program IDs for shaders
+
     GLuint Program_Texture = 0;
     GLuint Program_outline = 0;
     GLuint Program_instanceOutline = 0;
