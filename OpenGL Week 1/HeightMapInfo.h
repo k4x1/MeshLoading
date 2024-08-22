@@ -78,38 +78,35 @@ void BuildIndexData(const HeightMapInfo& BuildInfo, std::vector<unsigned int>& I
         }
     }
 }
+void ComputeNormals(const HeightMapInfo& BuildInfo, const std::vector<float>& HeightMap, std::vector<VertexStandard>& Vertices) {
+    float InvCellSpacing = 1.0f / (2.0f * BuildInfo.CellSpacing);
 
-void ComputeNormals(std::vector<VertexStandard>& Vertices, const std::vector<unsigned int>& Indices) {
-    unsigned int VertexCount = Vertices.size();
-    unsigned int IndexCount = Indices.size();
+    for (unsigned int Row = 0; Row < BuildInfo.Depth; ++Row) {
+        for (unsigned int Col = 0; Col < BuildInfo.Width; ++Col) {
+            float RowNeg = HeightMap[(Row == 0 ? Row : Row - 1) * BuildInfo.Width + Col];
+            float RowPos = HeightMap[(Row == BuildInfo.Depth - 1 ? Row : Row + 1) * BuildInfo.Width + Col];
+            float ColNeg = HeightMap[Row * BuildInfo.Width + (Col == 0 ? Col : Col - 1)];
+            float ColPos = HeightMap[Row * BuildInfo.Width + (Col == BuildInfo.Width - 1 ? Col : Col + 1)];
 
-    for (unsigned int i = 0; i < VertexCount; i++) {
-        Vertices[i].normal = glm::vec3(0.0f, 0.0f, 0.0f);
-    }
+            float X = (RowNeg - RowPos);
+            if (Row == 0 || Row == BuildInfo.Depth - 1) {
+                X *= 2.0f;
+            }
 
-    for (unsigned int i = 0; i < IndexCount; i += 3) {
-        unsigned int Index0 = Indices[i];
-        unsigned int Index1 = Indices[i + 1];
-        unsigned int Index2 = Indices[i + 2];
+            float Y = (ColPos - ColNeg);
+            if (Col == 0 || Col == BuildInfo.Width - 1) {
+                Y *= 2.0f;
+            }
 
-        glm::vec3 v0 = Vertices[Index0].position;
-        glm::vec3 v1 = Vertices[Index1].position;
-        glm::vec3 v2 = Vertices[Index2].position;
+            glm::vec3 TangentZ(0.0f, X * InvCellSpacing, 1.0f);
+            glm::vec3 TangentX(1.0f, Y * InvCellSpacing, 0.0f);
+            glm::vec3 Normal = glm::normalize(glm::cross(TangentZ, TangentX));
 
-        glm::vec3 Edge1 = v1 - v0;
-        glm::vec3 Edge2 = v2 - v0;
-
-        glm::vec3 FaceNormal = glm::normalize(glm::cross(Edge1, Edge2));
-
-        Vertices[Index0].normal += FaceNormal;
-        Vertices[Index1].normal += FaceNormal;
-        Vertices[Index2].normal += FaceNormal;
-    }
-
-    for (unsigned int i = 0; i < VertexCount; i++) {
-        Vertices[i].normal = glm::normalize(Vertices[i].normal);
+            Vertices[Row * BuildInfo.Width + Col].normal = Normal;
+        }
     }
 }
+
 
 void BuildEBO(const std::vector<VertexStandard>& Vertices, const std::vector<unsigned int>& Indices, GLuint& VAO, GLuint& VBO, GLuint& EBO) {
     glGenVertexArrays(1, &VAO);

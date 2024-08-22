@@ -40,7 +40,7 @@ void SkyboxScene::InitialSetup(GLFWwindow* _window, Camera* _camera) {
         std::vector<unsigned int> indices;
         BuildVertexData(heightMapInfo, heightMap, vertices);
         BuildIndexData(heightMapInfo, indices);
-        ComputeNormals(vertices, indices);
+        ComputeNormals(heightMapInfo, heightMap, vertices);
 
         GLuint VAO, VBO, EBO;
         BuildEBO(vertices, indices, VAO, VBO, EBO);
