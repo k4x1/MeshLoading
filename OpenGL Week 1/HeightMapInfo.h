@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "SkyboxScene.h"
+#include "HeightMapScene.h"
 #include <fstream>
 #include <vector>
 #include <glm.hpp>
@@ -36,6 +36,26 @@ bool LoadHeightMap(HeightMapInfo& BuildInfo, std::vector<float>& HeightMap) {
     return true;
 }
 
+
+void BuildIndexData(const HeightMapInfo& BuildInfo, std::vector<unsigned int>& Indices) {
+    unsigned int IndexCount = (BuildInfo.Width - 1) * (BuildInfo.Depth - 1) * 6;
+    Indices.resize(IndexCount);
+
+    int k = 0;
+    for (unsigned int Row = 0; Row < (BuildInfo.Depth - 1); Row++) {
+        for (unsigned int Col = 0; Col < (BuildInfo.Width - 1); Col++) {
+            Indices[k] = Row * BuildInfo.Width + Col;
+            Indices[k + 1] = Row * BuildInfo.Width + Col + 1;
+            Indices[k + 2] = (Row + 1) * BuildInfo.Width + Col;
+
+            Indices[k + 3] = (Row + 1) * BuildInfo.Width + Col;
+            Indices[k + 4] = Row * BuildInfo.Width + Col + 1;
+            Indices[k + 5] = (Row + 1) * BuildInfo.Width + Col + 1;
+
+            k += 6;
+        }
+    }
+}
 void BuildVertexData(const HeightMapInfo& BuildInfo, const std::vector<float>& HeightMap, std::vector<VertexStandard>& Vertices) {
     unsigned int VertexCount = BuildInfo.Width * BuildInfo.Depth;
     Vertices.resize(VertexCount);
@@ -55,26 +75,6 @@ void BuildVertexData(const HeightMapInfo& BuildInfo, const std::vector<float>& H
             Vertices[Index].position = glm::vec3(PosX, PosY, PosZ);
             Vertices[Index].texcoord = glm::vec2(Col * TexU, Row * TexV);
             Vertices[Index].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-        }
-    }
-}
-
-void BuildIndexData(const HeightMapInfo& BuildInfo, std::vector<unsigned int>& Indices) {
-    unsigned int IndexCount = (BuildInfo.Width - 1) * (BuildInfo.Depth - 1) * 6;
-    Indices.resize(IndexCount);
-
-    int k = 0;
-    for (unsigned int Row = 0; Row < (BuildInfo.Depth - 1); Row++) {
-        for (unsigned int Col = 0; Col < (BuildInfo.Width - 1); Col++) {
-            Indices[k] = Row * BuildInfo.Width + Col;
-            Indices[k + 1] = Row * BuildInfo.Width + Col + 1;
-            Indices[k + 2] = (Row + 1) * BuildInfo.Width + Col;
-
-            Indices[k + 3] = (Row + 1) * BuildInfo.Width + Col;
-            Indices[k + 4] = Row * BuildInfo.Width + Col + 1;
-            Indices[k + 5] = (Row + 1) * BuildInfo.Width + Col + 1;
-
-            k += 6;
         }
     }
 }
@@ -132,4 +132,37 @@ void BuildEBO(const std::vector<VertexStandard>& Vertices, const std::vector<uns
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStandard), (void*)offsetof(VertexStandard, normal));
 
     glBindVertexArray(0);
+}
+float Average(const std::vector<float>& HeightMap, const HeightMapInfo& BuildInfo, unsigned int Row, unsigned int Col) {
+    float sum = 0.0f;
+    int count = 0;
+
+    // Iterate over the 3x3 grid centered on (Row, Col)
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            int newRow = Row + i;
+            int newCol = Col + j;
+
+            // Check if the neighboring cell is within bounds
+            if (newRow >= 0 && newRow < BuildInfo.Depth && newCol >= 0 && newCol < BuildInfo.Width) {
+                sum += HeightMap[newRow * BuildInfo.Width + newCol];
+                count++;
+            }
+        }
+    }
+
+    // Return the average height
+    return sum / count;
+}
+void SmoothHeights(std::vector<float>& HeightMap, const HeightMapInfo& BuildInfo) {
+    std::vector<float> SmoothedMap(HeightMap.size());
+
+    for (unsigned int Row = 0; Row < BuildInfo.Depth; Row++) {
+        for (unsigned int Col = 0; Col < BuildInfo.Width; Col++) {
+            SmoothedMap[Row * BuildInfo.Width + Col] = Average(HeightMap, BuildInfo, Row, Col);
+        }
+    }
+
+    // Replace the original heightmap with the smoothed one
+    HeightMap = SmoothedMap;
 }

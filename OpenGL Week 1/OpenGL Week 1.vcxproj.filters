@@ -45,7 +45,10 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxScene.cpp">
+    <ClCompile Include="HeightMapScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NoiseScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,6 +92,9 @@
     <None Include="Resources\Shaders\Terrain.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="PerlinNoise.h">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderLoader.h">
@@ -130,10 +136,13 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxScene.h">
+    <ClInclude Include="HeightMapScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HeightMapInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoiseScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

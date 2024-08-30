@@ -1,6 +1,7 @@
 #include <memory>
 #include "GameScene.h"
-#include "SkyboxScene.h"
+#include "HeightMapScene.h"
+#include "NoiseScene.h"
 
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
@@ -10,7 +11,7 @@ InputManager* inputs = nullptr;
 
 int main()
 {
-    CurrentScene = std::make_unique<SkyboxScene>();
+    CurrentScene = std::make_unique<HeightMapScene>();
 
     if (!glfwInit())
     {
