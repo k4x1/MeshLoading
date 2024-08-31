@@ -31,4 +31,5 @@ public:
 
     // Initializes the texture from a file.
     void InitTexture(const char* _filePath);
+    void SaveTextureToFile(const char* _filePath);
 };

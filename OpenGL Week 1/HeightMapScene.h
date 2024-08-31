@@ -34,6 +34,7 @@ private:
 
     GLuint terrainVAO, terrainVBO, terrainEBO;
     Texture terrainTexture;
+    Texture grassTexture, dirtTexture, stoneTexture, snowTexture;
     std::vector<unsigned int> indices;
     // Define input manager
     InputManager* inputs = nullptr;

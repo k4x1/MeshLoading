@@ -5,15 +5,39 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
+in float Height;
 
-uniform sampler2D texture1;
+uniform sampler2D grassTexture;
+uniform sampler2D dirtTexture;
+uniform sampler2D stoneTexture;
+uniform sampler2D snowTexture;
+
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
 
+// Define height thresholds
+const float grassHeight = 30;
+const float dirtHeight = 60;
+const float stoneHeight = 90;
+const float snowHeight = 120;
+
 void main()
 {
+    vec4 grassColor = texture(grassTexture, TexCoord);
+    vec4 dirtColor = texture(dirtTexture, TexCoord);
+    vec4 stoneColor = texture(stoneTexture, TexCoord);
+    vec4 snowColor = texture(snowTexture, TexCoord);
+
+
+    float blendGrass = 1.0 - smoothstep(grassHeight, dirtHeight, Height);
+    float blendDirt = smoothstep(grassHeight, dirtHeight, Height) * (1.0 - smoothstep(dirtHeight, stoneHeight, Height));
+    float blendStone = smoothstep(dirtHeight, stoneHeight, Height) * (1.0 - smoothstep(stoneHeight, snowHeight, Height));
+    float blendSnow = smoothstep(stoneHeight, snowHeight, Height);
+
+    vec4 finalColor = grassColor * blendGrass + dirtColor * blendDirt + stoneColor * blendStone + snowColor * blendSnow;
+
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
     
@@ -29,6 +53,6 @@ void main()
     vec3 specular = specularStrength * spec * lightColor;  
     
     vec3 result = (ambient + diffuse + specular) * objectColor;
-    FragColor = texture(texture1, TexCoord) * vec4(result, 1.0);
- 
+
+    FragColor = finalColor * vec4(result, 1.0);
 }

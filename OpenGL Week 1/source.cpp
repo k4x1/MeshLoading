@@ -11,7 +11,7 @@ InputManager* inputs = nullptr;
 
 int main()
 {
-    CurrentScene = std::make_unique<HeightMapScene>();
+    CurrentScene = std::make_unique<NoiseScene>();
 
     if (!glfwInit())
     {

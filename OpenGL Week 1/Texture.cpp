@@ -16,6 +16,8 @@ Mail : kazuo.andrade@mds.ac.nz
 #include "Texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include <stb_image_write.h>
 #include <glew.h>
 #include "Texture.h"
 
@@ -74,3 +76,35 @@ void Texture::InitTexture(const char* _filePath)
     // Free the image data
     stbi_image_free(imageData);
 }
+
+//void Texture::SaveTextureToFile(const char* _filePath)
+//{
+//    glBindTexture(GL_TEXTURE_2D, m_textureID);
+//
+//    // Get the texture width, height, and format
+//    int width, height;
+//    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+//    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+//
+//    // Assuming the texture format is GL_RGBA
+//    int channels = 4;
+//    GLenum format = GL_RGBA;
+//
+//    // Allocate memory to store the texture data
+//    unsigned char* data = new unsigned char[width * height * channels];
+//
+//    // Read the texture data from the GPU
+//    glGetTexImage(GL_TEXTURE_2D, 0, format, GL_UNSIGNED_BYTE, data);
+//
+//    // Save the texture data to a file using stb_image_write
+//    if (stbi_write_png(_filePath, width, height, channels, data, width * channels)) {
+//        std::cout << "Texture saved successfully to " << _filePath << std::endl;
+//    }
+//    else {
+//        std::cerr << "Failed to save texture to " << _filePath << std::endl;
+//    }
+//
+//    // Clean up
+//    delete[] data;
+//    glBindTexture(GL_TEXTURE_2D, 0);
+//}

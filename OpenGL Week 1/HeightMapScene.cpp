@@ -53,6 +53,11 @@ void HeightMapScene::InitialSetup(GLFWwindow* _window, Camera* _camera) {
 
         // Load terrain texture
         terrainTexture.InitTexture("Resources/Textures/fakerRomance.png");
+   
+        grassTexture.InitTexture("Resources/Textures/grass.png");
+        dirtTexture.InitTexture("Resources/Textures/dirt.png");
+        stoneTexture.InitTexture("Resources/Textures/rocks.png");
+        snowTexture.InitTexture("Resources/Textures/snow.png");
     }
 }
 
@@ -66,7 +71,7 @@ void HeightMapScene::Update() {
 }
 void HeightMapScene::Render() {
     // Clear the color buffer
-    glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render the skybox
@@ -88,13 +93,24 @@ void HeightMapScene::Render() {
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 10.0f, 10.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(0.0f, 0.6f, 0.6f)));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
     // Bind texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, terrainTexture.GetId());
-   
-    glUniform1i(glGetUniformLocation(Program_terrain, "texture1"), 0);
+    glBindTexture(GL_TEXTURE_2D, grassTexture.GetId());
+    glUniform1i(glGetUniformLocation(Program_terrain, "grassTexture"), 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, dirtTexture.GetId());
+    glUniform1i(glGetUniformLocation(Program_terrain, "dirtTexture"), 1);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, stoneTexture.GetId());
+    glUniform1i(glGetUniformLocation(Program_terrain, "stoneTexture"), 2);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, snowTexture.GetId());
+    glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
 
     // Draw the terrain
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

@@ -159,6 +159,8 @@
     <None Include="Resources\Shaders\InstanceTexture.vert" />
     <None Include="Resources\Shaders\Color.frag" />
     <None Include="Resources\Shaders\Color.vert" />
+    <None Include="Resources\Shaders\Noise.frag" />
+    <None Include="Resources\Shaders\Noise.vert" />
     <None Include="Resources\Shaders\Outline.frag" />
     <None Include="Resources\Shaders\Outline.vert" />
     <None Include="Resources\Shaders\Skybox.frag" />
