@@ -46,52 +46,39 @@ void NoiseScene::GenerateAndSaveNoiseTexture() {
     const int Width = 512;
     const int Height = 512;
     PerlinNoise noiseGenerator;
-    uint8_t* Pixels = new uint8_t[Width * Height * 3];
-    uint8_t* Heightmap = new uint8_t[Width * Height];
+    uint8_t* Pixels = new uint8_t[Width * Height];
 
     for (int y = 0; y < Height; y++) {
         for (int x = 0; x < Width; x++) {
             double noiseValue = noiseGenerator.TotalNoisePerPoint(x, y);
-            noiseValue = (noiseValue + 1.0) * 0.5 * 255.0; // Scale to 0-255
-            uint8_t color = static_cast<uint8_t>(noiseValue);
-
-            // Apply gradient coloring (Fire effect: White, Yellow, Red, Black)
-            glm::vec3 gradientColor = ApplyGradientColor(noiseValue / 255.0f);
-            Pixels[(y * Width + x) * 3 + 0] = static_cast<uint8_t>(gradientColor.r * 255);
-            Pixels[(y * Width + x) * 3 + 1] = static_cast<uint8_t>(gradientColor.g * 255);
-            Pixels[(y * Width + x) * 3 + 2] = static_cast<uint8_t>(gradientColor.b * 255);
-
-            // Save heightmap data
-            Heightmap[y * Width + x] = color;
+            // Scale the noise value to [0, 1] range
+            noiseValue = (noiseValue + 1.0) * 0.5;
+            // Apply contrast enhancement
+            noiseValue = pow(noiseValue, 1.2);  // Gamma correction for more contrast
+            Pixels[y * Width + x] = static_cast<uint8_t>(noiseValue * 255.0);
         }
     }
 
-    // Save as JPG
-    stbi_write_jpg("Resources/Textures/NoiseTexture.jpg", Width, Height, 3, Pixels, 100);
-
-    // Save as RAW
-    std::ofstream rawFile("Resources/Textures/NoiseHeightmap.raw", std::ios::binary);
-    rawFile.write(reinterpret_cast<char*>(Heightmap), Width * Height);
-    rawFile.close();
+    stbi_write_jpg("Resources/Textures/NoiseTexture.jpg", Width, Height, 1, Pixels, 100);
 
     delete[] Pixels;
-    delete[] Heightmap;
 }
 
 glm::vec3 NoiseScene::ApplyGradientColor(float value) {
-    
+    return(glm::vec3(1, 1, 1));
     if (value < 0.25f) {
         return glm::mix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), value / 0.25f);
     }
     else if (value < 0.5f) {
-        return glm::mix(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), (value - 0.25f) / 0.25f);
+        return glm::mix(glm::vec3(1.0f, 0.0f, 0.0f  ), glm::vec3(1.0f, 1.0f, 0.0f), (value - 0.25f) / 0.25f);
     }
     else if (value < 0.75f) {
-        return glm::mix(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), (value - 0.5f) / 0.25f);
+        return glm::mix(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), (value - 0.5f) / 0.25f);
     }
     else {
-        return glm::mix(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), (value - 0.75f) / 0.25f);
+        return glm::mix(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), (value - 0.75f) / 0.25f);
     }
+
 }
 
 void NoiseScene::Update() {
@@ -179,6 +166,7 @@ void NoiseScene::RenderNoiseTexture() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_CULL_FACE);
 }
+
 /*
 void NoiseScene::RenderAnimatedNoise() {
     // Generate new noise texture data
