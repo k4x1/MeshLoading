@@ -106,13 +106,13 @@ void NoiseScene::InitQuadAndShader() {
     // Define the vertices for a quad (two triangles)
     float quadVertices[] = {
         // positions        // texture coords
-        -5.0f,  5.0f, 100.0f,  0.0f, 1.0f,
-        -5.0f, -5.0f, 100.0f,  0.0f, 0.0f,
-         5.0f, -5.0f, 100.0f,  1.0f, 0.0f,
+        -5.0f,  5.0f, 0.0f,  0.0f, 1.0f,
+        -5.0f, -5.0f, 0.0f,  0.0f, 0.0f,
+         5.0f, -5.0f, 0.0f,  1.0f, 0.0f,
 
-        -5.0f,  5.0f, 100.0f,  0.0f, 1.0f,
-         5.0f, -5.0f, 100.0f,  1.0f, 0.0f,
-         5.0f,  5.0f, 100.0f,  1.0f, 1.0f
+        -5.0f,  5.0f, 0.0f,  0.0f, 1.0f,
+         5.0f, -5.0f, 0.0f,  1.0f, 0.0f,
+         5.0f,  5.0f, 0.0f,  1.0f, 1.0f
     };
 
     // Generate and bind the VAO and VBO
@@ -160,6 +160,7 @@ void NoiseScene::Render() {
 }
 
 void NoiseScene::RenderNoiseTexture() {
+    glDisable(GL_CULL_FACE);
     glUseProgram(Program_noise);
     glBindVertexArray(quadVAO);
 
@@ -176,7 +177,9 @@ void NoiseScene::RenderNoiseTexture() {
     glUniform1i(glGetUniformLocation(Program_noise, "texture1"), 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_CULL_FACE);
 }
+/*
 void NoiseScene::RenderAnimatedNoise() {
     // Generate new noise texture data
     const int Width = 512;
@@ -186,7 +189,7 @@ void NoiseScene::RenderAnimatedNoise() {
 
     for (int y = 0; y < Height; y++) {
         for (int x = 0; x < Width; x++) {
-            double noiseValue = noiseGenerator.TotalNoisePerPoint(x, y);
+            double noiseValue = noiseGenerator.TotalNoisePerPoint(x, y, glfwGetTime() * 0.1); 
             noiseValue = (noiseValue + 1.0) * 0.5 * 255.0; // Scale to 0-255
             uint8_t color = static_cast<uint8_t>(noiseValue);
 
@@ -198,15 +201,28 @@ void NoiseScene::RenderAnimatedNoise() {
     }
 
     // Update the texture with new noise data
-    glBindTexture(GL_TEXTURE_2D, noiseTexture.GetId());
+    glBindTexture(GL_TEXTURE_2D, animatedNoiseTexture.GetId());
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, Pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     delete[] Pixels;
 
-    // Render the updated texture
-    RenderNoiseTexture();
+    // Render the updated texture on the second quad
+    glUseProgram(Program_noise);
+    glBindVertexArray(quadVAO);
+
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), animatedQuadPosition);
+    glUniformMatrix4fv(glGetUniformLocation(Program_noise, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(Program_noise, "view"), 1, GL_FALSE, glm::value_ptr(camera->m_view));
+    glUniformMatrix4fv(glGetUniformLocation(Program_noise, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, animatedNoiseTexture.GetId());
+    glUniform1i(glGetUniformLocation(Program_noise, "texture1"), 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+*/
 int NoiseScene::MainLoop() {
     while (!glfwWindowShouldClose(Window)) {
         Update();

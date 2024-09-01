@@ -32,7 +32,8 @@ private:
     GLuint m_textureID;
 
     GLuint quadVAO, quadVBO;
-    glm::vec3 quadPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 quadPosition = glm::vec3(0.0f, 0.0f, -100.0f);
+    glm::vec3 animatedQuadPosition = glm::vec3(0.0f, 0.0f, 100.0f);
     Texture noiseTexture;
     // Function to generate and save Perlin noise texture
     void GenerateAndSaveNoiseTexture();
