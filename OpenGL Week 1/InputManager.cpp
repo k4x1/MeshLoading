@@ -30,16 +30,16 @@ void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int
         std::cout << "Cursor Position: (" << xpos << ", " << ypos << ")" << std::endl;
     }
     if (_key == GLFW_KEY_1 && _action == GLFW_PRESS) {
-        m_updateLight = true;
-        m_pointlight = m_pointlight == 0 ? 1 : 0;
+        currentScene = SceneType::Game;
+        sceneChanged = true;
     }
     if (_key == GLFW_KEY_2 && _action == GLFW_PRESS) {
-        m_updateLight = true;
-        m_dirlight = m_dirlight == 0 ? 1 : 0;
+        currentScene = SceneType::HeightMap;
+        sceneChanged = true;
     }
     if (_key == GLFW_KEY_3 && _action == GLFW_PRESS) {
-        m_updateLight = true;
-        m_spotlight = m_spotlight == 0 ? 1 : 0;
+        currentScene = SceneType::Noise;
+        sceneChanged = true;
     }
 }
 

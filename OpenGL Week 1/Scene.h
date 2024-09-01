@@ -22,4 +22,5 @@ public:
     virtual void Update() {}
     virtual void Render() {}
     virtual int MainLoop() { return 0; }
+    virtual ~Scene() = default;
 };

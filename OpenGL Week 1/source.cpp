@@ -8,6 +8,20 @@ std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
 Camera* camera = new Camera();
 InputManager* inputs = nullptr;
+void switchScene(InputManager::SceneType sceneType) {
+    switch (sceneType) {
+    case InputManager::SceneType::Game:
+        CurrentScene = std::make_unique<GameScene>();
+        break;
+    case InputManager::SceneType::HeightMap:
+        CurrentScene = std::make_unique<HeightMapScene>();
+        break;
+    case InputManager::SceneType::Noise:
+        CurrentScene = std::make_unique<NoiseScene>();
+        break;
+    }
+    CurrentScene->InitialSetup(Window, camera);
+}
 
 int main()
 {
@@ -62,7 +76,10 @@ int main()
 
         // Process input
         inputs->ProcessInput(Window);
-
+        if (inputs->sceneChanged) {
+            switchScene(inputs->currentScene);
+            inputs->sceneChanged = false;
+        }
         // Update the scene
         CurrentScene->Update();
 

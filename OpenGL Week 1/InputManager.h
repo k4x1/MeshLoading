@@ -22,6 +22,7 @@ Mail : kazuo.andrade@mds.ac.nz
 #include "Camera.h"
 
 // Manages input handling for the application.
+
 class InputManager
 {
 private:
@@ -42,6 +43,13 @@ public:
     float m_spotlight = 1;
     float m_pointlight = 1;
     float m_dirlight = 1;
+    enum class SceneType {
+        Game,
+        HeightMap,
+        Noise
+    };
+    SceneType currentScene = SceneType::Game;
+    bool sceneChanged = false;
 
     // Constructor that takes a camera reference
     InputManager(Camera* _camRef);
