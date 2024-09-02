@@ -54,7 +54,7 @@ void NoiseScene::GenerateAndSaveNoiseTexture() {
             // Scale the noise value to [0, 1] range
             noiseValue = (noiseValue + 1.0) * 0.5;
             // Apply contrast enhancement
-            noiseValue = pow(noiseValue, 1.2);  // Gamma correction for more contrast
+            noiseValue = pow(noiseValue, 1.5);  
             Pixels[y * Width + x] = static_cast<uint8_t>(noiseValue * 255.0);
         }
     }

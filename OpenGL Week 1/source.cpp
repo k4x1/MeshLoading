@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "HeightMapScene.h"
 #include "NoiseScene.h"
+#include "FrameBufferScene.h"
 
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
@@ -25,7 +26,7 @@ void switchScene(InputManager::SceneType sceneType) {
 
 int main()
 {
-    CurrentScene = std::make_unique<NoiseScene>();
+    CurrentScene = std::make_unique<FrameBufferScene>();
 
     if (!glfwInit())
     {

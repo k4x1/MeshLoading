@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBufferScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InstanceMeshModel.cpp" />
@@ -163,6 +164,8 @@
     <None Include="Resources\Shaders\Noise.vert" />
     <None Include="Resources\Shaders\Outline.frag" />
     <None Include="Resources\Shaders\Outline.vert" />
+    <None Include="Resources\Shaders\PostProcessing.frag" />
+    <None Include="Resources\Shaders\PostProcessing.vert" />
     <None Include="Resources\Shaders\Skybox.frag" />
     <None Include="Resources\Shaders\Skybox.vert" />
     <None Include="Resources\Shaders\Terrain.frag" />
@@ -172,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameBufferScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HeightMapInfo.h" />
     <ClInclude Include="InputManager.h" />
