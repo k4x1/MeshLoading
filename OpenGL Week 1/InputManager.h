@@ -46,7 +46,8 @@ public:
     enum class SceneType {
         Game,
         HeightMap,
-        Noise
+        Noise,
+        FrameBuffer
     };
     SceneType currentScene = SceneType::Game;
     bool sceneChanged = false;

@@ -40,7 +40,12 @@ void InputManager::KeyCallback(GLFWwindow* _window, int _key, int _scancode, int
     if (_key == GLFW_KEY_3 && _action == GLFW_PRESS) {
         currentScene = SceneType::Noise;
         sceneChanged = true;
+    }    
+    if (_key == GLFW_KEY_4 && _action == GLFW_PRESS) {
+        currentScene = SceneType::FrameBuffer;
+        sceneChanged = true;
     }
+
 }
 
 void InputManager::MouseCallback(GLFWwindow* _window, double _xpos, double _ypos)

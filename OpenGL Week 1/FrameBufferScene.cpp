@@ -20,7 +20,7 @@ void FrameBufferScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
     Program_color = ShaderLoader::CreateProgram("Resources/Shaders/Color.vert", "Resources/Shaders/Color.frag");
-
+    postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/PostProcessing.vert", "Resources/Shaders/PostProcessing.frag");
 
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
@@ -105,6 +105,48 @@ void FrameBufferScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     spotLight.innerCutoff = glm::cos(glm::radians(13.0f));
     spotLight.outerCutoff = glm::cos(glm::radians(15.0f));
 
+    // Set up framebuffer
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    // Create a color attachment texture
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 800, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+    // Create a renderbuffer object for depth and stencil attachment
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Set up quad VAO
+    float quadVertices[] = {
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
 void FrameBufferScene::Update()
@@ -119,13 +161,23 @@ void FrameBufferScene::Update()
     spotLight.position = camera->m_position;
     spotLight.direction = camera->m_orientation;
 
-
+    static bool tabPressed = false;
+    if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed)
+    {
+        tabPressed = true;
+        currentEffect = static_cast<PostProcessEffect>((static_cast<int>(currentEffect) + 1) % 3);
+    }
+    if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_RELEASE)
+    {
+        tabPressed = false;
+    }
 }
 
 
 void FrameBufferScene::Render()
 {
     // Clear the color buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     GLenum error = glGetError();
@@ -180,6 +232,20 @@ void FrameBufferScene::Render()
 
 
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(postProcessingShader);
+    glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
+    glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
+
+    glBindVertexArray(quadVAO);
+    glDisable(GL_DEPTH_TEST);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+
 
     error = glGetError();
     if (error != GL_NO_ERROR) {
@@ -198,4 +264,10 @@ FrameBufferScene::~FrameBufferScene() {
     delete instanceModel;
     delete pointLight1;
     delete pointLight2;
+
+    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteTextures(1, &textureColorbuffer);
+    glDeleteRenderbuffers(1, &rbo);
+    glDeleteVertexArrays(1, &quadVAO);
+    glDeleteBuffers(1, &quadVBO);
 }

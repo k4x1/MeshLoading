@@ -28,10 +28,25 @@ private:
     MeshModel* pointLight1 = nullptr;
     MeshModel* pointLight2 = nullptr;
     InstanceMeshModel* instanceModel = nullptr;
-    //  InputManager* inputs = nullptr;
 
+    GLuint framebuffer;
+    GLuint textureColorbuffer;
+    GLuint rbo;
 
+    // Quad for rendering the framebuffer texture
+    GLuint quadVAO, quadVBO;
 
+    // Shader for post-processing
+    GLuint postProcessingShader;
+
+    // Enum for post-processing effects
+    enum class PostProcessEffect {
+        None,
+        Inversion,
+        Greyscale
+    };
+
+    PostProcessEffect currentEffect = PostProcessEffect::Greyscale;
       // Define program IDs for shaders
 
     GLuint Program_Texture = 0;
