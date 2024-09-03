@@ -34,7 +34,7 @@ void switchScene(InputManager::SceneType sceneType) {
 
 int main()
 {
-    CurrentScene = std::make_unique<NoiseScene>();
+    CurrentScene = std::make_unique<GameScene>();
 
     if (!glfwInit())
     {

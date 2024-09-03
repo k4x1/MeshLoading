@@ -25,8 +25,8 @@ void NoiseScene::InitialSetup(GLFWwindow* _window, Camera* _camera) {
     faces = {
            "Resources/Textures/skybox/Right.png",
            "Resources/Textures/skybox/Left.png",
-           "Resources/Textures/skybox/Top.png",
            "Resources/Textures/skybox/Bottom.png",
+           "Resources/Textures/skybox/Top.png",
            "Resources/Textures/skybox/Back.png",
            "Resources/Textures/skybox/Front.png"
     };
