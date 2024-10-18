@@ -106,26 +106,8 @@ void FrameBufferScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     spotLight.outerCutoff = glm::cos(glm::radians(15.0f));
 
     // Set up framebuffer
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-    // Create a color attachment texture
-    glGenTextures(1, &textureColorbuffer);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 800, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-    // Create a renderbuffer object for depth and stencil attachment
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_FrameBuffer = new FrameBuffer(800, 800);
+   
 
     // Set up quad VAO
     float quadVertices[] = {
@@ -177,7 +159,7 @@ void FrameBufferScene::Update()
 void FrameBufferScene::Render()
 {
     // Clear the color buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    m_FrameBuffer->Bind();
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     GLenum error = glGetError();
@@ -232,7 +214,8 @@ void FrameBufferScene::Render()
 
 
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_FrameBuffer->Unbind();
+
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -242,7 +225,7 @@ void FrameBufferScene::Render()
 
     glBindVertexArray(quadVAO);
     glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    m_FrameBuffer->BindTexture();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
 
@@ -265,9 +248,7 @@ FrameBufferScene::~FrameBufferScene() {
     delete pointLight1;
     delete pointLight2;
 
-    glDeleteFramebuffers(1, &framebuffer);
-    glDeleteTextures(1, &textureColorbuffer);
-    glDeleteRenderbuffers(1, &rbo);
+    delete m_FrameBuffer;
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &quadVBO);
 }

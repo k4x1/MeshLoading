@@ -139,9 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assignment3Scene.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FrameBufferScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="HeightMapInfo.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InstanceMeshModel.cpp" />
     <ClCompile Include="MeshModel.cpp" />
@@ -174,7 +177,9 @@
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assignment3Scene.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FrameBufferScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HeightMapInfo.h" />

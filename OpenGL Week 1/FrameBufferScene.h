@@ -14,6 +14,7 @@
 #include "Light.h"
 #include <string>
 #include "Skybox.h"
+#include "FrameBuffer.h"
 class FrameBufferScene : public Scene {
 public:
     void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
@@ -29,9 +30,7 @@ private:
     MeshModel* pointLight2 = nullptr;
     InstanceMeshModel* instanceModel = nullptr;
 
-    GLuint framebuffer;
-    GLuint textureColorbuffer;
-    GLuint rbo;
+    FrameBuffer* m_FrameBuffer;
 
     // Quad for rendering the framebuffer texture
     GLuint quadVAO, quadVBO;
