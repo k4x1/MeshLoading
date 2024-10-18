@@ -72,6 +72,7 @@ public:
     // Calculates the model matrix based on position, rotation, and scale.
     glm::mat4 CalculateModelMatrix();
 
+    glm::mat4 m_modelMatrix;
 protected:
     // Vertex Array Object and rendering details
     GLuint VAO;
@@ -88,5 +89,4 @@ protected:
     glm::vec3 m_position;
     glm::vec3 m_rotation;
     glm::vec3 m_scale;
-    glm::mat4 m_modelMatrix;
 };

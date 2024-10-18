@@ -151,6 +151,7 @@
     <ClCompile Include="NoiseScene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="HeightMapScene.cpp" />
     <ClCompile Include="source.cpp" />
@@ -163,12 +164,16 @@
     <None Include="Resources\Shaders\InstanceTexture.vert" />
     <None Include="Resources\Shaders\Color.frag" />
     <None Include="Resources\Shaders\Color.vert" />
+    <None Include="Resources\Shaders\MainRendering.frag" />
+    <None Include="Resources\Shaders\MainRendering.vert" />
     <None Include="Resources\Shaders\Noise.frag" />
     <None Include="Resources\Shaders\Noise.vert" />
     <None Include="Resources\Shaders\Outline.frag" />
     <None Include="Resources\Shaders\Outline.vert" />
     <None Include="Resources\Shaders\PostProcessing.frag" />
     <None Include="Resources\Shaders\PostProcessing.vert" />
+    <None Include="Resources\Shaders\ShadowMapping.frag" />
+    <None Include="Resources\Shaders\ShadowMapping.vert" />
     <None Include="Resources\Shaders\Skybox.frag" />
     <None Include="Resources\Shaders\Skybox.vert" />
     <None Include="Resources\Shaders\Terrain.frag" />
@@ -191,6 +196,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="HeightMapScene.h" />
     <ClInclude Include="Texture.h" />

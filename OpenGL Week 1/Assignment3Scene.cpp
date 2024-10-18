@@ -19,7 +19,8 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/PostProcessing.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
     Program_terrain = ShaderLoader::CreateProgram("Resources/Shaders/Terrain.vert", "Resources/Shaders/Terrain.frag");
-
+    shadowMappingShader = ShaderLoader::CreateProgram("Resources/Shaders/ShadowMapping.vert", "Resources/Shaders/ShadowMapping.frag");
+    mainRenderingShader = ShaderLoader::CreateProgram("Resources/Shaders/MainRendering.vert", "Resources/Shaders/MainRendering.frag");
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
     scifiTex.InitTexture("Resources/Textures/PolygonScifiWorlds_Texture_01_B.png");
@@ -99,6 +100,8 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     glDisable(GL_CULL_FACE);
 
+    m_ShadowMap = new ShadowMap(2048, 2048);
+
     // Initialize terrain
     HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
     std::vector<float> heightMap;
@@ -177,8 +180,30 @@ void Assignment3Scene::Update()
 
 void Assignment3Scene::Render()
 {
-    // First pass: Render to framebuffer
+    // First pass: Render to shadow map
+    m_ShadowMap->Bind();
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Update light space matrix
+    glm::vec3 lightPos = dirLight.direction * -700.0f;
+    m_ShadowMap->UpdateLightSpaceMatrix(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    // Use shadow mapping shader
+    glUseProgram(shadowMappingShader);
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
+
+
+    // Render shadow-casting objects
+    model->Render(shadowMappingShader);
+    instanceModel->Render(shadowMappingShader);
+    // Add other shadow-casting objects here
+
+    m_ShadowMap->Unbind();
+
+    // Second pass: Render scene with shadows to framebuffer
     m_FrameBuffer->Bind();
+    glViewport(0, 0, 800, 800);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -188,7 +213,7 @@ void Assignment3Scene::Render()
     glm::mat4 projection = camera->m_projection;
     skybox->Render(view, projection);
 
-    // Render model
+    // Render model with shadows
     glUseProgram(model->GetShader());
     model->BindTexture();
     model->PassUniforms(camera);
@@ -196,13 +221,19 @@ void Assignment3Scene::Render()
     model->PassDirectionalUniforms(dirLight);
     model->PassSpotLightUniforms(spotLight);
 
+    // Pass shadow map and light space matrix
+    glActiveTexture(GL_TEXTURE2);
+    m_ShadowMap->BindTexture(GL_TEXTURE2);
+    glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap"), 2);
+    glUniformMatrix4fv(glGetUniformLocation(model->GetShader(), "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
 
     model->Render(model->GetShader());
 
-    // Render instance model
+    // Render instance model with shadows
     glUseProgram(instanceModel->GetShader());
     instanceModel->BindTexture();
     instanceModel->PassUniforms(camera);
@@ -210,13 +241,19 @@ void Assignment3Scene::Render()
     instanceModel->PassDirectionalUniforms(dirLight);
     instanceModel->PassSpotLightUniforms(spotLight);
 
+    // Pass shadow map and light space matrix
+    glActiveTexture(GL_TEXTURE2);
+    m_ShadowMap->BindTexture(GL_TEXTURE2);
+    glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "shadowMap"), 2);
+    glUniformMatrix4fv(glGetUniformLocation(instanceModel->GetShader(), "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
     glUniform1i(glGetUniformLocation(Program_instanceTexture, "skybox"), 1);
     glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "Texture0"), 0);
     instanceModel->Render(instanceModel->GetShader());
 
-    // Render point lights
+    // Render point lights (these typically don't cast shadows)
     glUseProgram(pointLight1->GetShader());
     pointLight1->BindTexture();
     pointLight1->PassUniforms(camera);
@@ -229,16 +266,17 @@ void Assignment3Scene::Render()
     pointLight2->PassColorUniforms(PointLightArray[1].color.r, PointLightArray[1].color.g, PointLightArray[1].color.b, 1.0f);
     pointLight2->Render(pointLight2->GetShader());
 
-    // Render terrain
+    // Render terrain with shadows
     glUseProgram(Program_terrain);
     glBindVertexArray(terrainVAO);
 
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(camera->m_view));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
 
     // Set light and view position
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos"), 1, glm::value_ptr(glm::vec3(0.0f, 10.0f, 10.0f)));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos"), 1, glm::value_ptr(lightPos));
     glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -260,6 +298,11 @@ void Assignment3Scene::Render()
     glBindTexture(GL_TEXTURE_2D, snowTexture.GetId());
     glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
 
+    // Bind shadow map
+    glActiveTexture(GL_TEXTURE4);
+    m_ShadowMap->BindTexture(GL_TEXTURE4);
+    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap"), 4);
+
     // Draw the terrain
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -267,7 +310,9 @@ void Assignment3Scene::Render()
     glUseProgram(0);
 
     m_FrameBuffer->Unbind();
-    // Second pass: Post-processing
+
+    // Third pass: Post-processing
+    glViewport(0, 0, 800, 800);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -280,6 +325,7 @@ void Assignment3Scene::Render()
     m_FrameBuffer->BindTexture();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
+
     // Check for OpenGL errors
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
@@ -289,6 +335,7 @@ void Assignment3Scene::Render()
     // Swap buffers
     glfwSwapBuffers(Window);
 }
+
 
 int Assignment3Scene::MainLoop() {
     while (!glfwWindowShouldClose(Window)) {

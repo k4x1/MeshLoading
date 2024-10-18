@@ -15,6 +15,7 @@
 #include <string>
 #include "Skybox.h"
 #include "FrameBuffer.h"
+#include "ShadowMap.h"
 class Assignment3Scene : public Scene {
 public:
     void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
@@ -25,7 +26,7 @@ public:
 
 private:
     FrameBuffer* m_FrameBuffer = nullptr;
-
+    ShadowMap* m_ShadowMap;
 
     MeshModel* model = nullptr;
     MeshModel* pointLight1 = nullptr;
@@ -47,6 +48,8 @@ private:
     GLuint Program_Texture = 0;
     GLuint Program_instanceTexture = 0;
     GLuint Program_color = 0;
+    GLuint shadowMappingShader;
+    GLuint mainRenderingShader;
 
     Texture ancientTex;
     Texture scifiTex;
