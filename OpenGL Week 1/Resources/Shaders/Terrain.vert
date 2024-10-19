@@ -7,11 +7,13 @@ layout(location = 2) in vec3 aNormal;
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
+out vec4 FragPosLightSpace; 
 out float Height;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightSpaceMatrix; 
 
 void main()
 {
@@ -20,6 +22,8 @@ void main()
     TexCoord = aTexCoord;
     Height = aPos.y;  
     
+    // Calculate the fragment position in light space
+    FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0); 
+    
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }
-    

@@ -5,12 +5,14 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
+in vec4 FragPosLightSpace;
 in float Height;
 
 uniform sampler2D grassTexture;
 uniform sampler2D dirtTexture;
 uniform sampler2D stoneTexture;
 uniform sampler2D snowTexture;
+uniform sampler2D shadowMap; 
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
@@ -23,13 +25,23 @@ const float dirtHeight = 60;
 const float stoneHeight = 90;
 const float snowHeight = 120;
 
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float currentDepth = projCoords.z;
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    return shadow;
+}
+
 void main()
 {
     vec4 grassColor = texture(grassTexture, TexCoord);
     vec4 dirtColor = texture(dirtTexture, TexCoord);
     vec4 stoneColor = texture(stoneTexture, TexCoord);
     vec4 snowColor = texture(snowTexture, TexCoord);
-
 
     float blendGrass = 1.0 - smoothstep(grassHeight, dirtHeight, Height);
     float blendDirt = smoothstep(grassHeight, dirtHeight, Height) * (1.0 - smoothstep(dirtHeight, stoneHeight, Height));
@@ -52,7 +64,9 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColor;  
     
-    vec3 result = (ambient + diffuse + specular) * objectColor;
+    // Calculate shadow
+    float shadow = ShadowCalculation(FragPosLightSpace); 
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
 
     FragColor = finalColor * vec4(result, 1.0);
 }

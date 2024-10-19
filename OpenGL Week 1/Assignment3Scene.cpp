@@ -10,7 +10,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
 
-    camera->InitCamera(800, 800, glm::vec3(0.0f, 100.0f, 10.0f));
+    camera->InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Load shaders
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
@@ -51,8 +51,8 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     instanceModel->SetShader(Program_instanceTexture);
 
     // Add instances at random positions
-    for (int i = 0; i < 1000; i++) {
-        glm::vec3 randomPosition = glm::vec3(rand() % 1000 - 100, -5.0f, rand() % 1000 - 100);
+    for (int i = 0; i < 100; i++) {
+        glm::vec3 randomPosition = glm::vec3(rand() % 300 - 150, 10.0f, rand() % 300 - 150);
         glm::vec3 randomRotation = glm::vec3((rand() % 21) - 10);
         glm::vec3 randomScale = glm::vec3(((rand() % 10 + 5) / 200.0f));
         instanceModel->AddInstance(randomPosition, randomRotation, randomScale);
@@ -76,7 +76,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     PointLightCount = 2;
 
-    dirLight.direction = glm::vec3(-1.0f, -1.0f, 0.0f);
+    dirLight.direction = glm::vec3(0.0f, -1.0f, 0.3f);
     dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     dirLight.specularStrength = 1.0f;
 
@@ -100,7 +100,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     glDisable(GL_CULL_FACE);
 
-    m_ShadowMap = new ShadowMap(2048, 2048);
+    m_ShadowMap = new ShadowMap(4096, 4096);
 
     // Initialize terrain
     HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
@@ -299,6 +299,7 @@ void Assignment3Scene::Render()
     glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
 
     // Bind shadow map
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
     glActiveTexture(GL_TEXTURE4);
     m_ShadowMap->BindTexture(GL_TEXTURE4);
     glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap"), 4);

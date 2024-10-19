@@ -43,7 +43,7 @@ private:
         Greyscale
     };
 
-    PostProcessEffect currentEffect = PostProcessEffect::Greyscale;
+    PostProcessEffect currentEffect = PostProcessEffect::None;
 
     GLuint Program_Texture = 0;
     GLuint Program_instanceTexture = 0;
