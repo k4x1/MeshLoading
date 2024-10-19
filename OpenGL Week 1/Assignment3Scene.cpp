@@ -20,6 +20,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
     Program_terrain = ShaderLoader::CreateProgram("Resources/Shaders/Terrain.vert", "Resources/Shaders/Terrain.frag");
     shadowMappingShader = ShaderLoader::CreateProgram("Resources/Shaders/ShadowMapping.vert", "Resources/Shaders/ShadowMapping.frag");
+    instanceShadowMappingShader = ShaderLoader::CreateProgram("Resources/Shaders/ShadowMappingInstance.vert", "Resources/Shaders/ShadowMapping.frag");
     mainRenderingShader = ShaderLoader::CreateProgram("Resources/Shaders/MainRendering.vert", "Resources/Shaders/MainRendering.frag");
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
@@ -76,9 +77,12 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     PointLightCount = 2;
 
-    dirLight.direction = glm::vec3(0.0f, -1.0f, 0.3f);
-    dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    dirLight.specularStrength = 1.0f;
+    dirLight1.direction = glm::vec3(0.3f, -1.0f, 0.0f);
+    dirLight2.direction = glm::vec3(0.0f, -1.0f, 0.3f);
+    dirLight1.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    dirLight2.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    dirLight1.specularStrength = 1.0f;
+    dirLight2.specularStrength = 1.0f;
 
     pointLight1 = new MeshModel(PointLightArray[0].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
     pointLight1->SetTexture(blankTex.GetId());
@@ -100,7 +104,8 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     glDisable(GL_CULL_FACE);
 
-    m_ShadowMap = new ShadowMap(4096, 4096);
+    m_ShadowMap1 = new ShadowMap(4096, 4096);
+    m_ShadowMap2 = new ShadowMap(4096, 4096);
 
     // Initialize terrain
     HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
@@ -192,11 +197,11 @@ void Assignment3Scene::Render()
     glUseProgram(shadowMappingShader);
     glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
     glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
-
-
-    // Render shadow-casting objects
     model->Render(shadowMappingShader);
-    instanceModel->Render(shadowMappingShader);
+
+    glUseProgram(instanceShadowMappingShader);
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    instanceModel->Render(instanceShadowMappingShader);
     // Add other shadow-casting objects here
 
     m_ShadowMap->Unbind();
