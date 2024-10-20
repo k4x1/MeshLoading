@@ -104,7 +104,7 @@ void GeometryBuffer::PopulateProgram(GLuint Program)
 void GeometryBuffer::WriteDepth()
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, 800, 800, 0, 0, 800, 800, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

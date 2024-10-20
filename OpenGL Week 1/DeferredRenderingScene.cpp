@@ -30,7 +30,7 @@ void DeferredRenderingScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     blankTex.InitTexture("Resources/Textures/blankTex.png");
 
     InitializeModels();
-    //SetupLights();
+    SetupLights();
     //SetupTerrain();
     SetupQuad();
 
@@ -73,14 +73,38 @@ void DeferredRenderingScene::Render() {
     // Unbind the geometry buffer
     m_GeometryBuffer->Unbind();
     
+    
     // Render screen quad
     glUseProgram(Program_ScreenQuadLightingPass);
     m_GeometryBuffer->PopulateProgram(Program_ScreenQuadLightingPass);
+    glUniform1i(glGetUniformLocation(Program_ScreenQuadLightingPass, "PointLightCount"), pointLights.size());
+
+    // Iterate over each light and pass its properties
+    for (size_t i = 0; i < pointLights.size(); ++i) {
+        std::string baseName = "pointLights[" + std::to_string(i) + "]";
+
+        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".position").c_str()), 1, glm::value_ptr(pointLights[i].position));
+        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".color").c_str()), 1, glm::value_ptr(pointLights[i].color));
+        glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".specularStrength").c_str()), pointLights[i].specularStrength);
+        glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationConstant").c_str()), pointLights[i].attenuationConstant);
+        glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationLinear").c_str()), pointLights[i].attenuationLinear);
+        glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationExponent").c_str()), pointLights[i].attenuationExponent);
+    }
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Write depth
     m_GeometryBuffer->WriteDepth();
+    
+    // Render lights
+    glUseProgram(Program_color);
+    for (int i = 0; i< lightSourceModels.size(); i++)
+    {
+        lightSourceModels[i]->BindTexture();
+        lightSourceModels[i]->PassUniforms(camera);
+        lightSourceModels[i]->PassColorUniforms(pointLights[i].color.r, pointLights[i].color.g, pointLights[i].color.b, 1.0f);
+        lightSourceModels[i]->Render(lightSourceModels[i]->GetShader());
+    }
 
     // Skybox
     skybox->Render(view, projection);
@@ -128,7 +152,34 @@ void DeferredRenderingScene::InitializeModels() {
 }
 void DeferredRenderingScene::SetupLights() {
 
-    
+
+    //for (int i = 0; i < 20; ++i) {
+    //    glm::vec3 position = glm::vec3(rand() % 300 - 150, 0.0f, rand() % 300 - 150);
+    //    glm::vec3 rotation = glm::vec3(0.0f);
+    //    glm::vec3 scale = glm::vec3(0.05f);
+    //    MeshModel* newModel = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
+    //    newModel->SetTexture(ancientTex.GetId());
+    //    newModel->SetShader(geometryShader);
+    //    models.push_back(newModel);
+    //}
+
+    // Initialize point lights
+    for (int i = 0; i < 2; ++i) {
+        PointLight light;
+        light.position = glm::vec3(rand() % 300 - 150, 10.0f, rand() % 300 - 150);
+        light.color = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
+        light.specularStrength = 2.0f;
+        light.attenuationConstant = 1.0f;
+        light.attenuationLinear = 0.045f;
+        light.attenuationExponent = 0.0075f;
+        pointLights.push_back(light);
+
+        // Create light source model
+        MeshModel* lightSource = new MeshModel(light.position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
+        lightSource->SetTexture(blankTex.GetId());
+        lightSource->SetShader(Program_color);
+        lightSourceModels.push_back(lightSource);
+    }
 
     glDisable(GL_CULL_FACE);
 }
@@ -220,8 +271,6 @@ DeferredRenderingScene::~DeferredRenderingScene() {
     delete model;
     delete skybox;
     delete instanceModel;
-    delete pointLight1;
-    delete pointLight2;
 
     if (m_FrameBuffer) {
         delete m_FrameBuffer;

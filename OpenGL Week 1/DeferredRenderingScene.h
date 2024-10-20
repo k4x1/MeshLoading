@@ -31,8 +31,11 @@ private:
     GeometryBuffer* m_GeometryBuffer = nullptr;
 
     MeshModel* model = nullptr;
-    MeshModel* pointLight1 = nullptr;
-    MeshModel* pointLight2 = nullptr;
+
+    std::vector<MeshModel*> models;
+    std::vector<MeshModel*> lightSourceModels;
+    std::vector<PointLight> pointLights;
+
     InstanceMeshModel* instanceModel = nullptr;
 
     GLuint quadVAO, quadVBO;
