@@ -139,7 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assignment3Scene.cpp" />
+    <ClCompile Include="DeferredRenderingScene.cpp" />
+    <ClCompile Include="ShadowScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FrameBufferScene.cpp" />
@@ -159,11 +160,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PerlinNoise.h" />
+    <None Include="Resources\Shaders\GeometryPass.frag" />
+    <None Include="Resources\Shaders\GeometryPass.vert" />
     <None Include="Resources\Shaders\InstanceOutline.vert" />
     <None Include="Resources\Shaders\InstanceTexture.frag" />
     <None Include="Resources\Shaders\InstanceTexture.vert" />
     <None Include="Resources\Shaders\Color.frag" />
     <None Include="Resources\Shaders\Color.vert" />
+    <None Include="Resources\Shaders\LightingPass.frag" />
+    <None Include="Resources\Shaders\LightingPass.vert" />
+    <None Include="Resources\Shaders\LightSource.frag" />
+    <None Include="Resources\Shaders\LightSource.vert" />
     <None Include="Resources\Shaders\MainRendering.frag" />
     <None Include="Resources\Shaders\MainRendering.vert" />
     <None Include="Resources\Shaders\Noise.frag" />
@@ -183,7 +190,8 @@
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assignment3Scene.h" />
+    <ClInclude Include="DeferredRenderingScene.h" />
+    <ClInclude Include="ShadowScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FrameBufferScene.h" />

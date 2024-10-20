@@ -56,6 +56,8 @@ public:
     // Sets the rotation of the model.
     void SetRotation(glm::vec3 _newRot);
 
+    // Sets color of of model
+    void SetColor(const glm::vec3& color);
 
     // Pass base uniforms every mesh would need
     void PassUniforms(Camera* _camRef);

@@ -30,8 +30,9 @@ void ShadowMap::Initialize()
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
         std::cout << "ERROR::SHADOWMAP:: Framebuffer is not complete!" << std::endl;
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

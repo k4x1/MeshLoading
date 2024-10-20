@@ -4,7 +4,8 @@
 #include "NoiseScene.h"
 #include "FrameBufferScene.h"
 #include <iostream>
-#include "Assignment3Scene.h"
+#include "ShadowScene.h"
+#include "DeferredRenderingScene.h"
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
@@ -13,12 +14,12 @@ InputManager* inputs = nullptr;
 void switchScene(InputManager::SceneType sceneType) {
     switch (sceneType) {
     case InputManager::SceneType::Game:
-        CurrentScene = std::make_unique<Assignment3Scene>();
-        std::cout << "Assignment3 Scene" << std::endl;
+        CurrentScene = std::make_unique<ShadowScene>();
+        std::cout << "Shadow Scene" << std::endl;
         break;
     case InputManager::SceneType::HeightMap:
-        CurrentScene = std::make_unique<HeightMapScene>();
-        std::cout << "HeightMap Scene" << std::endl;
+        CurrentScene = std::make_unique<DeferredRenderingScene>();
+        std::cout << "DeferredRendering Scene" << std::endl;
         break;
     case InputManager::SceneType::Noise:
         CurrentScene = std::make_unique<NoiseScene>();
@@ -34,7 +35,7 @@ void switchScene(InputManager::SceneType sceneType) {
 
 int main()
 {
-    CurrentScene = std::make_unique<Assignment3Scene>();
+    CurrentScene = std::make_unique<DeferredRenderingScene>();
 
     if (!glfwInit())
     {

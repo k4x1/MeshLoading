@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="NonUsed">
+      <UniqueIdentifier>{878ef5ac-8a34-4727-89a7-a6c3cb9adb9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source.cpp">
@@ -39,22 +42,10 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HeightMapScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NoiseScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameBufferScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Assignment3Scene.cpp">
+    <ClCompile Include="ShadowScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HeightMapInfo.cpp">
@@ -65,6 +56,21 @@
     </ClCompile>
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRenderingScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NoiseScene.cpp">
+      <Filter>NonUsed</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMapScene.cpp">
+      <Filter>NonUsed</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBufferScene.cpp">
+      <Filter>NonUsed</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>NonUsed</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,47 +92,75 @@
     <None Include="Resources\Shaders\Skybox.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shaders\Color.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\Color.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\Outline.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\Outline.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\InstanceOutline.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Resources\Shaders\Terrain.frag">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Shaders\Terrain.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="PerlinNoise.h">
-      <Filter>Header Files</Filter>
+    <None Include="Resources\Shaders\Color.vert">
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="Resources\Shaders\Color.frag">
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="Resources\Shaders\InstanceOutline.vert">
+      <Filter>NonUsed</Filter>
     </None>
     <None Include="Resources\Shaders\Noise.frag">
-      <Filter>Resource Files</Filter>
+      <Filter>NonUsed</Filter>
     </None>
     <None Include="Resources\Shaders\Noise.vert">
-      <Filter>Resource Files</Filter>
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="Resources\Shaders\Outline.frag">
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="Resources\Shaders\Outline.vert">
+      <Filter>NonUsed</Filter>
     </None>
     <None Include="Resources\Shaders\PostProcessing.frag">
-      <Filter>Resource Files</Filter>
+      <Filter>NonUsed</Filter>
     </None>
     <None Include="Resources\Shaders\PostProcessing.vert">
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="PerlinNoise.h">
+      <Filter>NonUsed</Filter>
+    </None>
+    <None Include="Resources\Shaders\ShadowMappingInstance.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shaders\MainRendering.vert" />
-    <None Include="Resources\Shaders\ShadowMapping.vert" />
-    <None Include="Resources\Shaders\MainRendering.frag" />
-    <None Include="Resources\Shaders\ShadowMapping.frag" />
-    <None Include="Resources\Shaders\ShadowMappingInstance.vert" />
+    <None Include="Resources\Shaders\GeometryPass.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\GeometryPass.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\MainRendering.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\MainRendering.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\ShadowMapping.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\ShadowMapping.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\LightingPass.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\LightSource.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\LightingPass.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\LightSource.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderLoader.h">
@@ -162,25 +196,13 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HeightMapScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HeightMapInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NoiseScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameBufferScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Assignment3Scene.h">
+    <ClInclude Include="ShadowScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
@@ -188,6 +210,21 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRenderingScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBufferScene.h">
+      <Filter>NonUsed</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightMapScene.h">
+      <Filter>NonUsed</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>NonUsed</Filter>
+    </ClInclude>
+    <ClInclude Include="NoiseScene.h">
+      <Filter>NonUsed</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
