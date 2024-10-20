@@ -79,66 +79,48 @@ void ShadowScene::Update()
     }
 }
 void ShadowScene::Render() {
-    // First pass: Render to shadow map for the first directional light
-    m_ShadowMap1->Bind();
+    RenderShadowMap(m_ShadowMap1, dirLight1);
+    RenderShadowMap(m_ShadowMap2, dirLight2);
+    RenderSceneWithShadows();
+    RenderPostProcessing();
+}
+
+void ShadowScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight) {
+    shadowMap->Bind();
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Update light space matrix for the first light
-    glm::vec3 lightPos1 = dirLight1.direction * -700.0f;
-    m_ShadowMap1->UpdateLightSpaceMatrix(lightPos1, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+    glm::vec3 lightPos = dirLight.direction * -700.0f;
+    shadowMap->UpdateLightSpaceMatrix(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 
-    // Use shadow mapping shader for the first light
     glUseProgram(shadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(shadowMap->GetLightSpaceMatrix()));
     glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
     model->Render(shadowMappingShader);
 
     glUseProgram(instanceShadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(instanceShadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(instanceShadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(shadowMap->GetLightSpaceMatrix()));
     instanceModel->Render(instanceShadowMappingShader);
 
-    m_ShadowMap1->Unbind();
+    shadowMap->Unbind();
+}
 
-    // Second pass: Render to shadow map for the second directional light
-    m_ShadowMap2->Bind();
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    // Update light space matrix for the second light
-    glm::vec3 lightPos2 = dirLight2.direction * -700.0f;
-    m_ShadowMap2->UpdateLightSpaceMatrix(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-
-    // Use shadow mapping shader for the second light
-    glUseProgram(shadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
-    model->Render(shadowMappingShader);
-
-    glUseProgram(instanceShadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(instanceShadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
-    instanceModel->Render(instanceShadowMappingShader);
-
-    m_ShadowMap2->Unbind();
-
-    // Third pass: Render scene with shadows to framebuffer
+void ShadowScene::RenderSceneWithShadows() {
     m_FrameBuffer->Bind();
     glViewport(0, 0, 800, 800);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // Render skybox
     glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
     camera->Matrix(0.01f, 1000.0f);
     glm::mat4 projection = camera->m_projection;
     skybox->Render(view, projection);
 
-    // Render model with shadows
     glUseProgram(model->GetShader());
     model->BindTexture();
     model->PassUniforms(camera);
     model->PassDirectionalUniforms(dirLight1);
     model->PassSpotLightUniforms(spotLight);
 
-    // Pass shadow maps and light space matrices
     glActiveTexture(GL_TEXTURE2);
     m_ShadowMap1->BindTexture(GL_TEXTURE2);
     glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap1"), 2);
@@ -155,14 +137,12 @@ void ShadowScene::Render() {
 
     model->Render(model->GetShader());
 
-    // Render instance model with shadows
     glUseProgram(instanceModel->GetShader());
     instanceModel->BindTexture();
     instanceModel->PassUniforms(camera);
     instanceModel->PassDirectionalUniforms(dirLight1);
     instanceModel->PassSpotLightUniforms(spotLight);
 
-    // Pass shadow maps and light space matrices
     glActiveTexture(GL_TEXTURE2);
     m_ShadowMap1->BindTexture(GL_TEXTURE2);
     glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "shadowMap1"), 2);
@@ -179,8 +159,6 @@ void ShadowScene::Render() {
     glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "Texture0"), 0);
     instanceModel->Render(instanceModel->GetShader());
 
-
-    // Render terrain with shadows
     glUseProgram(Program_terrain);
     glBindVertexArray(terrainVAO);
 
@@ -190,9 +168,8 @@ void ShadowScene::Render() {
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
-    // Set light and view position
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(lightPos1));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(lightPos2));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(dirLight1.direction * -700.0f));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(dirLight2.direction * -700.0f));
     glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -255,6 +232,35 @@ void ShadowScene::Render() {
     // Swap buffers
     glfwSwapBuffers(Window);
 }
+void ShadowScene::RenderPostProcessing() {
+    // Set the viewport to the window size
+    glViewport(0, 0, 800, 800);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Use the post-processing shader
+    glUseProgram(postProcessingShader);
+
+    // Bind the framebuffer texture to be used as the input for post-processing
+    glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
+    glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
+
+    // Bind the vertex array for the quad
+    glBindVertexArray(quadVAO);
+
+    // Disable depth testing for post-processing
+    glDisable(GL_DEPTH_TEST);
+
+    // Bind the texture from the framebuffer
+    m_FrameBuffer->BindTexture();
+
+    // Draw the quad
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Re-enable depth testing
+    glEnable(GL_DEPTH_TEST);
+}
+
 
 void ShadowScene::InitializeModels() {
     glm::vec3 position(0.0f, 500.0f, 0.0f);
