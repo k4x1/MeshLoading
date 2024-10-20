@@ -143,7 +143,7 @@ void NoiseScene::Render() {
     }
 
     // Swap buffers
-    glfwSwapBuffers(Window);
+    
 }
 
 void NoiseScene::RenderNoiseTexture() {

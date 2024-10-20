@@ -124,8 +124,8 @@ void HeightMapScene::Render() {
         std::cerr << "OpenGL Error: " << error << std::endl;
     }
 
-    // Swap buffers
-    glfwSwapBuffers(Window);
+
+    
 }
 
 

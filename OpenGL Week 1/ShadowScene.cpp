@@ -230,7 +230,7 @@ void ShadowScene::RenderSceneWithShadows() {
     }
 
     // Swap buffers
-    glfwSwapBuffers(Window);
+    
 }
 void ShadowScene::RenderPostProcessing() {
     // Set the viewport to the window size

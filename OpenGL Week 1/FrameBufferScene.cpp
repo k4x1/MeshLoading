@@ -236,7 +236,7 @@ void FrameBufferScene::Render()
     }
     // Check for OpenGL errors
     // Swap buffers
-    glfwSwapBuffers(Window);
+    
 }
 int FrameBufferScene::MainLoop() {
     return 0;

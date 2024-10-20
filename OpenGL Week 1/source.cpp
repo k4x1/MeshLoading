@@ -95,6 +95,7 @@ int main()
 
         // Render the scene
         CurrentScene->Render();
+        glfwSwapBuffers(Window);
     }
 
     // Clean up

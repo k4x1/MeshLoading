@@ -116,7 +116,7 @@ void MeshModel::Update(float DeltaTime)
 void MeshModel::Render(GLuint _shader)
 {
  
-
+    glUseProgram(_shader);
     glCullFace(GL_BACK);
     glDepthFunc(GL_LESS);
 

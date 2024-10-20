@@ -219,7 +219,7 @@ void GameScene::Render()
     }
     // Check for OpenGL errors
     // Swap buffers
-    glfwSwapBuffers(Window);
+    
 }
 int GameScene::MainLoop() {
     return 0;

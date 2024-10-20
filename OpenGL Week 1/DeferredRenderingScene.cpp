@@ -36,7 +36,7 @@ void DeferredRenderingScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     m_FrameBuffer = new FrameBuffer(800, 800);
 
     SetupQuad();
-    std::cout << "reached 1" << std::endl;
+
 }
 
 void DeferredRenderingScene::Update()
@@ -45,42 +45,17 @@ void DeferredRenderingScene::Update()
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    // circle parameters
-    float radius = 1000.0f;
-    float speed = 1.0f;
-    glm::vec3 center(0.0f, 500.0f, 0.0f);
-
-    //  new position
-    float angle = speed * currentFrame;
-    float x = center.x + radius * cos(angle);
-    float z = center.z + radius * sin(angle);
-
-    // Update model position
-    model->SetPosition(glm::vec3(x, center.y, z));
-
-    // Update model rotation to face the direction of movement (optional)
-    float rotationAngle = glm::degrees(atan2(-sin(angle), -cos(angle)));
-    model->SetRotation(glm::vec3(0, rotationAngle, 0));
-
     // Update other scene elements
     model->Update(deltaTime);
-
-
-    static bool tabPressed = false;
-    if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed)
-    {
-        tabPressed = true;
-        currentEffect = static_cast<PostProcessEffect>((static_cast<int>(currentEffect) + 1) % 3);
-    }
-    if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_RELEASE)
-    {
-        tabPressed = false;
-    }
 }
 void DeferredRenderingScene::Render() {
+    
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClearColor(0, 0, 0, 1);
+    camera->Matrix(0.01f, 1000.0f);
     // Bind the geometry buffer
     m_GeometryBuffer->Bind();
-
     // Clear the buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -95,14 +70,16 @@ void DeferredRenderingScene::Render() {
     instanceModel->PassUniforms(camera);
     instanceModel->BindTexture();
     instanceModel->Render(Program_GeometryPass);
-
     // Unbind the geometry buffer
     m_GeometryBuffer->Unbind();
+
+    RenderPostProcessing();
+  
 }
 
 
 void DeferredRenderingScene::InitializeModels() {
-    glm::vec3 position(0.0f, 500.0f, 0.0f);
+    glm::vec3 position(0.0f, 0.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
 
@@ -184,6 +161,34 @@ void DeferredRenderingScene::SetupQuad() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
+void DeferredRenderingScene::RenderPostProcessing() {
+    // Set the viewport to the window size
+    glViewport(0, 0, 800, 800);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Use the post-processing shader
+    glUseProgram(postProcessingShader);
+
+    // Bind the framebuffer texture to be used as the input for post-processing
+    glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
+    glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
+
+    // Bind the vertex array for the quad
+    glBindVertexArray(quadVAO);
+
+    // Disable depth testing for post-processing
+    glDisable(GL_DEPTH_TEST);
+
+    // Bind the texture from the framebuffer
+    m_FrameBuffer->BindTexture();
+
+    // Draw the quad
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Re-enable depth testing
+    glEnable(GL_DEPTH_TEST);
 }
 int DeferredRenderingScene::MainLoop() {
     while (!glfwWindowShouldClose(Window)) {
