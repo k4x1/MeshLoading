@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DeferredRenderingScene.cpp" />
+    <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="ShadowScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -191,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeferredRenderingScene.h" />
+    <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="ShadowScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />

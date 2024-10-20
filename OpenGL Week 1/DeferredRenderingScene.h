@@ -15,6 +15,7 @@
 #include <string>
 #include "Skybox.h"
 #include "FrameBuffer.h"
+#include "GeometryBuffer.h"
 #include "ShadowMap.h"
 
 class DeferredRenderingScene : public Scene {
@@ -27,20 +28,15 @@ public:
 
 private:
     FrameBuffer* m_FrameBuffer = nullptr;
-    ShadowMap* m_ShadowMap1 = nullptr; // First shadow map
-    ShadowMap* m_ShadowMap2 = nullptr; // Second shadow map for the additional light
+    GeometryBuffer* m_GeometryBuffer = nullptr;
 
     MeshModel* model = nullptr;
-    std::vector<MeshModel*> models;
-    std::vector<MeshModel*> lightSourceModels;
-
-    InstanceMeshModel* instanceModel;
+    MeshModel* pointLight1 = nullptr;
+    MeshModel* pointLight2 = nullptr;
+    InstanceMeshModel* instanceModel = nullptr;
 
     GLuint quadVAO, quadVBO;
     GLuint postProcessingShader;
-    GLuint geometryShader;
-    GLuint lightingShader;
-    GLuint lightSourceShader;
 
     enum class PostProcessEffect {
         None,
@@ -53,12 +49,9 @@ private:
     GLuint Program_Texture = 0;
     GLuint Program_instanceTexture = 0;
     GLuint Program_color = 0;
-    GLuint shadowMappingShader;
-    GLuint instanceShadowMappingShader;
-    GLuint mainRenderingShader;
+    GLuint Program_GeometryPass = 0;
 
-    GLuint gBuffer;
-    GLuint gPosition, gNormal, gAlbedoSpec;
+
 
     Texture ancientTex;
     Texture scifiTex;
@@ -67,16 +60,11 @@ private:
 
     float AmbientStrength;
     glm::vec3 AmbientColor;
-    static const int MAX_POINT_LIGHTS = 10;
-    unsigned int PointLightCount;
-
-    std::vector<PointLight> pointLights;
-    DirectionalLight dirLight1;
-    DirectionalLight dirLight2;
-    SpotLight spotLight;
 
 
+    // HeightMap-related members
     GLuint Program_terrain = 0;
+
     GLuint terrainVAO, terrainVBO, terrainEBO;
     Texture terrainTexture;
     Texture grassTexture, dirtTexture, stoneTexture, snowTexture;
@@ -94,6 +82,15 @@ private:
 
     GLFWwindow* Window = nullptr;
 
+
+    void InitializeModels();
+    void SetupLights();
+    void SetupTerrain();
+    void SetupQuad();
+
+    void RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight);
+    void RenderSceneWithShadows();
+    void RenderPostProcessing();
     void SetupGBuffer();
     void GeometryPass();
     void LightingPass();

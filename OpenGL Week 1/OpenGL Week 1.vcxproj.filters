@@ -72,6 +72,9 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>NonUsed</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -225,6 +228,9 @@
     </ClInclude>
     <ClInclude Include="NoiseScene.h">
       <Filter>NonUsed</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBuffer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
