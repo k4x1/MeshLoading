@@ -5,16 +5,19 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
-in vec4 FragPosLightSpace;
+in vec4 FragPosLightSpace1;
+in vec4 FragPosLightSpace2;
 in float Height;
 
 uniform sampler2D grassTexture;
 uniform sampler2D dirtTexture;
 uniform sampler2D stoneTexture;
 uniform sampler2D snowTexture;
-uniform sampler2D shadowMap; 
+uniform sampler2D shadowMap1; 
+uniform sampler2D shadowMap2; 
 
-uniform vec3 lightPos;
+uniform vec3 lightPos1;
+uniform vec3 lightPos2;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
@@ -25,7 +28,7 @@ const float dirtHeight = 60;
 const float stoneHeight = 90;
 const float snowHeight = 120;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
@@ -54,18 +57,25 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
     
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
+    vec3 lightDir1 = normalize(lightPos1 - FragPos);
+    vec3 lightDir2 = normalize(lightPos2 - FragPos);
+    float diff1 = max(dot(norm, lightDir1), 0.0);
+    float diff2 = max(dot(norm, lightDir2), 0.0);
+    vec3 diffuse = (diff1 + diff2) * lightColor * 0.5;
     
     float specularStrength = 0.5;
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularStrength * spec * lightColor;  
+    vec3 reflectDir1 = reflect(-lightDir1, norm);
+    vec3 reflectDir2 = reflect(-lightDir2, norm);
+    float spec1 = pow(max(dot(viewDir, reflectDir1), 0.0), 32);
+    float spec2 = pow(max(dot(viewDir, reflectDir2), 0.0), 32);
+    vec3 specular = specularStrength * (spec1 + spec2) * lightColor * 0.5;  
     
-    // Calculate shadow
-    float shadow = ShadowCalculation(FragPosLightSpace); 
+    // Calculate shadows from both lights
+    float shadow1 = ShadowCalculation(FragPosLightSpace1, shadowMap1); 
+    float shadow2 = ShadowCalculation(FragPosLightSpace2, shadowMap2); 
+    float shadow = shadow1 + shadow2; // Combine shadows can evolve to for loop 
+
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
 
     FragColor = finalColor * vec4(result, 1.0);

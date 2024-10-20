@@ -77,12 +77,16 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     PointLightCount = 2;
 
-    dirLight1.direction = glm::vec3(0.3f, -1.0f, 0.0f);
-    dirLight2.direction = glm::vec3(0.0f, -1.0f, 0.3f);
+    m_ShadowMap1 = new ShadowMap();
+    m_ShadowMap2 = new ShadowMap();
+
+
+    dirLight1.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
     dirLight1.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    dirLight2.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    dirLight1.specularStrength = 1.0f;
-    dirLight2.specularStrength = 1.0f;
+
+    dirLight2.direction = glm::vec3(0.3f, -1.0f, 0.2f);
+    dirLight2.color = glm::vec3(0.8f, 0.8f, 0.8f);
+
 
     pointLight1 = new MeshModel(PointLightArray[0].position, glm::vec3(0), glm::vec3(1), "Resources/Models/Sphere.obj");
     pointLight1->SetTexture(blankTex.GetId());
@@ -104,8 +108,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
     glDisable(GL_CULL_FACE);
 
-    m_ShadowMap1 = new ShadowMap(4096, 4096);
-    m_ShadowMap2 = new ShadowMap(4096, 4096);
+  
 
     // Initialize terrain
     HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
@@ -115,7 +118,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
         std::vector<VertexStandard> vertices;
         std::vector<unsigned int> indices;
-        BuildVertexData(heightMapInfo, heightMap, vertices, 0.2f);
+        BuildVertexData(heightMapInfo, heightMap, vertices, 0.5f);
         BuildIndexData(heightMapInfo, indices);
         ComputeNormals(heightMapInfo, heightMap, vertices);
 
@@ -182,31 +185,48 @@ void Assignment3Scene::Update()
         tabPressed = false;
     }
 }
-
-void Assignment3Scene::Render()
-{
-    // First pass: Render to shadow map
-    m_ShadowMap->Bind();
+void Assignment3Scene::Render() {
+    // First pass: Render to shadow map for the first directional light
+    m_ShadowMap1->Bind();
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Update light space matrix
-    glm::vec3 lightPos = dirLight.direction * -700.0f;
-    m_ShadowMap->UpdateLightSpaceMatrix(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+    // Update light space matrix for the first light
+    glm::vec3 lightPos1 = dirLight1.direction * -700.0f;
+    m_ShadowMap1->UpdateLightSpaceMatrix(lightPos1, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 
-    // Use shadow mapping shader
+    // Use shadow mapping shader for the first light
     glUseProgram(shadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
     glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
     model->Render(shadowMappingShader);
 
     glUseProgram(instanceShadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(instanceShadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
     instanceModel->Render(instanceShadowMappingShader);
-    // Add other shadow-casting objects here
 
-    m_ShadowMap->Unbind();
+    m_ShadowMap1->Unbind();
 
-    // Second pass: Render scene with shadows to framebuffer
+    // Second pass: Render to shadow map for the second directional light
+    m_ShadowMap2->Bind();
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Update light space matrix for the second light
+    glm::vec3 lightPos2 = dirLight2.direction * -700.0f;
+    m_ShadowMap2->UpdateLightSpaceMatrix(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    // Use shadow mapping shader for the second light
+    glUseProgram(shadowMappingShader);
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(model->m_modelMatrix));
+    model->Render(shadowMappingShader);
+
+    glUseProgram(instanceShadowMappingShader);
+    glUniformMatrix4fv(glGetUniformLocation(instanceShadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
+    instanceModel->Render(instanceShadowMappingShader);
+
+    m_ShadowMap2->Unbind();
+
+    // Third pass: Render scene with shadows to framebuffer
     m_FrameBuffer->Bind();
     glViewport(0, 0, 800, 800);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -223,14 +243,19 @@ void Assignment3Scene::Render()
     model->BindTexture();
     model->PassUniforms(camera);
     model->PassPointUniforms(camera, PointLightArray, PointLightCount);
-    model->PassDirectionalUniforms(dirLight);
+    model->PassDirectionalUniforms(dirLight1);
     model->PassSpotLightUniforms(spotLight);
 
-    // Pass shadow map and light space matrix
+    // Pass shadow maps and light space matrices
     glActiveTexture(GL_TEXTURE2);
-    m_ShadowMap->BindTexture(GL_TEXTURE2);
-    glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap"), 2);
-    glUniformMatrix4fv(glGetUniformLocation(model->GetShader(), "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    m_ShadowMap1->BindTexture(GL_TEXTURE2);
+    glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap1"), 2);
+    glUniformMatrix4fv(glGetUniformLocation(model->GetShader(), "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+
+    glActiveTexture(GL_TEXTURE3);
+    m_ShadowMap2->BindTexture(GL_TEXTURE3);
+    glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap2"), 3);
+    glUniformMatrix4fv(glGetUniformLocation(model->GetShader(), "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
@@ -243,14 +268,19 @@ void Assignment3Scene::Render()
     instanceModel->BindTexture();
     instanceModel->PassUniforms(camera);
     instanceModel->PassPointUniforms(camera, PointLightArray, PointLightCount);
-    instanceModel->PassDirectionalUniforms(dirLight);
+    instanceModel->PassDirectionalUniforms(dirLight1);
     instanceModel->PassSpotLightUniforms(spotLight);
 
-    // Pass shadow map and light space matrix
+    // Pass shadow maps and light space matrices
     glActiveTexture(GL_TEXTURE2);
-    m_ShadowMap->BindTexture(GL_TEXTURE2);
-    glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "shadowMap"), 2);
-    glUniformMatrix4fv(glGetUniformLocation(instanceModel->GetShader(), "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    m_ShadowMap1->BindTexture(GL_TEXTURE2);
+    glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "shadowMap1"), 2);
+    glUniformMatrix4fv(glGetUniformLocation(instanceModel->GetShader(), "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+
+    glActiveTexture(GL_TEXTURE3);
+    m_ShadowMap2->BindTexture(GL_TEXTURE3);
+    glUniform1i(glGetUniformLocation(instanceModel->GetShader(), "shadowMap2"), 3);
+    glUniformMatrix4fv(glGetUniformLocation(instanceModel->GetShader(), "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
@@ -278,10 +308,12 @@ void Assignment3Scene::Render()
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(camera->m_view));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
     // Set light and view position
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(lightPos1));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(lightPos2));
     glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -303,11 +335,14 @@ void Assignment3Scene::Render()
     glBindTexture(GL_TEXTURE_2D, snowTexture.GetId());
     glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
 
-    // Bind shadow map
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap->GetLightSpaceMatrix()));
+    // Bind shadow maps
     glActiveTexture(GL_TEXTURE4);
-    m_ShadowMap->BindTexture(GL_TEXTURE4);
-    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap"), 4);
+    m_ShadowMap1->BindTexture(GL_TEXTURE4);
+    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap1"), 4);
+
+    glActiveTexture(GL_TEXTURE5);
+    m_ShadowMap2->BindTexture(GL_TEXTURE5);
+    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap2"), 5);
 
     // Draw the terrain
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -341,6 +376,7 @@ void Assignment3Scene::Render()
     // Swap buffers
     glfwSwapBuffers(Window);
 }
+
 
 
 int Assignment3Scene::MainLoop() {

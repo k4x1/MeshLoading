@@ -5,7 +5,7 @@
 #include <iostream>
 class ShadowMap {
 public:
-    ShadowMap(unsigned int width = 1024, unsigned int height = 1024);
+    ShadowMap(unsigned int width = 4096, unsigned int height = 4096);
     ~ShadowMap();
 
     void Bind();

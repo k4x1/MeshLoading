@@ -16,6 +16,7 @@
 #include "Skybox.h"
 #include "FrameBuffer.h"
 #include "ShadowMap.h"
+
 class Assignment3Scene : public Scene {
 public:
     void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
@@ -26,8 +27,8 @@ public:
 
 private:
     FrameBuffer* m_FrameBuffer = nullptr;
-    ShadowMap* m_ShadowMap1;
-    ShadowMap*  m_ShadowMap2;
+    ShadowMap* m_ShadowMap1 = nullptr; // First shadow map
+    ShadowMap* m_ShadowMap2 = nullptr; // Second shadow map for the additional light
 
     MeshModel* model = nullptr;
     MeshModel* pointLight1 = nullptr;
@@ -36,7 +37,6 @@ private:
 
     GLuint quadVAO, quadVBO;
     GLuint postProcessingShader;
-
 
     enum class PostProcessEffect {
         None,
@@ -64,7 +64,8 @@ private:
     unsigned int PointLightCount;
 
     PointLight PointLightArray[MAX_POINT_LIGHTS];
-    DirectionalLight dirLight1, dirLight2;
+    DirectionalLight dirLight1; // First directional light
+    DirectionalLight dirLight2; // Second directional light
     SpotLight spotLight;
 
     // HeightMap-related members
@@ -87,22 +88,3 @@ private:
 
     GLFWwindow* Window = nullptr;
 };
-float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap) {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float bias = 0.005;
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for (int x = -1; x <= 1; ++x)
-    {
-        for (int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-        }
-    }
-    shadow /= 9.0;
-    return shadow;
-}
