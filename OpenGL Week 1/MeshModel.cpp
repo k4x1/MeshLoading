@@ -169,6 +169,12 @@ void MeshModel::SetPosition(glm::vec3 _newPos)
     m_modelMatrix = CalculateModelMatrix();
 }
 
+void MeshModel::SetRotation(glm::vec3 _newRot)
+{
+    m_rotation = _newRot;
+    m_modelMatrix = CalculateModelMatrix();
+}
+
 void MeshModel::PassPointUniforms(Camera* _camRef, PointLight* _lightArr, unsigned int _lightCount)
 {
 

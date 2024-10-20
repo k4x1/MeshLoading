@@ -74,9 +74,10 @@ void main()
     // Calculate shadows from both lights
     float shadow1 = ShadowCalculation(FragPosLightSpace1, shadowMap1); 
     float shadow2 = ShadowCalculation(FragPosLightSpace2, shadowMap2); 
-    float shadow = shadow1 + shadow2; // Combine shadows can evolve to for loop 
+    float shadow = (shadow1 + shadow2); ; // Combine shadows can evolve to for loop 
+    float shadowIntensity = 0.5;
 
-    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
+    vec3 result = (ambient + (1.0 - shadow * shadowIntensity) * (diffuse + specular)) * objectColor;
 
     FragColor = finalColor * vec4(result, 1.0);
 }

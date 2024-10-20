@@ -29,7 +29,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     blankTex.InitTexture("Resources/Textures/blankTex.png");
 
     // Initialize models
-    glm::vec3 position(0.0f, 200.0f, 0.0f);
+    glm::vec3 position(0.0f, 500.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
 
@@ -118,7 +118,7 @@ void Assignment3Scene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
         std::vector<VertexStandard> vertices;
         std::vector<unsigned int> indices;
-        BuildVertexData(heightMapInfo, heightMap, vertices, 0.5f);
+        BuildVertexData(heightMapInfo, heightMap, vertices, 0.2f); // 0.2 is height
         BuildIndexData(heightMapInfo, indices);
         ComputeNormals(heightMapInfo, heightMap, vertices);
 
@@ -168,8 +168,26 @@ void Assignment3Scene::Update()
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-    model->Update(deltaTime);
 
+    // circle parameters
+    float radius = 1000.0f; 
+    float speed = 1.0f;   
+    glm::vec3 center(0.0f, 500.0f, 0.0f); 
+
+    //  new position
+    float angle = speed * currentFrame;
+    float x = center.x + radius * cos(angle);
+    float z = center.z + radius * sin(angle);
+
+    // Update model position
+    model->SetPosition(glm::vec3(x, center.y, z));
+
+    // Update model rotation to face the direction of movement (optional)
+    float rotationAngle = glm::degrees(atan2(-sin(angle), -cos(angle)));
+    model->SetRotation(glm::vec3(0,rotationAngle,0));
+
+    // Update other scene elements
+    model->Update(deltaTime);
 
     spotLight.position = camera->m_position;
     spotLight.direction = camera->m_orientation;

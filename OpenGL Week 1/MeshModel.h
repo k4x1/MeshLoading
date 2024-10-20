@@ -53,7 +53,10 @@ public:
     // Sets the position of the model.
     void SetPosition(glm::vec3 _newPos);
 
-   
+    // Sets the rotation of the model.
+    void SetRotation(glm::vec3 _newRot);
+
+
     // Pass base uniforms every mesh would need
     void PassUniforms(Camera* _camRef);
 
