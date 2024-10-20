@@ -17,10 +17,11 @@ void DeferredRenderingScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
     Program_color = ShaderLoader::CreateProgram("Resources/Shaders/Color.vert", "Resources/Shaders/Color.frag");
-    postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/PostProcessing.vert", "Resources/Shaders/PostProcessing.frag");
+    postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
     Program_terrain = ShaderLoader::CreateProgram("Resources/Shaders/Terrain.vert", "Resources/Shaders/Terrain.frag");
     Program_GeometryPass = ShaderLoader::CreateProgram("Resources/Shaders/GeometryPass.vert", "Resources/Shaders/GeometryPass.frag");
+    Program_ScreenQuadLightingPass = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/LightingPass.frag");
  
     // Initialize textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
@@ -29,12 +30,8 @@ void DeferredRenderingScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     blankTex.InitTexture("Resources/Textures/blankTex.png");
 
     InitializeModels();
-    SetupLights();
-    SetupTerrain();
-
-    // Initialize FrameBuffer
-    m_FrameBuffer = new FrameBuffer(800, 800);
-
+    //SetupLights();
+    //SetupTerrain();
     SetupQuad();
 
 }
@@ -53,8 +50,10 @@ void DeferredRenderingScene::Render() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0, 0, 0, 1);
-    camera->Matrix(0.01f, 1000.0f);
     // Bind the geometry buffer
+    glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
+    camera->Matrix(0.01f, 1000.0f);
+    glm::mat4 projection = camera->m_projection;
     m_GeometryBuffer->Bind();
     // Clear the buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -67,14 +66,32 @@ void DeferredRenderingScene::Render() {
     model->BindTexture();
     model->Render(Program_GeometryPass);
 
-    instanceModel->PassUniforms(camera);
-    instanceModel->BindTexture();
-    instanceModel->Render(Program_GeometryPass);
+    //instanceModel->PassUniforms(camera);
+    //instanceModel->BindTexture();
+    //instanceModel->Render(Program_GeometryPass);
+    
     // Unbind the geometry buffer
     m_GeometryBuffer->Unbind();
+    
+    // Render screen quad
+    glUseProgram(Program_ScreenQuadLightingPass);
+    m_GeometryBuffer->PopulateProgram(Program_ScreenQuadLightingPass);
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    RenderPostProcessing();
-  
+    // Write depth
+    m_GeometryBuffer->WriteDepth();
+
+    // Skybox
+    skybox->Render(view, projection);
+
+
+    glUseProgram(0);
+    GLenum error = glGetError();
+
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL Error: " << error << std::endl;
+    }
 }
 
 
@@ -85,7 +102,7 @@ void DeferredRenderingScene::InitializeModels() {
 
     model = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
     model->SetTexture(ancientTex.GetId());
-    model->SetShader(Program_Texture);
+    model->SetShader(Program_GeometryPass);
 
     faces = {
         "Resources/Textures/skybox/Right.png",
@@ -111,7 +128,7 @@ void DeferredRenderingScene::InitializeModels() {
 }
 void DeferredRenderingScene::SetupLights() {
 
- 
+    
 
     glDisable(GL_CULL_FACE);
 }

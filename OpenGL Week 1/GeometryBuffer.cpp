@@ -72,7 +72,39 @@ void GeometryBuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GeometryBuffer::PopulateProgam(GLuint Program)
+void GeometryBuffer::PopulateProgram(GLuint Program)
 {
-  
+
+    // Bind textures to texture units
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, Texture_Position);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, Texture_Normal);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, Texture_AlbedoShininess);
+
+    // Set uniform sampler locations
+    GLint locPosition = glGetUniformLocation(Program, "Texture_Position");
+    GLint locNormal = glGetUniformLocation(Program, "Texture_Normal");
+    GLint locAlbedoSpec = glGetUniformLocation(Program, "Texture_AlbedoShininess");
+
+    if (locPosition != -1) {
+        glUniform1i(locPosition, 0); // Texture unit 0
+    }
+    if (locNormal != -1) {
+        glUniform1i(locNormal, 1); // Texture unit 1
+    }
+    if (locAlbedoSpec != -1) {
+        glUniform1i(locAlbedoSpec, 2); // Texture unit 2
+    }
+
+
+}
+
+void GeometryBuffer::WriteDepth()
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, 800, 800, 0, 0, 800, 800, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

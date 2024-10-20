@@ -49,6 +49,7 @@ private:
     GLuint Program_Texture = 0;
     GLuint Program_instanceTexture = 0;
     GLuint Program_color = 0;
+    GLuint Program_ScreenQuadLightingPass = 0;
     GLuint Program_GeometryPass = 0;
 
 

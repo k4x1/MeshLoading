@@ -4,9 +4,9 @@ in vec2 TexCoords;
 
 out vec4 FragColor;
 
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedoSpec;
+uniform sampler2D Texture_Position;
+uniform sampler2D Texture_Normal;
+uniform sampler2D Texture_AlbedoShininess;
 
 uniform vec3 CameraPos;
 uniform float AmbientStrength;
@@ -44,10 +44,10 @@ vec3 CalculateLightPoint(PointLight light, vec3 fragPos, vec3 normal, vec3 viewD
 
 void main()
 {
-    vec3 fragPos = texture(gPosition, TexCoords).rgb;
-    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
-    vec3 albedo = texture(gAlbedoSpec, TexCoords).rgb;
-    float specular = texture(gAlbedoSpec, TexCoords).a;
+    vec3 fragPos = texture(Texture_Position, TexCoords).rgb;
+    vec3 normal = normalize(texture(Texture_Normal, TexCoords).rgb);
+    vec3 albedo = texture(Texture_AlbedoShininess, TexCoords).rgb;
+    float specular = texture(Texture_AlbedoShininess, TexCoords).a;
 
     vec3 viewDir = normalize(CameraPos - fragPos);
 
@@ -59,5 +59,5 @@ void main()
         lighting += CalculateLightPoint(PointLightArray[i], fragPos, normal, viewDir);
     }
 
-    FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(albedo, 1.0);
 }

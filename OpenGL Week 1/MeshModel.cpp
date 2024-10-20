@@ -224,7 +224,7 @@ void MeshModel::PassUniforms(Camera* _camRef)
 {
   
     _camRef->Matrix(0.01f, 1000.0f, m_shader, "VPMatrix");
-    glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
+  //  glUniform3fv(glGetUniformLocation(m_shader, "CameraPos"), 1, &_camRef->m_position[0]);
 }
 void MeshModel::PassSpotLightUniforms(SpotLight _spotLight)
 {

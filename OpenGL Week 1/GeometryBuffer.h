@@ -13,7 +13,8 @@ public:
 
 	void Bind();
 	void Unbind();
-	void PopulateProgam(GLuint Program);
+	void PopulateProgram(GLuint Program);
+	void WriteDepth();
 private:
 	GLuint FBO;
 	GLuint Texture_Position;

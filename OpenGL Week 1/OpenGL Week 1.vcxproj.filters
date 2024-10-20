@@ -125,9 +125,6 @@
     <None Include="Resources\Shaders\PostProcessing.frag">
       <Filter>NonUsed</Filter>
     </None>
-    <None Include="Resources\Shaders\PostProcessing.vert">
-      <Filter>NonUsed</Filter>
-    </None>
     <None Include="PerlinNoise.h">
       <Filter>NonUsed</Filter>
     </None>
@@ -162,6 +159,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Shaders\LightSource.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Quad.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

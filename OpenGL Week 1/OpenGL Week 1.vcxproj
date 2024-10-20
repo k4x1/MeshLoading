@@ -179,7 +179,7 @@
     <None Include="Resources\Shaders\Outline.frag" />
     <None Include="Resources\Shaders\Outline.vert" />
     <None Include="Resources\Shaders\PostProcessing.frag" />
-    <None Include="Resources\Shaders\PostProcessing.vert" />
+    <None Include="Resources\Shaders\Quad.vert" />
     <None Include="Resources\Shaders\ShadowMapping.frag" />
     <None Include="Resources\Shaders\ShadowMapping.vert" />
     <None Include="Resources\Shaders\ShadowMappingInstance.vert" />
