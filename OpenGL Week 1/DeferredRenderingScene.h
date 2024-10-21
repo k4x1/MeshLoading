@@ -92,8 +92,7 @@ private:
     void SetupTerrain();
     void SetupQuad();
 
-    void RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight);
-    void RenderSceneWithShadows();
+
     void RenderPostProcessing();
     void SetupGBuffer();
     void GeometryPass();

@@ -12,7 +12,7 @@ uniform vec3 CameraPos;
 uniform float AmbientStrength;
 uniform vec3 AmbientColor;
 
-#define MAX_POINT_LIGHTS 10
+#define MAX_POINT_LIGHTS 20
 
 struct PointLight {
     vec3 position;
@@ -28,18 +28,18 @@ uniform int PointLightCount;
 
 vec3 CalculateLightPoint(PointLight light, vec3 fragPos, vec3 normal, vec3 viewDir)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 lightDir = normalize(fragPos - light.position);
+    float diff = max(dot(normal, -lightDir), 0.0);
     vec3 diffuse = diff * light.color;
 
-    vec3 halfwayDir = normalize(lightDir + viewDir);
+    vec3 halfwayDir = normalize(-lightDir - viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
     vec3 specular = light.specularStrength * spec * light.color;
 
     float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.attenuationConstant + light.attenuationLinear * distance + light.attenuationExponent * (distance * distance));
+    float attenuation = 1.0 / (light.attenuationConstant + (light.attenuationLinear * distance) + (light.attenuationExponent * (distance * distance)));
 
-    return (diffuse + specular) * attenuation;
+    return (diffuse + specular) * attenuation;  
 }
 
 void main()
@@ -53,11 +53,12 @@ void main()
 
     vec3 ambient = AmbientStrength * AmbientColor * albedo;
 
-    vec3 lighting = ambient;
+    vec3 lighting = vec3(0);
     for (int i = 0; i < PointLightCount; ++i)
     {
         lighting += CalculateLightPoint(PointLightArray[i], fragPos, normal, viewDir);
     }
+    lighting += ambient;
 
-    FragColor = vec4(albedo, 1.0);
+    FragColor = vec4(lighting, 1.0);
 }

@@ -62,13 +62,13 @@ void DeferredRenderingScene::Render() {
     glUseProgram(Program_GeometryPass);
 
     // Render all models
-    model->PassUniforms(camera);
-    model->BindTexture();
-    model->Render(Program_GeometryPass);
+    for (auto m : models) {
+        m->PassUniforms(camera);
+        m->BindTexture();
+        m->Render(Program_GeometryPass);
+    }
 
-    //instanceModel->PassUniforms(camera);
-    //instanceModel->BindTexture();
-    //instanceModel->Render(Program_GeometryPass);
+ 
     
     // Unbind the geometry buffer
     m_GeometryBuffer->Unbind();
@@ -78,18 +78,21 @@ void DeferredRenderingScene::Render() {
     glUseProgram(Program_ScreenQuadLightingPass);
     m_GeometryBuffer->PopulateProgram(Program_ScreenQuadLightingPass);
     glUniform1i(glGetUniformLocation(Program_ScreenQuadLightingPass, "PointLightCount"), pointLights.size());
-
+    glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, "CameraPos"), 1,&camera->m_position[0]);
+    glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, "AmbientStrength"), 0.2f);
+    glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, "AmbientColor"), 1, glm::value_ptr(glm::vec3(1.0f,1.0f,1.0f)));
     // Iterate over each light and pass its properties
     for (size_t i = 0; i < pointLights.size(); ++i) {
-        std::string baseName = "pointLights[" + std::to_string(i) + "]";
-
-        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".position").c_str()), 1, glm::value_ptr(pointLights[i].position));
-        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".color").c_str()), 1, glm::value_ptr(pointLights[i].color));
+        std::string baseName = "PointLightArray[" + std::to_string(i) + "]";
+        
+        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".position").c_str()), 1,&pointLights[i].position[0]);
+        glUniform3fv(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".color").c_str()), 1, &pointLights[i].color[0]);
         glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".specularStrength").c_str()), pointLights[i].specularStrength);
         glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationConstant").c_str()), pointLights[i].attenuationConstant);
         glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationLinear").c_str()), pointLights[i].attenuationLinear);
         glUniform1f(glGetUniformLocation(Program_ScreenQuadLightingPass, (baseName + ".attenuationExponent").c_str()), pointLights[i].attenuationExponent);
     }
+
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -124,10 +127,22 @@ void DeferredRenderingScene::InitializeModels() {
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
 
-    model = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
-    model->SetTexture(ancientTex.GetId());
-    model->SetShader(Program_GeometryPass);
 
+    int rows = 10; 
+    int cols = 10; 
+    float spacing = 200.0f; 
+
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            glm::vec3 position = glm::vec3(col * spacing, 0.0f, row * spacing);
+            glm::vec3 rotation = glm::vec3(0.0f);
+            glm::vec3 scale = glm::vec3(0.05f);
+            MeshModel* newModel = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
+            newModel->SetTexture(ancientTex.GetId());
+            newModel->SetShader(Program_GeometryPass);
+            models.push_back(newModel);
+        }
+    }
     faces = {
         "Resources/Textures/skybox/Right.png",
         "Resources/Textures/skybox/Left.png",
@@ -138,40 +153,18 @@ void DeferredRenderingScene::InitializeModels() {
     };
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
-    instanceModel = new InstanceMeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(500.0f), "Resources/Models/AncientEmpire/SM_Env_Tree_Palm_01.obj");
-    instanceModel->SetTexture(ancientTex.GetId());
-    instanceModel->SetShader(Program_instanceTexture);
-
-    for (int i = 0; i < 100; i++) {
-        glm::vec3 randomPosition = glm::vec3(rand() % 300 - 150, 10.0f, rand() % 300 - 150);
-        glm::vec3 randomRotation = glm::vec3((rand() % 21) - 10);
-        glm::vec3 randomScale = glm::vec3(((rand() % 10 + 5) / 200.0f));
-        instanceModel->AddInstance(randomPosition, randomRotation, randomScale);
-    }
-    instanceModel->initBuffer();
 }
 void DeferredRenderingScene::SetupLights() {
-
-
-    //for (int i = 0; i < 20; ++i) {
-    //    glm::vec3 position = glm::vec3(rand() % 300 - 150, 0.0f, rand() % 300 - 150);
-    //    glm::vec3 rotation = glm::vec3(0.0f);
-    //    glm::vec3 scale = glm::vec3(0.05f);
-    //    MeshModel* newModel = new MeshModel(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
-    //    newModel->SetTexture(ancientTex.GetId());
-    //    newModel->SetShader(geometryShader);
-    //    models.push_back(newModel);
-    //}
-
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     // Initialize point lights
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 10; ++i) {
         PointLight light;
-        light.position = glm::vec3(rand() % 300 - 150, 10.0f, rand() % 300 - 150);
+        light.position = glm::vec3(rand() % 100 , 10.0f, rand() % 100);
         light.color = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
-        light.specularStrength = 2.0f;
+        light.specularStrength = 0.5f;
         light.attenuationConstant = 1.0f;
-        light.attenuationLinear = 0.045f;
-        light.attenuationExponent = 0.0075f;
+        light.attenuationLinear = 0.022f;
+        light.attenuationExponent = 0.0019f;
         pointLights.push_back(light);
 
         // Create light source model
