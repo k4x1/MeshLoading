@@ -100,10 +100,17 @@ void ParticleSystem::Render() {
     glUniformMatrix4fv(glGetUniformLocation(Program_Render, "viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(Program_Render, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 
+
+
     glEnable(GL_PROGRAM_POINT_SIZE);
     glPointSize(5.0f);
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glDisable(GL_DEPTH_TEST);
     glDrawArrays(GL_POINTS, 0, NumParticles);
+    glEnable(GL_DEPTH_TEST);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);

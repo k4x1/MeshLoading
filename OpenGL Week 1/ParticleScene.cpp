@@ -42,7 +42,7 @@ void ParticleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     m_FrameBuffer = new FrameBuffer(800, 800);
 
     SetupQuad();
-    particleSystem = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, glm::vec3(0.0f, 0.0f, 0.0f));
+    particleSystem = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, glm::vec3(0.0f, 0.0f, -10.0f));
 }
 
 void ParticleScene::Update()
