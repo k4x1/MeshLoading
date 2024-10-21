@@ -22,20 +22,29 @@ double RandomValue(uint ID, int Seed);
 
 void ResetParticle(uint Index) {
     float LifeModifier = 5.0f;
-    float Speed_XZ = 8.0f;
-    float Speed_Y = 20.0f;
+    float Speed = 15.0f;
 
     PositionLife[Index] = vec4(
         EmitterOrigin.xyz, 
         (RandomValue(Index, SeedLife) + 1) * 0.5f * LifeModifier
     );
 
-    Velocity[Index] = vec4(
-        Speed_XZ * RandomValue(Index, SeedX),
-        Speed_Y * (RandomValue(Index, SeedY) + 1.0f) * 0.5f + 10.0f,
-        Speed_XZ * RandomValue(Index, SeedZ),
-        0.0f
+    // Generate a random direction vector
+    vec3 randDir = vec3(
+        RandomValue(Index, SeedX),
+        RandomValue(Index, SeedY),
+        RandomValue(Index, SeedZ)
     );
+
+    // Ensure the random direction is not zero to avoid division by zero
+    if (length(randDir) == 0.0) {
+        randDir = vec3(0.0, 1.0, 0.0);
+    } else {
+        randDir = normalize(randDir); // Normalize to get a unit vector
+    }
+
+    // Set the velocity in the random direction scaled by the speed
+    Velocity[Index] = vec4(randDir * Speed, 0.0f);
 }
 
 double RandomValue(uint ID, int Seed) {

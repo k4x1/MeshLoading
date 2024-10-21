@@ -16,7 +16,6 @@
 #include "Skybox.h"
 #include "FrameBuffer.h"
 #include "ShadowMap.h"
-#include "Particle.h"
 #include "ParticleSystem.h"
 class ParticleScene : public Scene {
 public:
@@ -89,13 +88,10 @@ private:
     GLFWwindow* Window = nullptr;
 
 
-    std::vector<Particle> particles;
+  
     GLuint particleShaderProgram;
     ParticleSystem* particleSystem = nullptr;
 
-    void InitializeParticles();
-    void UpdateParticles();
-    void RenderParticles();
 
     void InitializeModels();
     void SetupLights();

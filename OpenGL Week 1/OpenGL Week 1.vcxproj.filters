@@ -75,9 +75,6 @@
     <ClCompile Include="GeometryBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -248,9 +245,6 @@
       <Filter>NonUsed</Filter>
     </ClInclude>
     <ClInclude Include="GeometryBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleScene.h">

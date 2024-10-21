@@ -385,42 +385,6 @@ void ParticleScene::SetupQuad() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-void ParticleScene::InitializeParticles() {
-    // Initialize particles with random positions, velocities, and colors
-    for (int i = 0; i < 1000; ++i) {
-        glm::vec3 position(0.0f, 0.0f, 0.0f);
-        glm::vec3 velocity(0.0f, 10.0f, 0.0f); // Upward velocity
-        glm::vec4 color(static_cast<float>(rand()) / RAND_MAX,
-            static_cast<float>(rand()) / RAND_MAX,
-            static_cast<float>(rand()) / RAND_MAX, 1.0f);
-        float lifetime = static_cast<float>(rand()) / RAND_MAX * 5.0f; // Random lifetime
-        particles.emplace_back(position, velocity, color, lifetime);
-    }
-
-    // Load particle shader
-    particleShaderProgram = ShaderLoader::CreateProgram("Resources/Shaders/Particle.vert", "Resources/Shaders/Particle.frag");
-}
-
-void ParticleScene::UpdateParticles() {
-    for (auto& particle : particles) {
-        particle.Update(deltaTime);
-    }
-    // Remove particles that have expired
-    particles.erase(std::remove_if(particles.begin(), particles.end(),
-        [](const Particle& p) { return p.lifetime <= 0.0f; }),
-        particles.end());
-}
-
-void ParticleScene::RenderParticles() {
-    glUseProgram(particleShaderProgram);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    for (const auto& particle : particles) {
-        particle.Render();
-    }
-    glDisable(GL_BLEND);
-}
-
 int ParticleScene::MainLoop() {
     while (!glfwWindowShouldClose(Window)) {
         Update();
