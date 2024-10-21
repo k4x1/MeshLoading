@@ -30,6 +30,7 @@ void switchScene(InputManager::SceneType sceneType) {
     //    CurrentScene = std::make_unique<FrameBufferScene>();
     //    std::cout << "FrameBuffer Scene" << std::endl;
     //    break;
+    // couldnt finish last scne ;-; GDC was so worth tho
 
     default:
         break;
@@ -40,7 +41,7 @@ void switchScene(InputManager::SceneType sceneType) {
 
 int main()
 {
-    CurrentScene = std::make_unique<ParticleScene>();
+    CurrentScene = std::make_unique<ShadowScene>();
 
     if (!glfwInit())
     {

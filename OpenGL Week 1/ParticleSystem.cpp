@@ -5,7 +5,7 @@ ParticleSystem::ParticleSystem(Camera* Cam, GLuint Program_Render, GLuint Progra
     this->Program_Compute = Program_Compute;
     this->EmitterOrigin = Origin;
 
-    GroupCountX = 10;
+    GroupCountX = 1000;
     WorkGroupSizeX = 128; 
     NumParticles = WorkGroupSizeX * GroupCountX;
     // Generate buffers
@@ -103,7 +103,7 @@ void ParticleSystem::Render() {
 
 
     glEnable(GL_PROGRAM_POINT_SIZE);
-    glPointSize(5.0f);
+    glPointSize(1.0f);
     // Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -119,4 +119,25 @@ void ParticleSystem::Render() {
     glUseProgram(0);
    
  //   glDisable(GL_BLEND);
+}
+void ParticleSystem::SetParticleColor(const glm::vec4& color) {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_Color);
+    glm::vec4* colorData = static_cast<glm::vec4*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+    for (int i = 0; i < NumParticles; i++) {
+        colorData[i] = color;
+    }
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+}
+bool ParticleSystem::IsFinished() {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_PositionLife);
+    glm::vec4* positionLifeData = static_cast<glm::vec4*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY));
+    bool finished = true;
+    for (int i = 0; i < NumParticles; i++) {
+        if (positionLifeData[i].w > 0.0f) {
+            finished = false;
+            break;
+        }
+    }
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    return finished;
 }

@@ -4,6 +4,9 @@
 #include <gtc/type_ptr.hpp>
 #include "ShaderLoader.h"
 #include "Camera.h"
+
+
+
 class ParticleSystem {
 public:
     ParticleSystem(Camera* Cam, GLuint Program_Render, GLuint Program_Compute, glm::vec3 Origin);
@@ -11,7 +14,8 @@ public:
 
     void Update(float DeltaTime);
     void Render();
-
+    bool IsFinished();
+    void SetParticleColor(const glm::vec4& color);
 
 private:
     Camera* ActiveCamera;
@@ -29,4 +33,5 @@ private:
     int GroupCountX;
     int WorkGroupSizeX;
     int NumParticles;
+
 };

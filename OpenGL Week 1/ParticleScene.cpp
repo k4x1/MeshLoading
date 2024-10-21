@@ -42,7 +42,20 @@ void ParticleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     m_FrameBuffer = new FrameBuffer(800, 800);
 
     SetupQuad();
-    particleSystem = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, glm::vec3(0.0f, 0.0f, -10.0f));
+
+    fireworkColors = {
+    glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), // Red
+    glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), // Green
+    glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), // Blue
+    glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)  // Yellow
+    };
+
+    for (int i = 0; i < 4; i++) {
+        glm::vec3 randomPosition = glm::vec3(rand() % 500 - 250, 0.0f, rand() % 500 - 250);
+        auto newParticle = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, glm::vec3(randomPosition.x, 0.0f, randomPosition.y));
+        explosions.push_back(newParticle);
+    }
+
 }
 
 void ParticleScene::Update()
@@ -85,24 +98,41 @@ void ParticleScene::Update()
         tabPressed = false;
     }
 
-    // Update Particle System
-
-
-    // Reinitialize particles on 'F' key press
     if (glfwGetKey(Window, GLFW_KEY_F) == GLFW_PRESS) {
-        delete particleSystem;
-        particleSystem = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, glm::vec3(0.0f, 0.0f, 0.0f));
+        for (auto it = explosions.begin(); it != explosions.end();) {
+            it = explosions.erase(it);
+        }
+
+        for (int i = 0; i < 4; i++) {
+            glm::vec3 randomPosition = glm::vec3(rand() % 500 - 250, 0.0f, rand() % 500 - 250);
+            ParticleSystem* explosion = new ParticleSystem(camera, Program_particle, Program_ComputeParticles, randomPosition);
+            explosion->SetParticleColor(fireworkColors[i]);
+            explosions.push_back(explosion);
+        }
     }
+    /*   for (auto it = explosions.begin(); it != explosions.end();) {
+        if ((*it)->IsFinished()) {
+            delete* it;
+            it = explosions.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }*/
+
 }
+
 void ParticleScene::Render() {
 
     RenderShadowMap(m_ShadowMap1, dirLight1);
     RenderShadowMap(m_ShadowMap2, dirLight2);
     RenderSceneWithShadows();
 
-   // Check for OpenGL errors
-    particleSystem->Update(deltaTime);
-    particleSystem->Render();
+   
+    for (auto explosion : explosions) {
+        explosion->Update(deltaTime);
+        explosion->Render();
+    }
    GLenum error = glGetError();
    if (error != GL_NO_ERROR) {
         std::cerr << "OpenGL Error: " << error << std::endl;
@@ -409,7 +439,10 @@ ParticleScene::~ParticleScene() {
         delete particleSystem;
         particleSystem = nullptr;
     }
-
+    for (auto explosion : explosions) {
+        delete explosion;
+    }
+    explosions.clear();
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &quadVBO);
     glDeleteVertexArrays(1, &terrainVAO);

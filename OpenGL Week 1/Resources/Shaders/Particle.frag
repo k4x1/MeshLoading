@@ -1,8 +1,10 @@
 #version 460 core
 
-// Output
-out vec4 FinalColor;
+in vec4 ParticleColor;
+in float ParticleLife;
+
+out vec4 FragColor;
 
 void main() {
-    FinalColor = vec4(1.0f, 1.0f, 0.0f, 1.0f); // yellow 
+    FragColor = vec4(ParticleColor.rgb, 1.0f);
 }

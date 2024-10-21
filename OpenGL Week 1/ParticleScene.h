@@ -87,11 +87,11 @@ private:
 
     GLFWwindow* Window = nullptr;
 
-
+    std::vector<glm::vec4> fireworkColors;
   
     GLuint particleShaderProgram;
     ParticleSystem* particleSystem = nullptr;
-
+    std::vector<ParticleSystem*> explosions;
 
     void InitializeModels();
     void SetupLights();
