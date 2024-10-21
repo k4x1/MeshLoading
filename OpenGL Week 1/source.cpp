@@ -6,6 +6,7 @@
 #include <iostream>
 #include "ShadowScene.h"
 #include "DeferredRenderingScene.h"
+#include "ParticleScene.h"
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
@@ -22,7 +23,7 @@ void switchScene(InputManager::SceneType sceneType) {
         std::cout << "DeferredRendering Scene" << std::endl;
         break;
     case InputManager::SceneType::Noise:
-        CurrentScene = std::make_unique<NoiseScene>();
+        CurrentScene = std::make_unique<ParticleScene>();
         std::cout << "Noise Scene" << std::endl;
         break;
     case InputManager::SceneType::FrameBuffer:
@@ -35,7 +36,7 @@ void switchScene(InputManager::SceneType sceneType) {
 
 int main()
 {
-    CurrentScene = std::make_unique<DeferredRenderingScene>();
+    CurrentScene = std::make_unique<ParticleScene>();
 
     if (!glfwInit())
     {

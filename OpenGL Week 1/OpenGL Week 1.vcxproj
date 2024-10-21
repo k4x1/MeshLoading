@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="DeferredRenderingScene.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="ParticleScene.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ShadowScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -161,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PerlinNoise.h" />
+    <None Include="Resources\Shaders\ComputeParticles.comp" />
     <None Include="Resources\Shaders\GeometryPass.frag" />
     <None Include="Resources\Shaders\GeometryPass.vert" />
     <None Include="Resources\Shaders\InstanceOutline.vert" />
@@ -178,6 +182,8 @@
     <None Include="Resources\Shaders\Noise.vert" />
     <None Include="Resources\Shaders\Outline.frag" />
     <None Include="Resources\Shaders\Outline.vert" />
+    <None Include="Resources\Shaders\Particle.frag" />
+    <None Include="Resources\Shaders\Particle.vert" />
     <None Include="Resources\Shaders\PostProcessing.frag" />
     <None Include="Resources\Shaders\Quad.vert" />
     <None Include="Resources\Shaders\ShadowMapping.frag" />
@@ -193,6 +199,9 @@
   <ItemGroup>
     <ClInclude Include="DeferredRenderingScene.h" />
     <ClInclude Include="GeometryBuffer.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleScene.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ShadowScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />

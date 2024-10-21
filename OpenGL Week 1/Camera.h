@@ -56,6 +56,9 @@ public:
     // Updates and exports the camera matrix to the Vertex Shader
     void Matrix(float _nearPlane, float _farPlane, GLuint _shaderID = NULL, const char* _uniform = nullptr);
 
+
+    glm::mat4 GetViewMatrix();
+    glm::mat4 GetProjectionMatrix();
    
 };
 

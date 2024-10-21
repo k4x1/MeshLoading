@@ -50,3 +50,17 @@ void Camera::Matrix(float _nearPlane, float _farPlane, GLuint _shaderID , const 
     }
     
 }
+
+glm::mat4 Camera::GetViewMatrix() 
+{
+
+    m_view = glm::lookAt(m_position, m_position + m_orientation, m_up);
+    return m_view;
+}
+
+glm::mat4 Camera::GetProjectionMatrix() 
+{
+    m_projection = glm::mat4(1.0f);
+    m_projection = glm::perspective(glm::radians(m_FOV), (m_width / m_height), 0.01f, 1000.0f);
+    return m_projection;
+}

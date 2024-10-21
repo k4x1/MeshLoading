@@ -37,6 +37,25 @@ GLuint ShaderLoader::CreateProgram(const char* vertexShaderFilename, const char*
 
 	return program;
 }
+GLuint ShaderLoader::CreateComputeProgram(const char* computeShaderFilename)
+{
+	GLuint computeShaderID = CreateShader(GL_COMPUTE_SHADER, computeShaderFilename);
+
+	GLuint program = glCreateProgram();
+	glAttachShader(program, computeShaderID);
+	glLinkProgram(program);
+
+	int link_result = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, &link_result);
+	if (link_result == GL_FALSE)
+	{
+		PrintErrorDetails(false, program, computeShaderFilename);
+		return 0;
+	}
+	glDeleteShader(computeShaderID);
+
+	return program;
+}
 
 GLuint ShaderLoader::CreateShader(GLenum shaderType, const char* shaderName)
 {

@@ -75,6 +75,15 @@
     <ClCompile Include="GeometryBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -164,6 +173,15 @@
     <None Include="Resources\Shaders\Quad.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Resources\Shaders\ComputeParticles.comp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Particle.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\Particle.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderLoader.h">
@@ -230,6 +248,15 @@
       <Filter>NonUsed</Filter>
     </ClInclude>
     <ClInclude Include="GeometryBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
