@@ -26,11 +26,15 @@ void switchScene(InputManager::SceneType sceneType) {
         CurrentScene = std::make_unique<ParticleScene>();
         std::cout << "Noise Scene" << std::endl;
         break;
-    case InputManager::SceneType::FrameBuffer:
-        CurrentScene = std::make_unique<FrameBufferScene>();
-        std::cout << "FrameBuffer Scene" << std::endl;
+    //case InputManager::SceneType::FrameBuffer:
+    //    CurrentScene = std::make_unique<FrameBufferScene>();
+    //    std::cout << "FrameBuffer Scene" << std::endl;
+    //    break;
+
+    default:
         break;
     }
+    //}
     CurrentScene->InitialSetup(Window, camera);
 }
 

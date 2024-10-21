@@ -101,12 +101,12 @@ void ParticleScene::Render() {
     RenderSceneWithShadows();
 
    // Check for OpenGL errors
+    particleSystem->Update(deltaTime);
+    particleSystem->Render();
    GLenum error = glGetError();
    if (error != GL_NO_ERROR) {
         std::cerr << "OpenGL Error: " << error << std::endl;
     }
-    particleSystem->Update(deltaTime);
-    particleSystem->Render();
     //RenderPostProcessing();
 }
 

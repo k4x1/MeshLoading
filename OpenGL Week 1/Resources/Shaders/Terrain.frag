@@ -23,24 +23,35 @@ uniform vec3 lightColor;
 uniform vec3 objectColor;
 
 // Define height thresholds
-const float grassHeight = 30;
-const float dirtHeight = 60;
-const float stoneHeight = 90;
-const float snowHeight = 120;
+const float grassHeight = 30.0;
+const float dirtHeight = 60.0;
+const float stoneHeight = 90.0;
+const float snowHeight = 120.0;
 
-float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap)
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, float heightAboveTerrain)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
+
+    // Retrieve the closest depth value from the shadow map
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
+
+    // Calculate the current depth
     float currentDepth = projCoords.z;
-    float bias = 0.005;
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+    // Calculate dynamic bias based on height
+    float baseBias = 0.005;
+    float dynamicBias = baseBias + heightAboveTerrain * 0.01; // Adjust multiplier as needed
+
+    // Determine if the fragment is in shadow
+    float shadow = currentDepth - dynamicBias > closestDepth ? 1.0 : 0.0;
+
     return shadow;
 }
 
 void main()
 {
+    // Texture blending based on height
     vec4 grassColor = texture(grassTexture, TexCoord);
     vec4 dirtColor = texture(dirtTexture, TexCoord);
     vec4 stoneColor = texture(stoneTexture, TexCoord);
@@ -53,6 +64,7 @@ void main()
 
     vec4 finalColor = grassColor * blendGrass + dirtColor * blendDirt + stoneColor * blendStone + snowColor * blendSnow;
 
+    // Lighting calculations
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
     
@@ -72,9 +84,10 @@ void main()
     vec3 specular = specularStrength * (spec1 + spec2) * lightColor * 0.5;  
     
     // Calculate shadows from both lights
-    float shadow1 = ShadowCalculation(FragPosLightSpace1, shadowMap1); 
-    float shadow2 = ShadowCalculation(FragPosLightSpace2, shadowMap2); 
-    float shadow = (shadow1 + shadow2); ; // Combine shadows can evolve to for loop 
+    float heightAboveTerrain = FragPos.y - Height; // Assuming Height is the terrain height at FragPos
+    float shadow1 = ShadowCalculation(FragPosLightSpace1, shadowMap1, heightAboveTerrain); 
+    float shadow2 = ShadowCalculation(FragPosLightSpace2, shadowMap2, heightAboveTerrain); 
+    float shadow = (shadow1 + shadow2); // Combine shadows
     float shadowIntensity = 0.5;
 
     vec3 result = (ambient + (1.0 - shadow * shadowIntensity) * (diffuse + specular)) * objectColor;

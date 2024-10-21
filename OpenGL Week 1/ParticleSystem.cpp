@@ -5,39 +5,47 @@ ParticleSystem::ParticleSystem(Camera* Cam, GLuint Program_Render, GLuint Progra
     this->Program_Compute = Program_Compute;
     this->EmitterOrigin = Origin;
 
-    GroupCountX = 1000;
+    GroupCountX = 10;
     WorkGroupSizeX = 128; 
     NumParticles = WorkGroupSizeX * GroupCountX;
+    // Generate buffers
     glGenBuffers(1, &VBO_PositionLife);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_PositionLife);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
-
     glGenBuffers(1, &VBO_Velocity);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_Velocity);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
-
     glGenBuffers(1, &VBO_Color);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, VBO_Color);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
 
+    // Allocate storage for buffers
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_PositionLife);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_Velocity);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_Color);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * NumParticles, NULL, GL_DYNAMIC_DRAW);
+
+    // Create VAO
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_PositionLife);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+    // Bind VBO_PositionLife to binding point 0
+    glBindVertexBuffer(0, VBO_PositionLife, 0, sizeof(glm::vec4));
+    glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribBinding(0, 0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_Velocity);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+    // Bind VBO_Velocity to binding point 1
+    glBindVertexBuffer(1, VBO_Velocity, 0, sizeof(glm::vec4));
+    glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribBinding(1, 1);
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_Color);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+    // Bind VBO_Color to binding point 2
+    glBindVertexBuffer(2, VBO_Color, 0, sizeof(glm::vec4));
+    glVertexAttribFormat(2, 4, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribBinding(2, 2);
     glEnableVertexAttribArray(2);
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Unbind VAO
     glBindVertexArray(0);
+
 }
 
 ParticleSystem::~ParticleSystem()
@@ -65,6 +73,7 @@ void ParticleSystem::Render() {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, VBO_Velocity);
 
     // Set the VelocityLifeChange uniform
+
     glUniform4fv(glGetUniformLocation(Program_Compute, "VelocityLifeChange"), 1, glm::value_ptr(VelocityLifeChange));
 
     // Set the EmitterOrigin uniform
@@ -79,7 +88,8 @@ void ParticleSystem::Render() {
     glDispatchCompute(GroupCountX, 1, 1);
 
     // Ensure all writes to the buffers are completed
-    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+    glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+
 
     // Render pass
     glUseProgram(Program_Render);

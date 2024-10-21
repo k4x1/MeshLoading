@@ -40,16 +40,17 @@ void ShadowScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 
 void ShadowScene::Update()
 {
+    // Update time
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    // circle parameters
-    float radius = 1000.0f; 
-    float speed = 1.0f;   
-    glm::vec3 center(0.0f, 500.0f, 0.0f); 
+    // Circle movement parameters
+    const float radius = 1000.0f;
+    const float speed = 1.0f;
+    const glm::vec3 center(0.0f, 500.0f, 0.0f);
 
-    //  new position
+    // Calculate new position in a circular path
     float angle = speed * currentFrame;
     float x = center.x + radius * cos(angle);
     float z = center.z + radius * sin(angle);
@@ -57,16 +58,16 @@ void ShadowScene::Update()
     // Update model position
     model->SetPosition(glm::vec3(x, center.y, z));
 
-    // Update model rotation to face the direction of movement (optional)
+    // Update model rotation to face the direction of movement
     float rotationAngle = glm::degrees(atan2(-sin(angle), -cos(angle)));
-    model->SetRotation(glm::vec3(0,rotationAngle,0));
+    model->SetRotation(glm::vec3(0, rotationAngle, 0));
 
-    // Update other scene elements
+    // Update model and lighting
     model->Update(deltaTime);
-
     spotLight.position = camera->m_position;
     spotLight.direction = camera->m_orientation;
 
+    // Handle TAB key input for cycling effects
     static bool tabPressed = false;
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed)
     {
@@ -78,6 +79,7 @@ void ShadowScene::Update()
         tabPressed = false;
     }
 }
+
 void ShadowScene::Render() {
     RenderShadowMap(m_ShadowMap1, dirLight1);
     RenderShadowMap(m_ShadowMap2, dirLight2);
@@ -115,12 +117,14 @@ void ShadowScene::RenderSceneWithShadows() {
     glm::mat4 projection = camera->m_projection;
     skybox->Render(view, projection);
 
+    // Use a single shader program for similar operations
     glUseProgram(model->GetShader());
     model->BindTexture();
     model->PassUniforms(camera);
     model->PassDirectionalUniforms(dirLight1);
     model->PassSpotLightUniforms(spotLight);
 
+    // Bind shadow maps once
     glActiveTexture(GL_TEXTURE2);
     m_ShadowMap1->BindTexture(GL_TEXTURE2);
     glUniform1i(glGetUniformLocation(model->GetShader(), "shadowMap1"), 2);
@@ -228,10 +232,8 @@ void ShadowScene::RenderSceneWithShadows() {
     if (error != GL_NO_ERROR) {
         std::cerr << "OpenGL Error: " << error << std::endl;
     }
-
-    // Swap buffers
-    
 }
+
 void ShadowScene::RenderPostProcessing() {
     // Set the viewport to the window size
     glViewport(0, 0, 800, 800);
@@ -285,7 +287,7 @@ void ShadowScene::InitializeModels() {
     instanceModel->SetTexture(ancientTex.GetId());
     instanceModel->SetShader(Program_instanceTexture);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 30; i++) {
         glm::vec3 randomPosition = glm::vec3(rand() % 300 - 150, 10.0f, rand() % 300 - 150);
         glm::vec3 randomRotation = glm::vec3((rand() % 21) - 10);
         glm::vec3 randomScale = glm::vec3(((rand() % 10 + 5) / 200.0f));
