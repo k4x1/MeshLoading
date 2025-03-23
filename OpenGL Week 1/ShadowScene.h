@@ -30,10 +30,11 @@ private:
     ShadowMap* m_ShadowMap1 = nullptr; // First shadow map
     ShadowMap* m_ShadowMap2 = nullptr; // Second shadow map for the additional light
 
-    MeshModel* model = nullptr;
     MeshModel* pointLight1 = nullptr;
     MeshModel* pointLight2 = nullptr;
-    InstanceMeshModel* instanceModel = nullptr;
+    GameObject* mainModel = nullptr;
+    GameObject* instanceModelObj = nullptr;
+
 
     GLuint quadVAO, quadVBO;
     GLuint postProcessingShader;

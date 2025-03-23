@@ -13,14 +13,33 @@
 #include "Light.h"
 #include <string> 
 #include "Skybox.h"
+#include "GameObject.h"
+#include "MeshRenderer.h"
 class Scene {
 public:
     GLFWwindow* Window;
     // Define a camera object
     Camera* camera;
+    std::vector<GameObject*> gameObjects;
     virtual void InitialSetup(GLFWwindow* _window, Camera* _camera) {}
     virtual void Update() {}
     virtual void Render() {}
     virtual int MainLoop() { return 0; }
-    virtual ~Scene() = default;
+    void AddGameObject(GameObject* obj) {
+        gameObjects.push_back(obj);
+    }
+
+    void RemoveGameObject(GameObject* obj) {
+        auto it = std::find(gameObjects.begin(), gameObjects.end(), obj);
+        if (it != gameObjects.end()) {
+            gameObjects.erase(it);
+        }
+    }
+
+    virtual ~Scene() { 
+        for (auto obj : gameObjects) {
+            delete obj;
+        }
+        gameObjects.clear();
+    }
 };
