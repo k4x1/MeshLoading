@@ -11,7 +11,9 @@ Mail : kazuo.andrade@mds.ac.nz
 */
 
 #include "MeshModel.h"
-#include <tiny_obj_loader.h> 
+#include "tiny_obj_loader_impl.h"
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 // Constructor for MeshModel
 MeshModel::MeshModel(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, std::string _modelFilePath)

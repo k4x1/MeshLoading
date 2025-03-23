@@ -6,6 +6,7 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/quaternion.hpp>
+
 // Forward declaration of Component
 class Component;
 
@@ -15,10 +16,8 @@ struct Transform {
     glm::vec3 rotation{ 0.0f }; // Euler angles (degrees)
     glm::vec3 scale{ 1.0f };
 
-    // Computes the local transformation matrix.
     glm::mat4 GetLocalMatrix() const {
         glm::mat4 T = glm::translate(glm::mat4(1.0f), position);
-        // Convert Euler angles to radians then create a quaternion.
         glm::quat q = glm::quat(glm::radians(rotation));
         glm::mat4 R = glm::mat4_cast(q);
         glm::mat4 S = glm::scale(glm::mat4(1.0f), scale);
@@ -26,44 +25,67 @@ struct Transform {
     }
 };
 
-/// GameObject class represents an entity in the scene.
 class GameObject {
 public:
     std::string name;
     Transform transform;
-
-    // Pointer to parent (if any) and list of child GameObjects.
     GameObject* parent = nullptr;
     std::vector<GameObject*> children;
-
-    // List of components attached to this GameObject.
     std::vector<std::unique_ptr<Component>> components;
 
-    GameObject(const std::string& name = "GameObject");
+    // Inline constructor and destructor.
+    GameObject(const std::string& name = "GameObject") : name(name) {}
+    ~GameObject() {
+        for (GameObject* child : children) {
+            delete child;
+        }
+    }
 
-    ~GameObject();
+    void AddChild(GameObject* child) {
+        child->parent = this;
+        children.push_back(child);
+    }
 
-    // Adds a child GameObject.
-    void AddChild(GameObject* child);
+    void RemoveChild(GameObject* child) {
+        children.erase(
+            std::remove(children.begin(), children.end(), child),
+            children.end()
+        );
+        child->parent = nullptr;
+    }
 
-    // Removes a child GameObject.
-    void RemoveChild(GameObject* child);
+    glm::mat4 GetWorldMatrix() const {
+        return parent ? parent->GetWorldMatrix() * transform.GetLocalMatrix() : transform.GetLocalMatrix();
+    }
 
-    // Recursively computes the world transformation matrix.
-    glm::mat4 GetWorldMatrix() const;
-
-    // Adds a component of type T to this GameObject.
     template<typename T, typename... Args>
-    T* AddComponent(Args&&... args);
+    T* AddComponent(Args&&... args) {
+        T* comp = new T(std::forward<Args>(args)...);
+        comp->owner = this;
+        components.emplace_back(comp);
+        return comp;
+    }
 
-    // Retrieves the first component of type T attached to this GameObject.
     template<typename T>
-    T* GetComponent();
-    // Removes all components of type T from this GameObject.
+    T* GetComponent() {
+        for (const auto& comp : components) {
+            if (T* t = dynamic_cast<T*>(comp.get()))
+                return t;
+        }
+        return nullptr;
+    }
+
     template<typename T>
-    void RemoveComponent();
+    void RemoveComponent() {
+        components.erase(
+            std::remove_if(components.begin(), components.end(),
+                [](const std::unique_ptr<Component>& comp) {
+                    return dynamic_cast<T*>(comp.get()) != nullptr;
+                }),
+            components.end()
+        );
+    }
 };
-
 
 class Component {
 public:
@@ -72,4 +94,3 @@ public:
     virtual void Update(float deltaTime) {}
     virtual void Render(class Camera* cam) {}
 };
-

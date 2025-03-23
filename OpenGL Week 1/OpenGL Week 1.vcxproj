@@ -160,6 +160,7 @@
     <ClCompile Include="HeightMapScene.cpp" />
     <ClCompile Include="source.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="tiny_obj_loader_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PerlinNoise.h" />

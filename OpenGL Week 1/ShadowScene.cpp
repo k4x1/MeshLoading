@@ -66,13 +66,19 @@ void ShadowScene::InitializeModels() {
     glm::vec3 position(0.0f, 500.0f, 0.0f);
     glm::vec3 rotation(0.0f);
     glm::vec3 scale(0.05f);
-
     mainModel = new GameObject("MainModel");
     MeshRenderer* mainRenderer = mainModel->AddComponent<MeshRenderer>(position, rotation, scale, "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj");
     mainRenderer->SetTexture(ancientTex.GetId());
     mainRenderer->SetShader(Program_Texture);
     AddGameObject(mainModel);
 
+    // Create a GameObject for the instance model (if needed).
+    instanceModelObj = new GameObject("InstanceModel");
+    // You might add a MeshRenderer or other component to instanceModelObj
+    // For example:
+    // MeshRenderer* instanceRenderer = instanceModelObj->AddComponent<MeshRenderer>(/* parameters */);
+    // Configure instanceRenderer accordingly...
+    AddGameObject(instanceModelObj);
 }
 
 void ShadowScene::SetupLights() {
