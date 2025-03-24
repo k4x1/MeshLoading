@@ -1,14 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : Skybox.cpp
-Description : Implementation file for the Skybox class, which manages the loading, updating, and rendering of a skybox.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
 
 #include "Skybox.h"
 #include <stb_image.h>

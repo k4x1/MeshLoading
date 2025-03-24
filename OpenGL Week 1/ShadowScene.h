@@ -33,7 +33,6 @@ private:
     MeshModel* pointLight1 = nullptr;
     MeshModel* pointLight2 = nullptr;
     GameObject* mainModel = nullptr;
-    GameObject* instanceModelObj = nullptr;
 
 
     GLuint quadVAO, quadVBO;

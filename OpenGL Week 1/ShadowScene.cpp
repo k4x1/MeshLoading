@@ -72,13 +72,7 @@ void ShadowScene::InitializeModels() {
     mainRenderer->SetShader(Program_Texture);
     AddGameObject(mainModel);
 
-    // Create a GameObject for the instance model (if needed).
-    instanceModelObj = new GameObject("InstanceModel");
-    // You might add a MeshRenderer or other component to instanceModelObj
-    // For example:
-    // MeshRenderer* instanceRenderer = instanceModelObj->AddComponent<MeshRenderer>(/* parameters */);
-    // Configure instanceRenderer accordingly...
-    AddGameObject(instanceModelObj);
+ 
 }
 
 void ShadowScene::SetupLights() {
@@ -157,7 +151,7 @@ void ShadowScene::Update() {
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-
+/*
     const float radius = 1000.0f;
     const float speed = 1.0f;
     const glm::vec3 center(0.0f, 500.0f, 0.0f);
@@ -170,7 +164,7 @@ void ShadowScene::Update() {
     mainModel->transform.position = glm::vec3(x, center.y, z);
     float rotationAngle = glm::degrees(atan2(-sin(angle), -cos(angle)));
     mainModel->transform.rotation.y = rotationAngle;
-
+    */
     // Update MeshRenderer component if needed
     MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
     if (mainRenderer) {
@@ -251,25 +245,6 @@ void ShadowScene::RenderSceneWithShadows() {
         mainRenderer->Render(camera);
     }
 
-    // Render instance model
-    glUseProgram(Program_instanceTexture);
-    MeshRenderer* instanceRenderer = instanceModelObj->GetComponent<MeshRenderer>();
-    if (instanceRenderer) {
-        instanceRenderer->BindTexture();
-        instanceRenderer->PassUniforms(camera);
-        instanceRenderer->PassDirectionalUniforms(dirLight1);
-        instanceRenderer->PassSpotLightUniforms(spotLight);
-    }
-
-    glActiveTexture(GL_TEXTURE2);
-    m_ShadowMap1->BindTexture(GL_TEXTURE2);
-    glUniform1i(glGetUniformLocation(Program_instanceTexture, "shadowMap1"), 2);
-    glUniformMatrix4fv(glGetUniformLocation(Program_instanceTexture, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
-
-    glActiveTexture(GL_TEXTURE3);
-    m_ShadowMap2->BindTexture(GL_TEXTURE3);
-    glUniform1i(glGetUniformLocation(Program_instanceTexture, "shadowMap2"), 3);
-    glUniformMatrix4fv(glGetUniformLocation(Program_instanceTexture, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
     // Render terrain
     glUseProgram(Program_terrain);
@@ -356,7 +331,6 @@ void ShadowScene::Render() {
 
 ShadowScene::~ShadowScene() {
     delete mainModel;
-    delete instanceModelObj;
     delete skybox;
     if (m_FrameBuffer) {
         delete m_FrameBuffer;
