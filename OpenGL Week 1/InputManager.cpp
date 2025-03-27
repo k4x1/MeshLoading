@@ -1,9 +1,10 @@
 #include "InputManager.h"
 InputManager* InputManager::m_instance = nullptr;
 
-InputManager::InputManager(Camera* _camRef)
+InputManager::InputManager(Camera* _camRef, Scene* _scene)
 {
     m_camera = _camRef;
+    m_scene = _scene;
     m_instance = this;
 }
 
@@ -89,12 +90,16 @@ void InputManager::ProcessInput(GLFWwindow* _window)
     m_currentFrame = glfwGetTime();
     m_deltaTime = m_currentFrame - m_lastFrame;
     m_lastFrame = m_currentFrame;
-    if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS) {
-   
-        m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
+    
+    if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS) {
+        m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_up;
     }
-    if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS) {
-        m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
+    if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS) {
+        m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_up;
+    }
+    if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS) {
+
+        m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
     }
     if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS) {
         m_camera->m_position -= glm::normalize(glm::cross(m_camera->m_orientation, m_camera->m_up)) * (m_camera->m_speed * float(m_deltaTime));
@@ -102,12 +107,26 @@ void InputManager::ProcessInput(GLFWwindow* _window)
     if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS) {
         m_camera->m_position += glm::normalize(glm::cross(m_camera->m_orientation, m_camera->m_up)) * (m_camera->m_speed * float(m_deltaTime));
     }
-    if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS) {
-        m_camera->m_position += (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_up;
-    }
-    if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS) {
-        m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_up;
-    }
+    static bool prevSKey = false;
+    bool currSKey = (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS);
+    bool ctrlPressed = (glfwGetKey(_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
+        glfwGetKey(_window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS);
+
+    if (currSKey )
+    {
+        if (ctrlPressed && m_scene != nullptr && !prevSKey)
+        {
+            m_scene->SaveToFile(m_scene->sceneName + ".json");
+        }
+        else if (!ctrlPressed)
+        {
+            m_camera->m_position -= (m_camera->m_speed * float(m_deltaTime)) * m_camera->m_orientation;
+        }
+   
+
+    }     
+    prevSKey = currSKey;
+   
 }
 
 void InputManager::SetCursorPosCallback(GLFWwindow* _window)

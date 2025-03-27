@@ -59,6 +59,7 @@ void ShadowScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     // Initialize framebuffer and quad for post-processing
     m_FrameBuffer = new FrameBuffer(800, 800);
     SetupQuad();
+ 
 }
 
 void ShadowScene::InitializeModels() {
@@ -71,8 +72,6 @@ void ShadowScene::InitializeModels() {
     mainRenderer->SetTexture(ancientTex.GetId());
     mainRenderer->SetShader(Program_Texture);
     AddGameObject(mainModel);
-
- 
 }
 
 void ShadowScene::SetupLights() {
@@ -151,7 +150,7 @@ void ShadowScene::Update() {
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-/*
+    /*
     const float radius = 1000.0f;
     const float speed = 1.0f;
     const glm::vec3 center(0.0f, 500.0f, 0.0f);
@@ -180,6 +179,7 @@ void ShadowScene::Update() {
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed)
     {
         tabPressed = true;
+        tabPressed = true;
         currentEffect = static_cast<PostProcessEffect>((static_cast<int>(currentEffect) + 1) % 3);
     }
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_RELEASE)
@@ -205,8 +205,6 @@ void ShadowScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& 
     if (mainRenderer) {
         mainRenderer->Render(camera);
     }
-
- 
     shadowMap->Unbind();
 }
 
@@ -219,13 +217,13 @@ void ShadowScene::RenderSceneWithShadows() {
     glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
     camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
     glm::mat4 projection = camera->m_projection;
+
     skybox->Render(view, projection);
 
-    // Render main model
     glUseProgram(Program_Texture);
     MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
     if (mainRenderer) {
-        mainRenderer->BindTexture();
+        mainRenderer->BindTexture(); 
         mainRenderer->PassUniforms(camera);
         mainRenderer->PassDirectionalUniforms(dirLight1);
         mainRenderer->PassSpotLightUniforms(spotLight);
@@ -241,10 +239,13 @@ void ShadowScene::RenderSceneWithShadows() {
     glUniform1i(glGetUniformLocation(Program_Texture, "shadowMap2"), 3);
     glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
+    glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
+
     if (mainRenderer) {
         mainRenderer->Render(camera);
     }
-
 
     // Render terrain
     glUseProgram(Program_terrain);

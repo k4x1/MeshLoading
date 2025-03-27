@@ -1,14 +1,4 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : InputManager.h
-Description : Header file for the InputManager class, which handles keyboard and mouse input for the application.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
+
 
 
 
@@ -20,9 +10,8 @@ Mail : kazuo.andrade@mds.ac.nz
 #include <glm.hpp>
 #include <iostream>
 #include "Camera.h"
-
-// Manages input handling for the application.
-
+#include "Scene.h"
+class Scene;
 class InputManager
 {
 private:
@@ -30,6 +19,7 @@ private:
     double m_lastFrame = m_currentFrame; // Last frame time
     double m_deltaTime; // Time difference between frames
     Camera* m_camera; // Pointer to the camera object
+    Scene* m_scene; 
     static InputManager* m_instance; // Singleton instance
 
     // Static callback functions for GLFW
@@ -53,7 +43,7 @@ public:
     bool sceneChanged = false;
 
     // Constructor that takes a camera reference
-    InputManager(Camera* _camRef);
+    InputManager(Camera* _camRef, Scene* _scene = nullptr);
 
     // Key callback function
     void KeyCallback(GLFWwindow* _window, int _key, int _scancode, int _action, int _mods);

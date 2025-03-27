@@ -1,14 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : InstanceMeshModel.cpp
-Description : Implementation file for the InstanceMeshModel class, which extends MeshModel to support instanced rendering.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
 
 
 

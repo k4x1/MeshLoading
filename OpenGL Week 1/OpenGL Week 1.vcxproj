@@ -72,12 +72,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann</IncludePath>
     <LibraryPath>$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann</IncludePath>
     <LibraryPath>$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -114,6 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,7 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DeferredRenderingScene.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ShadowScene.cpp" />
@@ -197,8 +201,11 @@
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="All.h" />
     <ClInclude Include="DeferredRenderingScene.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeometryBuffer.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ShadowScene.h" />
@@ -219,7 +226,7 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="HeightMapScene.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexStandard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

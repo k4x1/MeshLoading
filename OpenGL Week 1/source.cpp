@@ -75,7 +75,7 @@ int main()
     }
 
     // Set input callbacks
-    inputs = new InputManager(camera);
+    inputs = new InputManager(camera, CurrentScene.get());
     inputs->SetCursorPosCallback(Window);
 
     // Set cursor mode

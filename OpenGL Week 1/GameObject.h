@@ -6,24 +6,13 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/quaternion.hpp>
+#include "Utils.h"
+#include <nlohmann/json.hpp>
 
 // Forward declaration of Component
 class Component;
 
-// Simple Transform struct for clarity
-struct Transform {
-    glm::vec3 position{ 0.0f };
-    glm::vec3 rotation{ 0.0f }; // Euler angles (degrees)
-    glm::vec3 scale{ 1.0f };
 
-    glm::mat4 GetLocalMatrix() const {
-        glm::mat4 T = glm::translate(glm::mat4(1.0f), position);
-        glm::quat q = glm::quat(glm::radians(rotation));
-        glm::mat4 R = glm::mat4_cast(q);
-        glm::mat4 S = glm::scale(glm::mat4(1.0f), scale);
-        return T * R * S;
-    }
-};
 
 class GameObject {
 public:
@@ -86,7 +75,41 @@ public:
         );
     }
 };
+inline json SerializeGameObject(GameObject* obj)
+{
+    json j;
+    j["name"] = obj->name;
+    j["transform"] = TransformToJson(obj->transform);
 
+
+    j["children"] = json::array();
+    for (GameObject* child : obj->children)
+    {
+        j["children"].push_back(SerializeGameObject(child));
+    }
+    return j;
+}
+
+inline GameObject* DeserializeGameObject(const json& j)
+{
+    GameObject* obj = new GameObject(j.value("name", "Unnamed"));
+
+    if (j.contains("transform"))
+    {
+        TransformFromJson(j["transform"], obj->transform);
+    }
+
+
+    if (j.contains("children"))
+    {
+        for (const auto& childJson : j["children"])
+        {
+            GameObject* child = DeserializeGameObject(childJson);
+            obj->AddChild(child);
+        }
+    }
+    return obj;
+}
 class Component {
 public:
     GameObject* owner = nullptr;

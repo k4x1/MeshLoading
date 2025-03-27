@@ -1,14 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : Camera.cpp
-Description : Implementation file for the Camera class, which manages the camera's position, orientation, and view/projection matrices.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
 
 
 

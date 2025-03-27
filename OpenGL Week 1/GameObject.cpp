@@ -1,3 +1,7 @@
+
+//having these separated breaks for some reason idfk
+
+
 //#include "GameObject.h"
 //#include "MeshRenderer.h"
 //
