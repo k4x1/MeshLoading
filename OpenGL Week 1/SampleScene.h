@@ -7,7 +7,6 @@
 #include "ShaderLoader.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "InstanceMeshModel.h"
 #include "InputManager.h"
 #include "Light.h"
 #include "Skybox.h"
@@ -16,25 +15,26 @@
 
 class SampleScene : public Scene {
 public:
-    void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
-    void Start() override;
-    void Update() override;
-    void Render() override;
-    int MainLoop() override;
+    virtual void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
+    virtual void Start() override;
+    virtual void Update() override;
+    virtual void Render() override;
+    virtual int MainLoop() override;
     virtual ~SampleScene();
 
 private:
+    // Extra passes
     FrameBuffer* m_FrameBuffer = nullptr;
-    ShadowMap* m_ShadowMap1 = nullptr; 
+    ShadowMap* m_ShadowMap1 = nullptr;
     ShadowMap* m_ShadowMap2 = nullptr;
 
-    MeshModel* pointLight1 = nullptr;
-    MeshModel* pointLight2 = nullptr;
+    // Game objects are added via the base Scene class.
+    // For example, mainModel is created and gets a MeshRenderer.
     GameObject* mainModel = nullptr;
 
+    // Post-processing quad data.
     GLuint quadVAO = 0, quadVBO = 0;
     GLuint postProcessingShader = 0;
-
     enum class PostProcessEffect {
         None,
         Inversion,
@@ -42,6 +42,7 @@ private:
     };
     PostProcessEffect currentEffect = PostProcessEffect::None;
 
+    // Shader programs for extra passes.
     GLuint Program_Texture = 0;
     GLuint Program_instanceTexture = 0;
     GLuint Program_color = 0;
@@ -49,32 +50,35 @@ private:
     GLuint instanceShadowMappingShader = 0;
     GLuint mainRenderingShader = 0;
 
+    // Textures.
     Texture ancientTex;
     Texture scifiTex;
     Texture skyboxTex;
     Texture blankTex;
 
-    float AmbientStrength;
-    glm::vec3 AmbientColor;
+    // Lights.
     DirectionalLight dirLight1;
     DirectionalLight dirLight2;
     SpotLight spotLight;
 
+    // Terrain members.
     GLuint Program_terrain = 0;
     GLuint terrainVAO = 0, terrainVBO = 0, terrainEBO = 0;
     Texture terrainTexture;
     Texture grassTexture, dirtTexture, stoneTexture, snowTexture;
     std::vector<unsigned int> indices;
 
+    // Skybox.
     Skybox* skybox = nullptr;
     std::vector<std::string> faces;
     GLuint Program_skybox = 0;
 
+    // Timing.
     double currentFrame = 0;
     double lastFrame = 0;
     double deltaTime = 0;
-    float modelSpeed = 100.0f;
 
+    // Local window pointer.
     GLFWwindow* Window = nullptr;
 
     // Helper functions.
@@ -83,7 +87,8 @@ private:
     void SetupTerrain();
     void SetupQuad();
 
-    void RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight);
-    void RenderSceneWithShadows();
+    // Extra rendering passes.
+    void RenderShadowMap();
+    void RenderSceneExtras();
     void RenderPostProcessing();
 };
