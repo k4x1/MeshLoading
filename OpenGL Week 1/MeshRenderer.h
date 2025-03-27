@@ -14,6 +14,7 @@ public:
 
     virtual void Update(float deltaTime) override {
         MeshModel::Update(deltaTime);
+        
     }
 
     virtual void Render(Camera* cam) override {

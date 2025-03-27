@@ -3,16 +3,24 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/quaternion.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "Utils.h"
 #include <nlohmann/json.hpp>
 
-// Forward declaration of Component
-class Component;
+class Camera;
 
+class GameObject;
 
+class Component {
+public:
+    GameObject* owner = nullptr;
+    virtual ~Component() {}
+    virtual void Start() {}
+    virtual void Update(float dt) {}
+    virtual void Render(Camera* cam) {}
+};
 
 class GameObject {
 public:
@@ -22,7 +30,6 @@ public:
     std::vector<GameObject*> children;
     std::vector<std::unique_ptr<Component>> components;
 
-    // Inline constructor and destructor.
     GameObject(const std::string& name = "GameObject") : name(name) {}
     ~GameObject() {
         for (GameObject* child : children) {
@@ -74,15 +81,33 @@ public:
             components.end()
         );
     }
+
+    void Update(float dt) {
+        for (auto& comp : components) {
+            comp->Update(dt);
+        }
+    }
+
+    void Start() {
+        for (auto& comp : components) {
+            comp->Start();
+        }
+    }
+
+    void Render(Camera* cam) {
+        for (auto& comp : components) {
+            comp->Render(cam);
+        }
+    }
 };
-inline json SerializeGameObject(GameObject* obj)
+
+inline nlohmann::json SerializeGameObject(GameObject* obj)
 {
-    json j;
+    nlohmann::json j;
     j["name"] = obj->name;
     j["transform"] = TransformToJson(obj->transform);
 
-
-    j["children"] = json::array();
+    j["children"] = nlohmann::json::array();
     for (GameObject* child : obj->children)
     {
         j["children"].push_back(SerializeGameObject(child));
@@ -90,7 +115,7 @@ inline json SerializeGameObject(GameObject* obj)
     return j;
 }
 
-inline GameObject* DeserializeGameObject(const json& j)
+inline GameObject* DeserializeGameObject(const nlohmann::json& j)
 {
     GameObject* obj = new GameObject(j.value("name", "Unnamed"));
 
@@ -98,7 +123,6 @@ inline GameObject* DeserializeGameObject(const json& j)
     {
         TransformFromJson(j["transform"], obj->transform);
     }
-
 
     if (j.contains("children"))
     {
@@ -110,10 +134,3 @@ inline GameObject* DeserializeGameObject(const json& j)
     }
     return obj;
 }
-class Component {
-public:
-    GameObject* owner = nullptr;
-    virtual ~Component() {}
-    virtual void Update(float deltaTime) {}
-    virtual void Render(class Camera* cam) {}
-};

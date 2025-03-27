@@ -1,17 +1,14 @@
 #include "SceneManager.h"
-#include "GameScene.h"
+#include "SampleScene.h"
 
 // Include other scenes
 
 void SceneManager::SwitchScene(int sceneNumber) {
     switch (sceneNumber) {
     case 1:
-        currentScene = std::make_unique<GameScene>();
+        currentScene = std::make_unique<SampleScene>();
         break;
-    case 2:
-      //  currentScene = std::make_unique<Scene2>();
-        break;
-        // Add cases for other scenes
+
     default:
         return;
     }

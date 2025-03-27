@@ -141,27 +141,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DeferredRenderingScene.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
-    <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="ShadowScene.cpp" />
+    <ClCompile Include="SampleScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="FrameBufferScene.cpp" />
-    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="HeightMapInfo.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InstanceMeshModel.cpp" />
     <ClCompile Include="MeshModel.cpp" />
-    <ClCompile Include="NoiseScene.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="HeightMapScene.cpp" />
     <ClCompile Include="source.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tiny_obj_loader_impl.cpp" />
@@ -202,29 +199,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="All.h" />
-    <ClInclude Include="DeferredRenderingScene.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeometryBuffer.h" />
+    <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MeshRenderer.h" />
-    <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="ShadowScene.h" />
+    <ClInclude Include="SampleScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="FrameBufferScene.h" />
-    <ClInclude Include="GameScene.h" />
     <ClInclude Include="HeightMapInfo.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InstanceMeshModel.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MeshModel.h" />
-    <ClInclude Include="NoiseScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
-    <ClInclude Include="HeightMapScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexStandard.h" />

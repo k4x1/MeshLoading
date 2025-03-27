@@ -1,17 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : Texture.cpp
-Description : Implementation file for the Texture class, which manages texture loading and binding for OpenGL.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
-
-
-
 
 #include "Texture.h"
 #define STB_IMAGE_IMPLEMENTATION

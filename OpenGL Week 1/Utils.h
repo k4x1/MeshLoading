@@ -1,7 +1,6 @@
 #pragma once
-#include "GameObject.h" 
+#include "All.h"
 #include <nlohmann/json.hpp>
-
 
 using json = nlohmann::json;
 struct Transform {
