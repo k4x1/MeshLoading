@@ -1,9 +1,21 @@
 #pragma once
-
-#include "All.h"   
-#include <vector>
-#include <string>
-
+#pragma once
+#include <glew.h>
+#include <glfw3.h>
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+#include <iostream>
+#include "ShaderLoader.h"
+#include "Camera.h"
+#include "Texture.h"
+#include "InputManager.h"
+#include "Light.h"
+#include <string> 
+#include "Skybox.h"
+#include "GameObject.h"
+#include "Component.h"
+#include "MeshRenderer.h"
 class Scene {
 public:
     GLFWwindow* Window;

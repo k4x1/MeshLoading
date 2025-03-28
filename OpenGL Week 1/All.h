@@ -8,12 +8,11 @@
 #include "ShaderLoader.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "InstanceMeshModel.h"
 #include "InputManager.h"
 #include "Light.h"
 #include <string> 
 #include "Skybox.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
-#include "Utils.h"
 #include "Debug.h"	
+#include "Component.h"

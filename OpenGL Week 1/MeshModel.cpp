@@ -1,16 +1,7 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : MeshModel.cpp
-Description : Implementation file for the MeshModel class, which manages the loading, updating, and rendering of a 3D mesh model.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
 
 #include "MeshModel.h"
+#include "Camera.h"
+
 #include "tiny_obj_loader_impl.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>

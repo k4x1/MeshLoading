@@ -7,7 +7,6 @@
 #include "ShaderLoader.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "InstanceMeshModel.h"
 #include "InputManager.h"
 #include "Light.h"
 #include "Skybox.h"

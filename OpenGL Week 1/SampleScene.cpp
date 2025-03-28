@@ -14,7 +14,6 @@
 #include <cstdlib>
 #include <cmath>
 
-
 void SampleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 {
     Scene::InitialSetup(_window, _camera);
@@ -22,8 +21,17 @@ void SampleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
+    // If the camera doesn't have an owner, create one.
+    if (_camera->owner == nullptr)
+    {
+        GameObject* camGO = new GameObject("CameraObject");
+        camGO->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        _camera->owner = camGO;
+        AddGameObject(camGO);
+    }
 
-    camera->InitCamera(800, 800, glm::vec3(0.0f, 0.0f, 0.0f));
+    camera = _camera;
+    camera->InitCamera(800, 800);
 
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     Program_instanceTexture = ShaderLoader::CreateProgram("Resources/Shaders/InstanceTexture.vert", "Resources/Shaders/InstanceTexture.frag");
@@ -64,7 +72,6 @@ void SampleScene::Start()
     Scene::Start();
 }
 
-
 void SampleScene::Update() {
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
@@ -74,8 +81,18 @@ void SampleScene::Update() {
         obj->Update(static_cast<float>(deltaTime));
     }
 
-    spotLight.position = camera->m_position;
-    spotLight.direction = camera->m_orientation;
+    // Update the spotlight based on the camera's owner's transform:
+    spotLight.position = camera->owner->transform.position;
+    {
+        // Compute the camera's forward direction using its owner's rotation.
+        float pitch = camera->owner->transform.rotation.x;
+        float yaw = camera->owner->transform.rotation.y;
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+        spotLight.direction = glm::normalize(direction);
+    }
 
     static bool tabPressed = false;
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed)
@@ -90,7 +107,6 @@ void SampleScene::Update() {
     Scene::Update();
 }
 
-
 void SampleScene::Render() {
     RenderShadowMap(m_ShadowMap1, dirLight1);
     RenderShadowMap(m_ShadowMap2, dirLight2);
@@ -98,7 +114,6 @@ void SampleScene::Render() {
     RenderPostProcessing();
     Scene::Render();
 }
-
 
 int SampleScene::MainLoop() {
     while (!glfwWindowShouldClose(Window)) {
@@ -132,8 +147,17 @@ void SampleScene::SetupLights() {
     dirLight2.direction = glm::vec3(0.3f, -1.0f, 0.2f);
     dirLight2.color = glm::vec3(0.8f, 0.8f, 0.8f);
 
-    spotLight.position = camera->m_position;
-    spotLight.direction = camera->m_orientation;
+    // Set spotlight using camera's owner's transform and computed forward direction.
+    spotLight.position = camera->owner->transform.position;
+    {
+        float pitch = camera->owner->transform.rotation.x;
+        float yaw = camera->owner->transform.rotation.y;
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+        spotLight.direction = glm::normalize(direction);
+    }
     spotLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     spotLight.specularStrength = 1.0f;
     spotLight.attenuationConstant = 1.0f;
@@ -144,6 +168,7 @@ void SampleScene::SetupLights() {
 
     glDisable(GL_CULL_FACE);
 }
+
 void SampleScene::SetupTerrain() {
     HeightMapInfo heightMapInfo = { "Resources/Heightmaps/heightmap.raw", 512, 512, 1.0f };
     std::vector<float> heightMap;
@@ -213,15 +238,15 @@ void SampleScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& 
     shadowMap->Unbind();
 }
 
-
 void SampleScene::RenderSceneWithShadows() {
     m_FrameBuffer->Bind();
     glViewport(0, 0, 800, 800);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    // Update camera matrices
     camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
-    glm::mat4 view = glm::mat4(glm::mat3(camera->m_view));
+    glm::mat4 view = camera->m_view;
     glm::mat4 projection = camera->m_projection;
 
     skybox->Render(view, projection);
@@ -261,7 +286,8 @@ void SampleScene::RenderSceneWithShadows() {
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(dirLight1.direction * -700.0f));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(dirLight2.direction * -700.0f));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->m_position));
+    // Replace camera->m_position with camera->owner->transform.position if needed:
+    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->owner->transform.position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
@@ -316,7 +342,6 @@ void SampleScene::RenderPostProcessing() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
 }
-
 
 SampleScene::~SampleScene() {
     delete mainModel;

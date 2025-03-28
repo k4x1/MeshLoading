@@ -1,55 +1,37 @@
-
-
-
 #include "Camera.h"
-
-// Moves the camera to a new position
-void Camera::MoveCamera(glm::vec3 _position)
-{
-    m_position = _position;
-}
-
-// Initializes the camera with given width, height, and position
-void Camera::InitCamera(int _width, int _height, glm::vec3 _position)
-{
-    m_width = static_cast<float>(_width);
-    m_height = static_cast<float>(_height);
-    MoveCamera(_position);
-
-    // Enable face culling and depth testing
+#include "GameObject.h"
+void Camera::InitCamera(float width, float height) {
+    m_width = width;
+    m_height = height;
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
 
-// Updates and exports the camera matrix to the vertex shader
-void Camera::Matrix(float _nearPlane, float _farPlane, GLuint _shaderID , const char* _uniform )
-{
-    // Initialize the projection matrix
-    m_projection = glm::mat4(1.0f);
+glm::mat4 Camera::GetViewMatrix() {
+    glm::vec3 pos = owner->transform.position;
+    float pitch = owner->transform.rotation.x;
+    float yaw = owner->transform.rotation.y;
 
-    // Make the camera look in the right direction from the right position
-    m_view = glm::lookAt(m_position, m_position+m_orientation, m_up);
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    direction = glm::normalize(direction);
 
-    // Add perspective to the scene
-    m_projection = glm::perspective(glm::radians(m_FOV), (m_width / m_height), _nearPlane, _farPlane);
-    if(_uniform!=nullptr && _shaderID!= NULL){
-    // Export the camera matrix to the vertex shader
-        glUniformMatrix4fv(glGetUniformLocation(_shaderID, _uniform), 1, GL_FALSE, glm::value_ptr(m_projection * m_view));
-    }
-    
-}
-
-glm::mat4 Camera::GetViewMatrix() 
-{
-
-    m_view = glm::lookAt(m_position, m_position + m_orientation, m_up);
+    m_view = glm::lookAt(pos, pos + direction, m_up);
     return m_view;
 }
 
-glm::mat4 Camera::GetProjectionMatrix() 
-{
-    m_projection = glm::mat4(1.0f);
-    m_projection = glm::perspective(glm::radians(m_FOV), (m_width / m_height), 0.01f, 1000.0f);
+glm::mat4 Camera::GetProjectionMatrix() {
+    m_projection = glm::perspective(glm::radians(m_FOV), m_width / m_height, 0.01f, 1000.0f);
     return m_projection;
+}
+
+void Camera::Matrix(float nearPlane, float farPlane, GLuint shaderID, const char* uniform) {
+    m_view = GetViewMatrix();
+    m_projection = glm::perspective(glm::radians(m_FOV), m_width / m_height, nearPlane, farPlane);
+    if (uniform != nullptr && shaderID != 0) {
+        glUniformMatrix4fv(glGetUniformLocation(shaderID, uniform), 1, GL_FALSE, glm::value_ptr(m_projection * m_view));
+    }
 }

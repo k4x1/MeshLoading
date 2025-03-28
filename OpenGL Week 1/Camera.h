@@ -1,51 +1,44 @@
 #ifndef CAMERA_CLASS_H
 #define CAMERA_CLASS_H
+#pragma once
 
+#include "Component.h"
 #include <glew.h>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-#include <glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include "ShaderLoader.h"
 
-class Camera
-{
+class GameObject;
+
+class Camera : public Component {
 public:
-    // Stores the main vectors of the camera
-    glm::vec3 m_position;
-    glm::vec3 m_orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+    // Camera-specific properties
+    float m_FOV = 90.0f;
+    float m_width = 800.0f;
+    float m_height = 800.0f;
     glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    // Cached matrices
     glm::mat4 m_view = glm::mat4(1.0f);
     glm::mat4 m_projection = glm::mat4(1.0f);
-    // Prevents the camera from jumping around when first clicking left click
-    bool m_firstClick = true;
 
-    // Stores the width and height of the window
-    float m_width;
-    float m_height;
-    float m_FOV = 90.0f;
+    Camera() = default;
+    virtual ~Camera() = default;
 
-    // Adjust the speed of the camera and its sensitivity when looking around
-    float m_speed = 50.0f;
-    float m_sensitivity = 10.0f;
+    // Initialize camera settings and OpenGL state
+    void InitCamera(float width, float height);
 
-    // Yaw and pitch angles for camera orientation
-    float m_yaw = -90.0f; // Initialized to -90.0 degrees to look forward
-    float m_pitch = 0.0f;
-    float m_radius = 80.0f;
-
-    void MoveCamera(glm::vec3 _position);
-    // Camera constructor to set up initial values
-    void InitCamera(int _width, int _height, glm::vec3 _position);
-
-    // Updates and exports the camera matrix to the Vertex Shader
-    void Matrix(float _nearPlane, float _farPlane, GLuint _shaderID = NULL, const char* _uniform = nullptr);
-
-
+    // Returns the view matrix.
     glm::mat4 GetViewMatrix();
+
+    // Returns the projection matrix.
     glm::mat4 GetProjectionMatrix();
-   
+
+    // Sets the shader uniform using the product of projection and view matrices.
+    void Matrix(float nearPlane, float farPlane, GLuint shaderID = 0, const char* uniform = nullptr);
 };
 
-#endif
+#endif // CAMERA_CLASS_H

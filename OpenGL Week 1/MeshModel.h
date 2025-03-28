@@ -1,15 +1,3 @@
-/*
-Bachelor of Software Engineering
-Media Design School
-Auckland
-New Zealand
-(c) 2024 Media Design School
-File Name : MeshModel.h
-Description : Header file for the MeshModel class, which manages the loading, updating, and rendering of a 3D mesh model.
-Author : Kazuo Reis de Andrade
-Mail : kazuo.andrade@mds.ac.nz
-*/
-
 
 #pragma once
 
@@ -19,10 +7,10 @@ Mail : kazuo.andrade@mds.ac.nz
 #include <gtc/type_ptr.hpp>
 #include <ext/matrix_transform.hpp>
 #include "VertexStandard.h"
-#include "Camera.h"
+#include "Component.h"
 #include "Light.h"
 
-// Manages the loading, updating, and rendering of a 3D mesh model.
+class Camera;
 class MeshModel
 {
 public:
