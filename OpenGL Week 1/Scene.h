@@ -16,11 +16,16 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "MeshRenderer.h"
+#include <imgui.h>  
+#include "FrameBuffer.h"
+
 class Scene {
 public:
     GLFWwindow* Window;
     Camera* camera;
     std::vector<GameObject*> gameObjects;
+    FrameBuffer* m_FrameBuffer = nullptr;
+
     std::string sceneName = "scene";
 
     virtual void InitialSetup(GLFWwindow* _window, Camera* _camera);
@@ -28,6 +33,7 @@ public:
     virtual void Update();
     virtual void Render();
     virtual int MainLoop();
+    FrameBuffer* GetFrameBuffer();
 
     void AddGameObject(GameObject* obj);
     void RemoveGameObject(GameObject* obj);

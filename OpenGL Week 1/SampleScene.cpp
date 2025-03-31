@@ -70,6 +70,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
 void SampleScene::Start()
 {
     Scene::Start();
+    SaveToFile(sceneName + ".json");
 }
 
 void SampleScene::Update() {
@@ -242,7 +243,7 @@ void SampleScene::RenderSceneWithShadows() {
     m_FrameBuffer->Bind();
     glViewport(0, 0, 800, 800);
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // Update camera matrices
     camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");

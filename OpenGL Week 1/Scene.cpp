@@ -43,6 +43,11 @@ int Scene::MainLoop() {
     return 0;
 }
 
+FrameBuffer* Scene::GetFrameBuffer()
+{
+    return m_FrameBuffer;
+}
+
 void Scene::AddGameObject(GameObject* obj) {
     gameObjects.push_back(obj);
 }

@@ -1,6 +1,13 @@
 #include "InputManager.h"
-#include "Camera.h"
 #include "Scene.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include "Scene.h"
+#include "Component.h"
+#include <glew.h>
+#include <glfw3.h>
+#include <glm/glm.hpp>
 
 // Define the singleton instance
 InputManager* InputManager::m_instance = nullptr;
@@ -10,13 +17,18 @@ InputManager::InputManager(Camera* _camRef, Scene* _scene)
     m_camera = _camRef;
     m_scene = _scene;
     m_instance = this;
+
 }
 
 void InputManager::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    if (ImGui::GetIO().WantCaptureKeyboard)
+    {
+       // ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+        return;
+    }
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
-        static bool cursorVisible = true;
         cursorVisible = !cursorVisible;
         glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
     }
@@ -75,7 +87,7 @@ void InputManager::MouseCallback(GLFWwindow* window, double xpos, double ypos)
     float pitch = m_camera->owner->transform.rotation.x;
 
     yaw += xoffset;
-    pitch += yoffset;
+    pitch -= yoffset;
 
     if (pitch > 89.0f)
         pitch = 89.0f;
@@ -123,17 +135,17 @@ void InputManager::ProcessInput(GLFWwindow* window)
 
     // Move up and down (using the camera's up vector)
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        m_camera->owner->transform.position += m_camera->m_up * speed * static_cast<float>(m_deltaTime);
+        m_camera->owner->transform.position -= m_camera->m_up * speed * static_cast<float>(m_deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        m_camera->owner->transform.position -= m_camera->m_up * speed * static_cast<float>(m_deltaTime);
+        m_camera->owner->transform.position += m_camera->m_up * speed * static_cast<float>(m_deltaTime);
     }
 
     // Process scene saving with CTRL+S
     static bool prevSKey = false;
     bool currSKey = (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
     bool ctrlPressed = (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
-        glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS);
+    glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS);
     if (currSKey)
     {
         if (ctrlPressed && m_scene != nullptr && !prevSKey)
@@ -153,6 +165,7 @@ void InputManager::SetCursorPosCallback(GLFWwindow* window)
 
 void InputManager::StaticScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (m_instance) {
+    
         m_instance->ScrollCallback(window, xoffset, yoffset);
     }
 }
@@ -172,8 +185,12 @@ void InputManager::StaticKeyCallback(GLFWwindow* window, int key, int scancode, 
 }
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    // Adjust the Field of View (FOV) of the Camera.
-    // Here we directly modify the Camera's m_FOV.
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+      //  ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+        return;
+
+    }
     m_camera->m_FOV -= static_cast<float>(yoffset);
     if (m_camera->m_FOV < 1.0f)
         m_camera->m_FOV = 1.0f;

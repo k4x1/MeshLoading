@@ -1,13 +1,9 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
-#include <glew.h>
-#include <glfw3.h>
-#include <glm/glm.hpp>
 #include <iostream>
-#include "Camera.h"  // This is your Camera component (derived from Component)
-#include "Scene.h"
-#include "Component.h"
+#include "Camera.h"  
+
 class Scene;
 
 class InputManager {
@@ -18,6 +14,7 @@ private:
     Camera* m_camera;                   // Pointer to the Camera component
     Scene* m_scene;
     static InputManager* m_instance;    // Singleton instance
+    bool cursorVisible = true;
 
     // Static callback functions for GLFW
     static void StaticMouseCallback(GLFWwindow* window, double xpos, double ypos);

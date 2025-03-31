@@ -10,7 +10,6 @@
 #include "InputManager.h"
 #include "Light.h"
 #include "Skybox.h"
-#include "FrameBuffer.h"
 #include "ShadowMap.h"
 
 class SampleScene : public Scene {
@@ -23,7 +22,6 @@ public:
     virtual ~SampleScene();
 
 private:
-    FrameBuffer* m_FrameBuffer = nullptr;
     ShadowMap* m_ShadowMap1 = nullptr; 
     ShadowMap* m_ShadowMap2 = nullptr;
 
