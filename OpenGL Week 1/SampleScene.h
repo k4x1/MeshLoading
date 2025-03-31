@@ -17,8 +17,7 @@ public:
     void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
     void Start() override;
     void Update() override;
-    void Render() override;
-    int MainLoop() override;
+    void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr) override;
     virtual ~SampleScene();
 
 private:

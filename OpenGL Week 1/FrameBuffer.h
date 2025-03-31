@@ -7,7 +7,8 @@ class FrameBuffer {
 public:
     FrameBuffer(int width, int height);
     ~FrameBuffer();
-
+    
+    void Initialize();
     void Bind();
     void Unbind();
     void BindTexture(GLenum TextureUnit = GL_TEXTURE0);
@@ -20,5 +21,4 @@ private:
     int m_Width;
     int m_Height;
 
-    void Initialize();
 };

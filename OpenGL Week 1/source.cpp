@@ -10,6 +10,7 @@ std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
 Camera* camera = new Camera();
 InputManager* inputs = nullptr;
+FrameBuffer* editorFrameBuffer;
 FrameBuffer* frameBuffer;
 void switchScene(InputManager::SceneType sceneType) {
     switch (sceneType) {
@@ -21,7 +22,7 @@ void switchScene(InputManager::SceneType sceneType) {
         break;
     }
     CurrentScene->InitialSetup(Window, camera);
-    frameBuffer = CurrentScene->GetFrameBuffer();
+   
 }
 enum class EditorState {
     Play,      
@@ -81,15 +82,42 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
-
+    frameBuffer = new FrameBuffer(800, 800);
+    frameBuffer->Initialize();    
+    editorFrameBuffer = new FrameBuffer(800, 800);
+    editorFrameBuffer->Initialize();
     // Perform initial setup
     CurrentScene->InitialSetup(Window, camera);
-    frameBuffer = CurrentScene->GetFrameBuffer();
     // Run the main loop
     while (!glfwWindowShouldClose(Window))
     {
         // Process events
         glfwPollEvents();
+    
+
+        // Process input
+        inputs->ProcessInput(Window);
+        if (inputs->sceneChanged) {
+            switchScene(inputs->currentScene);
+            inputs->sceneChanged = false;
+        }
+        // Update the scene
+        switch (currentState) {
+        case EditorState::Play:
+            // Run simulation updates normally.
+            CurrentScene->Update();
+            break;
+        case EditorState::Pause:
+            // Skip updates, or update only UI elements.
+            break;
+        case EditorState::Stop:
+           
+            switchScene(InputManager::SceneType::Game);
+            currentState = EditorState::Play;
+            break;
+        } 
+
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -108,11 +136,17 @@ int main()
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
             ImGui::End();
         }
-
         ImGui::Begin("Scene View");
         {
+            ImVec2 imageSize(800, 600);
+            CurrentScene->Render(editorFrameBuffer);
+            ImGui::Image((ImTextureID)(intptr_t)editorFrameBuffer->GetTextureID(), imageSize);
+        }
+        ImGui::End();
+        ImGui::Begin("Game View");
+        {
 
-           
+
             if (ImGui::Button("Play")) {
                 currentState = EditorState::Play;
             }
@@ -125,10 +159,10 @@ int main()
                 currentState = EditorState::Stop;
             }
             ImVec2 imageSize(800, 800);
+            CurrentScene->Render(frameBuffer);
             ImGui::Image((ImTextureID)frameBuffer->GetTextureID(), imageSize);
             ImGui::Text("This is where the scene is rendered.");
         }
-
         ImGui::End();
 
         ImGui::Begin("Inspector");
@@ -154,31 +188,6 @@ int main()
             ImGui::Text("Console panel");
         }
         ImGui::End();
-
-        // Process input
-        inputs->ProcessInput(Window);
-        if (inputs->sceneChanged) {
-            switchScene(inputs->currentScene);
-            inputs->sceneChanged = false;
-        }
-        // Update the scene
-        switch (currentState) {
-        case EditorState::Play:
-            // Run simulation updates normally.
-            CurrentScene->Update();
-            break;
-        case EditorState::Pause:
-            // Skip updates, or update only UI elements.
-            break;
-        case EditorState::Stop:
-           
-            switchScene(InputManager::SceneType::Game);
-            currentState = EditorState::Play;
-            break;
-        } 
-
-        // Render the scene
-        CurrentScene->Render();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Window);

@@ -2,7 +2,6 @@
 FrameBuffer::FrameBuffer(int width, int height)
     : m_Width(width), m_Height(height), m_FBO(0), m_TextureID(0), m_RBO(0)
 {
-    Initialize();
 }
 
 FrameBuffer::~FrameBuffer()

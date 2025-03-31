@@ -24,15 +24,14 @@ public:
     GLFWwindow* Window;
     Camera* camera;
     std::vector<GameObject*> gameObjects;
-    FrameBuffer* m_FrameBuffer = nullptr;
+    FrameBuffer* gameFrameBuffer = nullptr;
 
     std::string sceneName = "scene";
 
     virtual void InitialSetup(GLFWwindow* _window, Camera* _camera);
     virtual void Start();
     virtual void Update();
-    virtual void Render();
-    virtual int MainLoop();
+    virtual void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr);
     FrameBuffer* GetFrameBuffer();
 
     void AddGameObject(GameObject* obj);

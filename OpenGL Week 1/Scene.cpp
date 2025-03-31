@@ -25,27 +25,15 @@ void Scene::Update() {
     }
 }
 
-void Scene::Render() {
+void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     for (GameObject* obj : gameObjects) {
         obj->Render(camera);
     }
 }
 
-int Scene::MainLoop() {
-    while (!glfwWindowShouldClose(Window)) {
-        glfwPollEvents();
-        Update();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Render();
-
-        glfwSwapBuffers(Window);
-    }
-    return 0;
-}
-
 FrameBuffer* Scene::GetFrameBuffer()
 {
-    return m_FrameBuffer;
+    return gameFrameBuffer;
 }
 
 void Scene::AddGameObject(GameObject* obj) {

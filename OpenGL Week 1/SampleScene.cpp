@@ -63,7 +63,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
     SetupTerrain();
     SetupQuad();
 
-    m_FrameBuffer = new FrameBuffer(800, 800);
+    //gameFrameBuffer = new FrameBuffer(800, 800);
     Start();
 }
 
@@ -108,23 +108,45 @@ void SampleScene::Update() {
     Scene::Update();
 }
 
-void SampleScene::Render() {
+void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     RenderShadowMap(m_ShadowMap1, dirLight1);
     RenderShadowMap(m_ShadowMap2, dirLight2);
-    RenderSceneWithShadows();
-    RenderPostProcessing();
-    Scene::Render();
-}
+    
+    currentBuffer->Bind();
+    glViewport(0, 0, 800, 800);
+    glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-int SampleScene::MainLoop() {
-    while (!glfwWindowShouldClose(Window)) {
-        glfwPollEvents();
-        Update();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        Render();
-        glfwSwapBuffers(Window);
+    // Update camera matrices
+    glm::mat4 view;
+    glm::mat4 projection;
+    if(_camera == nullptr)
+    { 
+        camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
+        view = camera->m_view;
+        projection = camera->m_projection;
     }
-    return 0;
+    else
+    {
+        _camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
+        view = _camera->m_view;
+        projection = _camera->m_projection;
+    }
+    skybox->Render(view, projection);
+    RenderSceneWithShadows();
+    currentBuffer->Unbind();
+  /*  sceneFrameBuffer->Bind();
+    glViewport(0, 0, 800, 600);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
+    //// Update the scene camera based on input.
+    //sceneCamera->Update(deltaTime); // Ensure this is updated with current mouse/scroll input.
+    //glm::mat4 sceneView = sceneCamera->GetViewMatrix();
+    //glm::mat4 sceneProjection = sceneCamera->GetProjectionMatrix();
+    //SetShaderMatrices(sceneView, sceneProjection);
+    //RenderSceneWithShadows();
+    //sceneFrameBuffer->Unbind();
+   // RenderPostProcessing();
+    Scene::Render(currentBuffer);
 }
 
 void SampleScene::InitializeModels() {
@@ -240,17 +262,7 @@ void SampleScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& 
 }
 
 void SampleScene::RenderSceneWithShadows() {
-    m_FrameBuffer->Bind();
-    glViewport(0, 0, 800, 800);
-    glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    // Update camera matrices
-    camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
-    glm::mat4 view = camera->m_view;
-    glm::mat4 projection = camera->m_projection;
-
-    skybox->Render(view, projection);
+   
 
     glUseProgram(Program_Texture);
     MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
@@ -315,19 +327,17 @@ void SampleScene::RenderSceneWithShadows() {
     glBindVertexArray(0);
     glUseProgram(0);
 
-    m_FrameBuffer->Unbind();
 
     glViewport(0, 0, 800, 800);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(postProcessingShader);
     glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
     glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
     glBindVertexArray(quadVAO);
     glDisable(GL_DEPTH_TEST);
-    m_FrameBuffer->BindTexture();
+ /*   gameFrameBuffer->BindTexture();
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);*/
+ 
 }
 
 void SampleScene::RenderPostProcessing() {
@@ -339,7 +349,7 @@ void SampleScene::RenderPostProcessing() {
     glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
     glBindVertexArray(quadVAO);
     glDisable(GL_DEPTH_TEST);
-    m_FrameBuffer->BindTexture();
+    gameFrameBuffer->BindTexture();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
 }
@@ -347,9 +357,9 @@ void SampleScene::RenderPostProcessing() {
 SampleScene::~SampleScene() {
     delete mainModel;
     delete skybox;
-    if (m_FrameBuffer) {
-        delete m_FrameBuffer;
-        m_FrameBuffer = nullptr;
+    if (gameFrameBuffer) {
+        delete gameFrameBuffer;
+        gameFrameBuffer = nullptr;
     }
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &quadVBO);
