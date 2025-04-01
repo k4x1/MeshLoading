@@ -14,23 +14,22 @@
 #include <cstdlib>
 #include <cmath>
 
-void SampleScene::InitialSetup(GLFWwindow* _window, Camera* _camera)
+void SampleScene::InitialSetup(GLFWwindow* _window)
 {
-    Scene::InitialSetup(_window, _camera);
+    Scene::InitialSetup(_window);
     Window = _window; // For local use
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, 800, 800);
     // If the camera doesn't have an owner, create one.
-    if (_camera->owner == nullptr)
+    if (camera->owner == nullptr)
     {
         GameObject* camGO = new GameObject("CameraObject");
         camGO->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
-        _camera->owner = camGO;
+        camera->owner = camGO;
         AddGameObject(camGO);
     }
 
-    camera = _camera;
     camera->InitCamera(800, 800);
 
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
@@ -120,20 +119,24 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     // Update camera matrices
     glm::mat4 view;
     glm::mat4 projection;
+    Camera* selectedCamera;
     if(_camera == nullptr)
     { 
         camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
         view = camera->m_view;
         projection = camera->m_projection;
+        selectedCamera = camera;
     }
     else
     {
         _camera->Matrix(0.01f, 1000.0f, mainRenderingShader, "VPMatrix");
         view = _camera->m_view;
         projection = _camera->m_projection;
+        selectedCamera = _camera;
     }
     skybox->Render(view, projection);
-    RenderSceneWithShadows();
+    
+    RenderSceneWithShadows(selectedCamera);
     currentBuffer->Unbind();
   /*  sceneFrameBuffer->Bind();
     glViewport(0, 0, 800, 600);
@@ -261,14 +264,14 @@ void SampleScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& 
     shadowMap->Unbind();
 }
 
-void SampleScene::RenderSceneWithShadows() {
+void SampleScene::RenderSceneWithShadows(Camera* _camera) {
    
 
     glUseProgram(Program_Texture);
     MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
     if (mainRenderer) {
         mainRenderer->BindTexture();
-        mainRenderer->PassUniforms(camera);
+        mainRenderer->PassUniforms(_camera);
         mainRenderer->PassDirectionalUniforms(dirLight1);
         mainRenderer->PassSpotLightUniforms(spotLight);
     }
@@ -287,12 +290,12 @@ void SampleScene::RenderSceneWithShadows() {
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
 
     if (mainRenderer) {
-        mainRenderer->Render(camera);
+        mainRenderer->Render(_camera);
     }
 
     glUseProgram(Program_terrain);
     glBindVertexArray(terrainVAO);
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(camera->m_view));
+    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(_camera->m_view));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
     glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
@@ -300,7 +303,7 @@ void SampleScene::RenderSceneWithShadows() {
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(dirLight1.direction * -700.0f));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(dirLight2.direction * -700.0f));
     // Replace camera->m_position with camera->owner->transform.position if needed:
-    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(camera->owner->transform.position));
+    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(_camera->owner->transform.position));
     glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
     glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 

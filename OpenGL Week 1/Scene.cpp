@@ -5,9 +5,9 @@
 #include <nlohmann/json.hpp>
 
 
-void Scene::InitialSetup(GLFWwindow* _window, Camera* _camera) {
+void Scene::InitialSetup(GLFWwindow* _window) {
     Window = _window;
-    camera = _camera;
+    camera= new Camera();
 }
 
 void Scene::Start()
@@ -26,6 +26,7 @@ void Scene::Update() {
 }
 
 void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
+    Camera* renderCamera = (_camera != nullptr) ? _camera : camera;
     for (GameObject* obj : gameObjects) {
         obj->Render(camera);
     }

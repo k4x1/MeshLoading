@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CameraMovement.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_demo.cpp" />
@@ -204,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="All.h" />
+    <ClInclude Include="CameraMovement.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dependencies\IMGUI\imconfig.h" />

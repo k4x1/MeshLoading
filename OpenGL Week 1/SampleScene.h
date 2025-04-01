@@ -14,7 +14,7 @@
 
 class SampleScene : public Scene {
 public:
-    void InitialSetup(GLFWwindow* _window, Camera* _camera) override;
+    void InitialSetup(GLFWwindow* _window) override;
     void Start() override;
     void Update() override;
     void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr) override;
@@ -80,6 +80,6 @@ private:
     void SetupQuad();
 
     void RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight);
-    void RenderSceneWithShadows();
+    void RenderSceneWithShadows(Camera* _camera);
     void RenderPostProcessing();
 };

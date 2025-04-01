@@ -1,58 +1,48 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
-#include <iostream>
-#include "Camera.h"  
-
-class Scene;
+#include <glew.h>     
+#include <unordered_map>
+#include <GLFW/glfw3.h>
 
 class InputManager {
-private:
-    double m_currentFrame = 0;          // Current frame time
-    double m_lastFrame = m_currentFrame;  // Last frame time
-    double m_deltaTime;                 // Time difference between frames
-    Camera* m_camera;                   // Pointer to the Camera component
-    Scene* m_scene;
-    static InputManager* m_instance;    // Singleton instance
-    bool cursorVisible = true;
-
-    // Static callback functions for GLFW
-    static void StaticMouseCallback(GLFWwindow* window, double xpos, double ypos);
-    static void StaticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    static void StaticScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
 public:
-    bool m_updateLight = false;
-    float m_spotlight = 1;
-    float m_pointlight = 1;
-    float m_dirlight = 1;
-    enum class SceneType {
-        Game,
-        HeightMap,
-        Noise,
-        FrameBuffer
-    };
-    SceneType currentScene = SceneType::Game;
+  
+
+    static InputManager& Instance();
+
+    void Update();
+
+    bool GetKey(int key) const;
+    bool GetKeyDown(int key) const;
+    bool GetKeyUp(int key) const;
+
+    double GetMouseX() const;
+    double GetMouseY() const;
+    void GetMousePosition(double& x, double& y) const;
+
+    double GetScrollOffset() const;
+
+    static void SetCallbacks(GLFWwindow* window);
+
+   // SceneType currentScene = SceneType::Game;
     bool sceneChanged = false;
 
-    // Constructor takes a Camera pointer and an optional Scene pointer
-    InputManager(Camera* _camRef, Scene* _scene = nullptr);
+    InputManager(const InputManager&) = delete;
+    InputManager& operator=(const InputManager&) = delete;
 
-    // Key callback function
-    void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+private:
+    InputManager();
 
-    // Mouse callback function
-    void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+    std::unordered_map<int, bool> currentKeyStates;
+    std::unordered_map<int, bool> previousKeyStates;
 
-    // Scroll callback function
-    void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    double mouseX = 0.0, mouseY = 0.0;
+    double scrollOffset = 0.0;
 
-    // Processes input for the current frame
-    void ProcessInput(GLFWwindow* window);
-
-    // Sets the GLFW callback functions
-    static void SetCursorPosCallback(GLFWwindow* window);
-    static void SetKeyCallback(GLFWwindow* window);
+    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };
 
-#endif
+#endif 

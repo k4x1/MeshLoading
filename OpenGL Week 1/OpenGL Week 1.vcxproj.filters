@@ -102,6 +102,9 @@
     <ClCompile Include="Dependencies\IMGUI\imgui_impl_opengl3.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="CameraMovement.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -265,9 +268,6 @@
     <ClInclude Include="Debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3_loader.h">
       <Filter>ImGui</Filter>
     </ClInclude>
@@ -294,6 +294,12 @@
     </ClInclude>
     <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMovement.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

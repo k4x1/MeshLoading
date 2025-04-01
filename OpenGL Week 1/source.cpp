@@ -5,23 +5,29 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "FrameBuffer.h"
+#include "GameObject.h"
+#include "CameraMovement.h"
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
-Camera* camera = new Camera();
+
 InputManager* inputs = nullptr;
 FrameBuffer* editorFrameBuffer;
+GameObject* editorCamera;
 FrameBuffer* frameBuffer;
-void switchScene(InputManager::SceneType sceneType) {
+enum class SceneType {
+    Game,
+};
+void switchScene(SceneType sceneType) {
     switch (sceneType) {
-    case InputManager::SceneType::Game:
+    case SceneType::Game:
         CurrentScene = std::make_unique<SampleScene>();
         std::cout << "Shadow Scene" << std::endl;
         break;
     default:
         break;
     }
-    CurrentScene->InitialSetup(Window, camera);
+    CurrentScene->InitialSetup(Window);
    
 }
 enum class EditorState {
@@ -68,8 +74,7 @@ int main()
     }
 
     // Set input callbacks
-    inputs = new InputManager(camera, CurrentScene.get());
-    inputs->SetCursorPosCallback(Window);
+    InputManager::SetCallbacks(Window);
 
     // Set cursor mode
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -81,13 +86,17 @@ int main()
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
-
+    editorCamera = new GameObject("Camera");
+    editorCamera->transform.position = glm::vec3(-200.0f, 500.0f, 0.0f);
+    editorCamera->AddComponent<Camera>();
+    editorCamera->AddComponent<CameraMovement>();
     frameBuffer = new FrameBuffer(800, 800);
     frameBuffer->Initialize();    
     editorFrameBuffer = new FrameBuffer(800, 800);
     editorFrameBuffer->Initialize();
     // Perform initial setup
-    CurrentScene->InitialSetup(Window, camera);
+    CurrentScene->InitialSetup(Window);
+    editorCamera->Start();
     // Run the main loop
     while (!glfwWindowShouldClose(Window))
     {
@@ -95,13 +104,13 @@ int main()
         glfwPollEvents();
     
 
-        // Process input
-        inputs->ProcessInput(Window);
-        if (inputs->sceneChanged) {
-            switchScene(inputs->currentScene);
-            inputs->sceneChanged = false;
-        }
-        // Update the scene
+        InputManager::Instance().Update();
+        editorCamera->Update(1);
+        //if (inputs->sceneChanged) {
+        //    switchScene(inputs->currentScene);
+        //    inputs->sceneChanged = false;
+        //}
+        //// Update the scene
         switch (currentState) {
         case EditorState::Play:
             // Run simulation updates normally.
@@ -112,7 +121,7 @@ int main()
             break;
         case EditorState::Stop:
            
-            switchScene(InputManager::SceneType::Game);
+            switchScene(SceneType::Game);
             currentState = EditorState::Play;
             break;
         } 
@@ -139,7 +148,7 @@ int main()
         ImGui::Begin("Scene View");
         {
             ImVec2 imageSize(800, 600);
-            CurrentScene->Render(editorFrameBuffer);
+            CurrentScene->Render(editorFrameBuffer, editorCamera->GetComponent<Camera>());
             ImGui::Image((ImTextureID)(intptr_t)editorFrameBuffer->GetTextureID(), imageSize);
         }
         ImGui::End();
@@ -159,6 +168,7 @@ int main()
                 currentState = EditorState::Stop;
             }
             ImVec2 imageSize(800, 800);
+            editorCamera->Render(editorCamera->GetComponent<Camera>());
             CurrentScene->Render(frameBuffer);
             ImGui::Image((ImTextureID)frameBuffer->GetTextureID(), imageSize);
             ImGui::Text("This is where the scene is rendered.");
@@ -193,13 +203,12 @@ int main()
         glfwSwapBuffers(Window);
     }
 
-    // Clean up
-    delete inputs;
-    delete camera;
+    delete frameBuffer;
+    delete editorFrameBuffer;
+  
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    // Terminate GLFW
     glfwTerminate();
     return 0;
 }

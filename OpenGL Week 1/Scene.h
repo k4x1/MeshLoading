@@ -28,7 +28,7 @@ public:
 
     std::string sceneName = "scene";
 
-    virtual void InitialSetup(GLFWwindow* _window, Camera* _camera);
+    virtual void InitialSetup(GLFWwindow* _window);
     virtual void Start();
     virtual void Update();
     virtual void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr);
