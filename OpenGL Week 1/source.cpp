@@ -1,6 +1,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <memory>
 #include <iostream>
+#include <string>
+#include <algorithm>
 #include "SampleScene.h"
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -8,23 +10,25 @@
 #include "FrameBuffer.h"
 #include "GameObject.h"
 #include "CameraMovement.h"
+#include "InputManager.h"  
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
-#include <glm/gtx/quaternion.hpp>  
-// Function prototypes
+#include <glm/gtx/quaternion.hpp>
+
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
-
 InputManager* inputs = nullptr;
 FrameBuffer* editorFrameBuffer;
 GameObject* editorCamera;
 FrameBuffer* frameBuffer;
 GameObject* selectedGameObject = nullptr;
 int emptyObjCount = 0;
+
 enum class SceneType {
     Game,
 };
+
 void switchScene(SceneType sceneType) {
     switch (sceneType) {
     case SceneType::Game:
@@ -35,13 +39,18 @@ void switchScene(SceneType sceneType) {
         break;
     }
     CurrentScene->InitialSetup(Window);
-   
 }
+
 enum class EditorState {
-    Play,      
-    Pause,      
-    Stop        
+    Play,
+    Pause,
+    Stop
 };
+
+GameObject* renamingGameObject = nullptr;
+char renameBuffer[256] = { 0 };
+bool shouldOpenRenamePopup = false; 
+
 void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
     ImGuiTreeNodeFlags flags = gameObject->children.empty() ? ImGuiTreeNodeFlags_Leaf : 0;
     if (gameObject == selected)
@@ -51,14 +60,12 @@ void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
     if (ImGui::IsItemClicked())
         selected = gameObject;
 
-    // Drag source
     if (ImGui::BeginDragDropSource()) {
         ImGui::SetDragDropPayload("DND_GAMEOBJECT", &gameObject, sizeof(GameObject*));
         ImGui::Text("Dragging %s", gameObject->name.c_str());
         ImGui::EndDragDropSource();
     }
 
-    // Drag target
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
             GameObject* dropped = *(GameObject**)payload->Data;
@@ -74,32 +81,29 @@ void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
         ImGui::EndDragDropTarget();
     }
 
+    // Popup context menu.
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::MenuItem("Rename")) {
-            // Insert renaming logic here
+            renamingGameObject = gameObject;
+            strncpy_s(renameBuffer, gameObject->name.c_str(), sizeof(renameBuffer) - 1);
+            renameBuffer[sizeof(renameBuffer) - 1] = '\0';
+            shouldOpenRenamePopup = true;
         }
         if (ImGui::MenuItem("Delete")) {
- 
             if (gameObject->parent) {
                 auto& siblings = gameObject->parent->children;
                 siblings.erase(std::remove(siblings.begin(), siblings.end(), gameObject), siblings.end());
             }
-            //  remove from the scene=
-     
-            // scene->RemoveGameObject(gameObject);
-
             delete gameObject;
             if (selected == gameObject)
                 selected = nullptr;
             ImGui::EndPopup();
-     
             if (open)
                 ImGui::TreePop();
             return;
         }
         ImGui::EndPopup();
     }
-
 
     if (open) {
         for (GameObject* child : gameObject->children) {
@@ -111,12 +115,15 @@ void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
 
 void DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
     if (ImGui::Begin("Hierarchy")) {
+        if (ImGui::Button("Save")) {
+            CurrentScene->SaveToFile(CurrentScene->sceneName + ".json");
+        }
+      
         if (ImGui::Button("Add Empty GameObject")) {
             GameObject* newObj = new GameObject(std::string("New GameObject ") + std::to_string(emptyObjCount));
             emptyObjCount++;
             scene->AddGameObject(newObj);
         }
-
         for (GameObject* obj : scene->gameObjects) {
             if (obj->parent == nullptr) {
                 ShowGameObjectNode(obj, selected);
@@ -129,45 +136,34 @@ void DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
 int main()
 {
     EditorState currentState = EditorState::Play;
-
     CurrentScene = std::make_unique<SampleScene>();
 
-    if (!glfwInit())
-    {
+    if (!glfwInit()) {
         std::cerr << "GLFW initialization failed. Terminating program." << std::endl;
         return -1;
     }
 
-    // Set GLFW window hints
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE);
 
-    // Create a window
-    Window = glfwCreateWindow(800, 800, "First OpenGL Window", NULL, NULL);
-    if (Window == NULL)
-    {
+    Window = glfwCreateWindow(800, 800, "First OpenGL Window", nullptr, nullptr);
+    if (Window == nullptr) {
         std::cerr << "GLFW window creation failed. Terminating program." << std::endl;
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(Window);
 
-
-    // Initialize GLEW
-    if (glewInit() != GLEW_OK)
-    {
+    if (glewInit() != GLEW_OK) {
         std::cerr << "GLEW initialization failed. Terminating program." << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    // Set input callbacks
     InputManager::SetCallbacks(Window);
-
-    // Set cursor mode
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     IMGUI_CHECKVERSION();
@@ -177,47 +173,36 @@ int main()
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
+
     editorCamera = new GameObject("Camera");
     editorCamera->transform.position = glm::vec3(0.0f, 500.0f, 0.0f);
-    //editorCamera->transform.rotation = glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
+
     frameBuffer = new FrameBuffer(800, 800);
-    frameBuffer->Initialize();    
+    frameBuffer->Initialize();
     editorFrameBuffer = new FrameBuffer(800, 800);
     editorFrameBuffer->Initialize();
-    // Perform initial setup
+
     CurrentScene->InitialSetup(Window);
     editorCamera->Start();
-    // Run the main loop
+
     while (!glfwWindowShouldClose(Window))
     {
-        // Process events
         glfwPollEvents();
-    
-
         InputManager::Instance().Update();
 
-        //if (inputs->sceneChanged) {
-        //    switchScene(inputs->currentScene);
-        //    inputs->sceneChanged = false;
-        //}
-        //// Update the scene
         switch (currentState) {
         case EditorState::Play:
-            // Run simulation updates normally.
             CurrentScene->Update();
             break;
         case EditorState::Pause:
-            // Skip updates, or update only UI elements.
             break;
         case EditorState::Stop:
-           
             switchScene(SceneType::Game);
             currentState = EditorState::Play;
             break;
-        } 
-
+        }
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -237,6 +222,7 @@ int main()
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
             ImGui::End();
         }
+
         ImGui::Begin("Scene View");
         {
             editorCamera->Update(0.016f);
@@ -245,10 +231,9 @@ int main()
             ImGui::Image((ImTextureID)(intptr_t)editorFrameBuffer->GetTextureID(), imageSize);
         }
         ImGui::End();
+
         ImGui::Begin("Game View");
         {
-
-
             if (ImGui::Button("Play")) {
                 currentState = EditorState::Play;
             }
@@ -276,6 +261,27 @@ int main()
 
         DrawHierarchyWindow(CurrentScene.get(), selectedGameObject);
 
+        if (shouldOpenRenamePopup) {
+            ImGui::OpenPopup("Rename GameObject");
+            shouldOpenRenamePopup = false;
+        }
+        if (ImGui::BeginPopupModal("Rename GameObject", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            ImGui::InputText("New Name", renameBuffer, IM_ARRAYSIZE(renameBuffer));
+            if (ImGui::Button("OK")) {
+                if (renamingGameObject) {
+                    renamingGameObject->name = std::string(renameBuffer);
+                    renamingGameObject = nullptr;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                renamingGameObject = nullptr;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::Begin("Project");
         {
             ImGui::Text("Project panel");
@@ -287,6 +293,7 @@ int main()
             ImGui::Text("Console panel");
         }
         ImGui::End();
+
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Window);
@@ -294,7 +301,7 @@ int main()
 
     delete frameBuffer;
     delete editorFrameBuffer;
-  
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
