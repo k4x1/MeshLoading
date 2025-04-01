@@ -8,7 +8,7 @@
 #include "GameObject.h"
 
 CameraMovement::CameraMovement()
-    : movementSpeed(10.0f),
+    : movementSpeed(100.0f),
     mouseSensitivity(0.1f),
     firstMouse(true),
     lastX(400.0f),

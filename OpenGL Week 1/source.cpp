@@ -20,6 +20,7 @@ InputManager* inputs = nullptr;
 FrameBuffer* editorFrameBuffer;
 GameObject* editorCamera;
 FrameBuffer* frameBuffer;
+GameObject* selectedGameObject = nullptr;
 enum class SceneType {
     Game,
 };
@@ -40,6 +41,88 @@ enum class EditorState {
     Pause,      
     Stop        
 };
+void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
+    ImGuiTreeNodeFlags flags = gameObject->children.empty() ? ImGuiTreeNodeFlags_Leaf : 0;
+    if (gameObject == selected)
+        flags |= ImGuiTreeNodeFlags_Selected;
+
+    bool open = ImGui::TreeNodeEx(gameObject->name.c_str(), flags);
+    if (ImGui::IsItemClicked())
+        selected = gameObject;
+
+    // Drag source: allow dragging this GameObject.
+    if (ImGui::BeginDragDropSource()) {
+        ImGui::SetDragDropPayload("DND_GAMEOBJECT", &gameObject, sizeof(GameObject*));
+        ImGui::Text("Dragging %s", gameObject->name.c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    // Drag target: accept a dropped GameObject to reparent.
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
+            GameObject* dropped = *(GameObject**)payload->Data;
+            if (dropped != gameObject) {
+                // Remove from old parent if any.
+                if (dropped->parent) {
+                    auto& siblings = dropped->parent->children;
+                    siblings.erase(std::remove(siblings.begin(), siblings.end(), dropped), siblings.end());
+                }
+                // Set new parent.
+                dropped->parent = gameObject;
+                gameObject->children.push_back(dropped);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    // Right-click context menu for renaming or deletion.
+    if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::MenuItem("Rename")) {
+            // Insert renaming logic here (e.g., open a rename dialog)
+        }
+        if (ImGui::MenuItem("Delete")) {
+            // Remove this GameObject from its parent's children list if applicable.
+            if (gameObject->parent) {
+                auto& siblings = gameObject->parent->children;
+                siblings.erase(std::remove(siblings.begin(), siblings.end(), gameObject), siblings.end());
+            }
+            // Optionally, remove it from the scene's main gameObjects vector.
+            delete gameObject;
+            if (selected == gameObject)
+                selected = nullptr;
+            ImGui::EndPopup();
+            return; // Stop processing this node if deleted.
+        }
+        ImGui::EndPopup();
+    }
+
+    // If the node is open, display its children.
+    if (open) {
+        for (GameObject* child : gameObject->children) {
+            ShowGameObjectNode(child, selected);
+        }
+        ImGui::TreePop();
+    }
+}
+
+// Function to draw the Hierarchy window.
+void DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
+    if (ImGui::Begin("Hierarchy")) {
+        // Button to add a new empty GameObject.
+        if (ImGui::Button("Add Empty GameObject")) {
+            GameObject* newObj = new GameObject("New GameObject");
+            scene->AddGameObject(newObj);
+        }
+        // Iterate through all root GameObjects (those without a parent).
+        for (GameObject* obj : scene->gameObjects) {
+            if (obj->parent == nullptr) {
+                ShowGameObjectNode(obj, selected);
+            }
+        }
+    }
+    ImGui::End();
+}
+
 int main()
 {
     EditorState currentState = EditorState::Play;
@@ -153,7 +236,7 @@ int main()
         }
         ImGui::Begin("Scene View");
         {
-            editorCamera->Update(1);
+            editorCamera->Update(0.016f);
             ImVec2 imageSize(800, 600);
             CurrentScene->Render(editorFrameBuffer, editorCamera->GetComponent<Camera>());
             ImGui::Image((ImTextureID)(intptr_t)editorFrameBuffer->GetTextureID(), imageSize);
@@ -188,11 +271,7 @@ int main()
         }
         ImGui::End();
 
-        ImGui::Begin("Hierarchy");
-        {
-            ImGui::Text("Hierarchy panel (list of GameObjects)");
-        }
-        ImGui::End();
+        DrawHierarchyWindow(CurrentScene.get(), selectedGameObject);
 
         ImGui::Begin("Project");
         {
