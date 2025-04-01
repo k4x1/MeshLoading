@@ -137,6 +137,7 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     skybox->Render(view, projection);
     
     RenderSceneWithShadows(selectedCamera);
+    Scene::Render(currentBuffer);
     currentBuffer->Unbind();
   /*  sceneFrameBuffer->Bind();
     glViewport(0, 0, 800, 600);
@@ -149,7 +150,6 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     //RenderSceneWithShadows();
     //sceneFrameBuffer->Unbind();
    // RenderPostProcessing();
-    Scene::Render(currentBuffer);
 }
 
 void SampleScene::InitializeModels() {

@@ -10,18 +10,12 @@ void Camera::InitCamera(float width, float height) {
 
 glm::mat4 Camera::GetViewMatrix() {
     glm::vec3 pos = owner->transform.position;
-    float pitch = owner->transform.rotation.x;
-    float yaw = owner->transform.rotation.y;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-    direction = glm::normalize(direction);
-
-    m_view = glm::lookAt(pos, pos + direction, m_up);
+    glm::vec3 direction = owner->transform.GetForward();
+    glm::vec3 up = owner->transform.GetUp();
+    m_view = glm::lookAt(pos, pos + direction, -up);
     return m_view;
 }
+
 
 glm::mat4 Camera::GetProjectionMatrix() {
     m_projection = glm::perspective(glm::radians(m_FOV), m_width / m_height, 0.01f, 1000.0f);

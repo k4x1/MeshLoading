@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include <memory>
 #include <iostream>
 #include "SampleScene.h"
@@ -7,6 +8,10 @@
 #include "FrameBuffer.h"
 #include "GameObject.h"
 #include "CameraMovement.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/quaternion.hpp>  
 // Function prototypes
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
@@ -87,7 +92,8 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
     editorCamera = new GameObject("Camera");
-    editorCamera->transform.position = glm::vec3(-200.0f, 500.0f, 0.0f);
+    editorCamera->transform.position = glm::vec3(0.0f, 500.0f, 0.0f);
+    //editorCamera->transform.rotation = glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
     frameBuffer = new FrameBuffer(800, 800);

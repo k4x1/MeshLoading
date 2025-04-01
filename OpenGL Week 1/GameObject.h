@@ -1,4 +1,5 @@
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include <string>
 #include <vector>
 #include <memory>
@@ -6,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "Utils.h"
 #include <nlohmann/json.hpp>
 class Camera;
@@ -15,33 +17,47 @@ class Component;
 struct Transform {
 public:
     glm::vec3 position{ 0.0f };
-    glm::vec3 rotation{ 0.0f };
+    glm::quat rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
     glm::vec3 scale{ 1.0f };
 
     glm::mat4 GetLocalMatrix() const {
         glm::mat4 T = glm::translate(glm::mat4(1.0f), position);
-        glm::quat q = glm::quat(glm::radians(rotation));
-        glm::mat4 R = glm::mat4_cast(q);
+        glm::mat4 R = glm::toMat4(rotation);
         glm::mat4 S = glm::scale(glm::mat4(1.0f), scale);
         return T * R * S;
     }
+
+    glm::vec3 GetForward() const {
+        return rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+    }
+
+    glm::vec3 GetUp() const {
+        return rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+    }
 };
-inline json TransformToJson(const Transform& t)
+
+inline nlohmann::json TransformToJson(const Transform& t)
 {
-    return json{
+    return nlohmann::json{
         {"position", { t.position.x, t.position.y, t.position.z }},
-        {"rotation", { t.rotation.x, t.rotation.y, t.rotation.z }},
+        {"rotation", { t.rotation.w, t.rotation.x, t.rotation.y, t.rotation.z }},
         {"scale",    { t.scale.x,    t.scale.y,    t.scale.z    }}
     };
 }
 
-inline void TransformFromJson(const json& j, Transform& t)
+inline void TransformFromJson(const nlohmann::json& j, Transform& t)
 {
     auto pos = j.at("position");
     t.position = glm::vec3(pos[0].get<float>(), pos[1].get<float>(), pos[2].get<float>());
 
     auto rot = j.at("rotation");
-    t.rotation = glm::vec3(rot[0].get<float>(), rot[1].get<float>(), rot[2].get<float>());
+    // Expecting the quaternion in order: [w, x, y, z]
+    t.rotation = glm::quat(
+        rot[0].get<float>(),
+        rot[1].get<float>(),
+        rot[2].get<float>(),
+        rot[3].get<float>()
+    );
 
     auto scale = j.at("scale");
     t.scale = glm::vec3(scale[0].get<float>(), scale[1].get<float>(), scale[2].get<float>());
