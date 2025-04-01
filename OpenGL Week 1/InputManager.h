@@ -24,7 +24,7 @@ public:
     double GetScrollOffset() const;
 
     static void SetCallbacks(GLFWwindow* window);
-
+    GLFWwindow* GetWindow() const { return m_window; }
    // SceneType currentScene = SceneType::Game;
     bool sceneChanged = false;
 
@@ -36,7 +36,7 @@ private:
 
     std::unordered_map<int, bool> currentKeyStates;
     std::unordered_map<int, bool> previousKeyStates;
-
+   static GLFWwindow* m_window;
     double mouseX = 0.0, mouseY = 0.0;
     double scrollOffset = 0.0;
 

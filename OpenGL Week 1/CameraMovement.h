@@ -16,4 +16,5 @@ private:
     bool firstMouse;
     float lastX;
     float lastY;
+
 };

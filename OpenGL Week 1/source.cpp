@@ -105,7 +105,7 @@ int main()
     
 
         InputManager::Instance().Update();
-        editorCamera->Update(1);
+
         //if (inputs->sceneChanged) {
         //    switchScene(inputs->currentScene);
         //    inputs->sceneChanged = false;
@@ -147,6 +147,7 @@ int main()
         }
         ImGui::Begin("Scene View");
         {
+            editorCamera->Update(1);
             ImVec2 imageSize(800, 600);
             CurrentScene->Render(editorFrameBuffer, editorCamera->GetComponent<Camera>());
             ImGui::Image((ImTextureID)(intptr_t)editorFrameBuffer->GetTextureID(), imageSize);

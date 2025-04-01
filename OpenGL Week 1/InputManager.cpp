@@ -1,4 +1,5 @@
 #include "InputManager.h"
+GLFWwindow* InputManager::m_window = nullptr;
 
 // Define the singleton instance via a static local variable in Instance()
 InputManager& InputManager::Instance() {
@@ -63,6 +64,7 @@ double InputManager::GetScrollOffset() const {
 }
 
 void InputManager::SetCallbacks(GLFWwindow* window) {
+    m_window = window;
     glfwSetKeyCallback(window, KeyCallback);
     glfwSetCursorPosCallback(window, MouseCallback);
     glfwSetScrollCallback(window, ScrollCallback);
