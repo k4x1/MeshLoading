@@ -70,11 +70,15 @@ void CameraMovement::Update(float dt) {
     if (InputManager::Instance().GetKey(GLFW_KEY_S))
         owner->transform.position -= forward * movementSpeed * dt;
     if (InputManager::Instance().GetKey(GLFW_KEY_A))
-        owner->transform.position -= right * movementSpeed * dt;
-    if (InputManager::Instance().GetKey(GLFW_KEY_D))
         owner->transform.position += right * movementSpeed * dt;
+    if (InputManager::Instance().GetKey(GLFW_KEY_D))
+        owner->transform.position -= right * movementSpeed * dt;
     if (InputManager::Instance().GetKey(GLFW_KEY_Q))
-        owner->transform.position -= up * movementSpeed * dt;
-    if (InputManager::Instance().GetKey(GLFW_KEY_E))
         owner->transform.position += up * movementSpeed * dt;
+    if (InputManager::Instance().GetKey(GLFW_KEY_E))
+        owner->transform.position -= up * movementSpeed * dt;
+}
+ void CameraMovement::OnInspectorGUI() {
+    ImGui::DragFloat("Movement Speed", &movementSpeed, 0.1f);
+    ImGui::DragFloat("Mouse Sensitivity", &mouseSensitivity, 0.01f);
 }

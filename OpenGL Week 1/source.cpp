@@ -16,6 +16,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+// Global variables
 std::unique_ptr<Scene> CurrentScene;
 GLFWwindow* Window = nullptr;
 InputManager* inputs = nullptr;
@@ -49,7 +50,7 @@ enum class EditorState {
 
 GameObject* renamingGameObject = nullptr;
 char renameBuffer[256] = { 0 };
-bool shouldOpenRenamePopup = false; 
+bool shouldOpenRenamePopup = false;
 
 void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected) {
     ImGuiTreeNodeFlags flags = gameObject->children.empty() ? ImGuiTreeNodeFlags_Leaf : 0;
@@ -118,9 +119,9 @@ void DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
         if (ImGui::Button("Save")) {
             CurrentScene->SaveToFile(CurrentScene->sceneName + ".json");
         }
-      
+
         if (ImGui::Button("Add Empty GameObject")) {
-            GameObject* newObj = new GameObject(std::string("New GameObject ") + std::to_string(emptyObjCount));
+            GameObject* newObj = new GameObject("New GameObject " + std::to_string(emptyObjCount));
             emptyObjCount++;
             scene->AddGameObject(newObj);
         }
@@ -208,6 +209,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // DockSpace
         {
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
             const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -223,6 +225,7 @@ int main()
             ImGui::End();
         }
 
+        // Scene View Window
         ImGui::Begin("Scene View");
         {
             editorCamera->Update(0.016f);
@@ -232,6 +235,7 @@ int main()
         }
         ImGui::End();
 
+        // Game View Window
         ImGui::Begin("Game View");
         {
             if (ImGui::Button("Play")) {
@@ -253,14 +257,22 @@ int main()
         }
         ImGui::End();
 
+        // Inspector Window - Updated to call inspector logic from selectedGameObject
         ImGui::Begin("Inspector");
         {
-            ImGui::Text("Inspector panel");
+            if (selectedGameObject) {
+                selectedGameObject->OnInspectorGUI();
+            }
+            else {
+                ImGui::Text("Nothing selected.");
+            }
         }
         ImGui::End();
 
+        // Hierarchy Window
         DrawHierarchyWindow(CurrentScene.get(), selectedGameObject);
 
+        // Rename Popup
         if (shouldOpenRenamePopup) {
             ImGui::OpenPopup("Rename GameObject");
             shouldOpenRenamePopup = false;
@@ -282,12 +294,14 @@ int main()
             ImGui::EndPopup();
         }
 
+        // Project Window
         ImGui::Begin("Project");
         {
             ImGui::Text("Project panel");
         }
         ImGui::End();
 
+        // Console Window
         ImGui::Begin("Console");
         {
             ImGui::Text("Console panel");

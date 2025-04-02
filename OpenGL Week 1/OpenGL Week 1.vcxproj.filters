@@ -105,6 +105,9 @@
     <ClCompile Include="CameraMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -300,6 +303,12 @@
     </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="IInspectable.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRegistry.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

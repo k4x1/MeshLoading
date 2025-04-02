@@ -17,4 +17,8 @@ public:
 
     virtual void Update(float deltaTime) override;
     virtual void Render(Camera* cam) override;
+
+    virtual void OnInspectorGUI() override;
+    float a;
+    float b;
 };

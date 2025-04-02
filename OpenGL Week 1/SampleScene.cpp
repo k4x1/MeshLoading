@@ -69,7 +69,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
 void SampleScene::Start()
 {
     Scene::Start();
-    LoadFromFile(sceneName + ".json");
+    //LoadFromFile(sceneName + ".json");
 }
 
 void SampleScene::Update() {

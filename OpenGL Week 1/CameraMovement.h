@@ -2,12 +2,13 @@
 #include "Component.h"  
 #include <glm/glm.hpp>
 
-class CameraMovement : public Component {
+class CameraMovement : public Component{
 public:
     CameraMovement();
 
     virtual void Start() override;
     virtual void Update(float dt) override;
+    virtual void OnInspectorGUI() override;
 
 private:
     float movementSpeed;
