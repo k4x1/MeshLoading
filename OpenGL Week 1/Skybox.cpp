@@ -52,9 +52,9 @@ void Skybox::Render(const glm::mat4& view, const glm::mat4& projection) {
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-    glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 5);
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 

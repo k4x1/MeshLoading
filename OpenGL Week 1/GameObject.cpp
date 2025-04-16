@@ -61,10 +61,8 @@ glm::mat4 GameObject::GetWorldMatrix() const {
 }
 
 void GameObject::OnInspectorGUI() {
-    // Display transform properties
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::DragFloat3("Position", glm::value_ptr(transform.position), 0.1f);
-        // Here we assume Euler angles are used for simplicity.
         static float rotation[3] = { 0.0f, 0.0f, 0.0f };
         if (ImGui::DragFloat3("Rotation", rotation, 0.5f)) {
             transform.rotation = glm::quat(glm::radians(glm::vec3(rotation[0], rotation[1], rotation[2])));
@@ -98,6 +96,7 @@ void GameObject::Update(float dt) {
     for (auto& comp : components) {
         comp->Update(dt);
     }
+    std::cout << transform.position.x << std::endl;;
 }
 
 void GameObject::Start() {

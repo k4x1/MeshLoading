@@ -126,11 +126,11 @@ void MeshModel::Render(GLuint _shader)
 // Bind the texture
 void MeshModel::BindTexture()
 {
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
     if (m_texture != NULL) {
-        glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
+        glUniform1i(glGetUniformLocation(m_shader, "Texture5"), 4);
     }
 
 }

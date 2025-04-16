@@ -13,7 +13,7 @@
 #include <gtc/type_ptr.hpp>
 #include <cstdlib>
 #include <cmath>
-
+#include "CameraMovement.h"
 void SampleScene::InitialSetup(GLFWwindow* _window)
 {
     Scene::InitialSetup(_window);
@@ -27,6 +27,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
         GameObject* camGO = new GameObject("CameraObject");
         camGO->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
         camera->owner = camGO;
+        camGO->AddComponent<CameraMovement>();
         AddGameObject(camGO);
     }
 
@@ -55,7 +56,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
         "Resources/Textures/skybox/Back.png",
         "Resources/Textures/skybox/Front.png"
     };
-    skybox = new Skybox("Resources/Models/cube.obj", faces);
+   // skybox = new Skybox("Resources/Models/cube.obj", faces);
 
     InitializeModels();
     SetupLights();
@@ -108,8 +109,8 @@ void SampleScene::Update() {
 }
 
 void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
-    RenderShadowMap(m_ShadowMap1, dirLight1);
-    RenderShadowMap(m_ShadowMap2, dirLight2);
+   // RenderShadowMap(m_ShadowMap1, dirLight1);
+    //RenderShadowMap(m_ShadowMap2, dirLight2);
     
     currentBuffer->Bind();
     glViewport(0, 0, 800, 800);
@@ -134,9 +135,9 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
         projection = _camera->m_projection;
         selectedCamera = _camera;
     }
-    skybox->Render(view, projection);
+   // skybox->Render(view, projection);
     
-    RenderSceneWithShadows(selectedCamera);
+   // RenderSceneWithShadows(selectedCamera);
     Scene::Render(currentBuffer);
     currentBuffer->Unbind();
   /*  sceneFrameBuffer->Bind();
@@ -245,98 +246,85 @@ void SampleScene::SetupQuad() {
 }
 
 void SampleScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight) {
-    shadowMap->Bind();
-    glClear(GL_DEPTH_BUFFER_BIT);
+    //shadowMap->Bind();
+    //glClear(GL_DEPTH_BUFFER_BIT);
 
-    glm::vec3 lightPos = dirLight.direction * -700.0f;
-    shadowMap->UpdateLightSpaceMatrix(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //glm::vec3 lightPos = dirLight.direction * -700.0f;
+    //shadowMap->UpdateLightSpaceMatrix(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    glUseProgram(shadowMappingShader);
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(shadowMap->GetLightSpaceMatrix()));
+    //glUseProgram(shadowMappingShader);
+    //glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(shadowMap->GetLightSpaceMatrix()));
 
-    // Render the main model's shadow.
-    glm::mat4 modelMatrix = mainModel->GetWorldMatrix();
-    glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
-    if (mainRenderer) {
-        mainRenderer->Render(camera);
-    }
-    shadowMap->Unbind();
+    ////// Render the main model's shadow.
+    ////glm::mat4 modelMatrix = mainModel->GetWorldMatrix();
+    ////glUniformMatrix4fv(glGetUniformLocation(shadowMappingShader, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    ////MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
+    ////if (mainRenderer) {
+    ////    mainRenderer->Render(camera);
+    ////}
+    //shadowMap->Unbind();
 }
 
 void SampleScene::RenderSceneWithShadows(Camera* _camera) {
    
 
-    glUseProgram(Program_Texture);
+   /* glUseProgram(Program_Texture);
     MeshRenderer* mainRenderer = mainModel->GetComponent<MeshRenderer>();
     if (mainRenderer) {
         mainRenderer->BindTexture();
         mainRenderer->PassUniforms(_camera);
         mainRenderer->PassDirectionalUniforms(dirLight1);
         mainRenderer->PassSpotLightUniforms(spotLight);
-    }
-    glActiveTexture(GL_TEXTURE2);
-    m_ShadowMap1->BindTexture(GL_TEXTURE2);
-    glUniform1i(glGetUniformLocation(Program_Texture, "shadowMap1"), 2);
-    glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+    }*/
 
-    glActiveTexture(GL_TEXTURE3);
-    m_ShadowMap2->BindTexture(GL_TEXTURE3);
-    glUniform1i(glGetUniformLocation(Program_Texture, "shadowMap2"), 3);
-    glUniformMatrix4fv(glGetUniformLocation(Program_Texture, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
-    glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 1);
-
-    if (mainRenderer) {
+   /* if (mainRenderer) {
         mainRenderer->Render(_camera);
-    }
+    }*/
 
-    glUseProgram(Program_terrain);
-    glBindVertexArray(terrainVAO);
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(_camera->m_view));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
-    glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(dirLight1.direction * -700.0f));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(dirLight2.direction * -700.0f));
-    // Replace camera->m_position with camera->owner->transform.position if needed:
-    glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(_camera->owner->transform.position));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
-    glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
+    //glUseProgram(Program_terrain);
+    //glBindVertexArray(terrainVAO);
+    //glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "view"), 1, GL_FALSE, glm::value_ptr(_camera->m_view));
+    //glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "projection"), 1, GL_FALSE, glm::value_ptr(camera->m_projection));
+    //glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+    //glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix1"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap1->GetLightSpaceMatrix()));
+    //glUniformMatrix4fv(glGetUniformLocation(Program_terrain, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(m_ShadowMap2->GetLightSpaceMatrix()));
+    //glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos1"), 1, glm::value_ptr(dirLight1.direction * -700.0f));
+    //glUniform3fv(glGetUniformLocation(Program_terrain, "lightPos2"), 1, glm::value_ptr(dirLight2.direction * -700.0f));
+    //// Replace camera->m_position with camera->owner->transform.position if needed:
+    //glUniform3fv(glGetUniformLocation(Program_terrain, "viewPos"), 1, glm::value_ptr(_camera->owner->transform.position));
+    //glUniform3fv(glGetUniformLocation(Program_terrain, "lightColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
+    //glUniform3fv(glGetUniformLocation(Program_terrain, "objectColor"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, grassTexture.GetId());
-    glUniform1i(glGetUniformLocation(Program_terrain, "grassTexture"), 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, dirtTexture.GetId());
-    glUniform1i(glGetUniformLocation(Program_terrain, "dirtTexture"), 1);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, stoneTexture.GetId());
-    glUniform1i(glGetUniformLocation(Program_terrain, "stoneTexture"), 2);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, snowTexture.GetId());
-    glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
-    glActiveTexture(GL_TEXTURE4);
-    m_ShadowMap1->BindTexture(GL_TEXTURE4);
-    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap1"), 4);
-    glActiveTexture(GL_TEXTURE5);
-    m_ShadowMap2->BindTexture(GL_TEXTURE5);
-    glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap2"), 5);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, grassTexture.GetId());
+    //glUniform1i(glGetUniformLocation(Program_terrain, "grassTexture"), 0);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, dirtTexture.GetId());
+    //glUniform1i(glGetUniformLocation(Program_terrain, "dirtTexture"), 1);
+    //glActiveTexture(GL_TEXTURE2);
+    //glBindTexture(GL_TEXTURE_2D, stoneTexture.GetId());
+    //glUniform1i(glGetUniformLocation(Program_terrain, "stoneTexture"), 2);
+    //glActiveTexture(GL_TEXTURE3);
+    //glBindTexture(GL_TEXTURE_2D, snowTexture.GetId());
+    //glUniform1i(glGetUniformLocation(Program_terrain, "snowTexture"), 3);
+    //glActiveTexture(GL_TEXTURE4);
+    //m_ShadowMap1->BindTexture(GL_TEXTURE4);
+    //glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap1"), 4);
+    //glActiveTexture(GL_TEXTURE5);
+    //m_ShadowMap2->BindTexture(GL_TEXTURE5);
+    //glUniform1i(glGetUniformLocation(Program_terrain, "shadowMap2"), 5);
 
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-    glUseProgram(0);
+    //glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+    //glBindVertexArray(0);
+    //glUseProgram(0);
 
 
-    glViewport(0, 0, 800, 800);
-    glUseProgram(postProcessingShader);
-    glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
-    glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
-    glBindVertexArray(quadVAO);
-    glDisable(GL_DEPTH_TEST);
+    //glViewport(0, 0, 800, 800);
+    //glUseProgram(postProcessingShader);
+    //glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
+    //glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), static_cast<int>(currentEffect));
+    //glBindVertexArray(quadVAO);
+    //glDisable(GL_DEPTH_TEST);
  /*   gameFrameBuffer->BindTexture();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);*/
