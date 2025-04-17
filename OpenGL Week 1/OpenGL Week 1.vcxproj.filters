@@ -108,6 +108,9 @@
     <ClCompile Include="ComponentRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -309,6 +312,9 @@
     </ClInclude>
     <ClInclude Include="ComponentRegistry.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainComponent.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

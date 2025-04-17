@@ -1,4 +1,3 @@
-
 #include "Skybox.h"
 #include <stb_image.h>
 #include <gtc/matrix_transform.hpp>
@@ -7,7 +6,8 @@
 #include "ShaderLoader.h"
 
 Skybox::Skybox(const std::string& objFilePath, const std::vector<std::string>& faces)
-    : MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(1), objFilePath) {
+    : MeshModel(glm::vec3(0), glm::vec3(0), glm::vec3(1), objFilePath)
+{
     loadCubemap(faces);
     setupShader();
 }
@@ -20,8 +20,10 @@ void Skybox::loadCubemap(const std::vector<std::string>& faces) {
     for (unsigned int i = 0; i < faces.size(); i++) {
         unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
             stbi_image_free(data);
         }
         else {
@@ -41,26 +43,33 @@ void Skybox::setupShader() {
 }
 
 void Skybox::Render(const glm::mat4& view, const glm::mat4& projection) {
-
-
+    // Set up state for skybox rendering.
     glCullFace(GL_FRONT);
     glDepthFunc(GL_LEQUAL);
+
     glUseProgram(shaderProgram);
 
-    glm::mat4 viewMatrix = glm::mat4(glm::mat3(view)); 
+    // Remove translation from the view matrix.
+    glm::mat4 viewMatrix = glm::mat4(glm::mat3(view));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-    glBindVertexArray(VAO);
+    // IMPORTANT: Bind the cubemap to texture unit 5
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    // Tell the shader that the cubemap is in texture unit 5.
     glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 5);
+
+    glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
 
+    // Restore default state.
+    glCullFace(GL_BACK);
+    glDepthFunc(GL_LESS);
 }
 
 GLuint Skybox::GetCubemapTexture()
 {
-    return cubemapTexture; 
+    return cubemapTexture;
 }

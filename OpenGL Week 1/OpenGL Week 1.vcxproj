@@ -167,6 +167,7 @@
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="source.cpp" />
+    <ClCompile Include="TerrainComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tiny_obj_loader_impl.cpp" />
   </ItemGroup>
@@ -236,6 +237,7 @@
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="TerrainComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexStandard.h" />

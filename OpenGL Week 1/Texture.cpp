@@ -20,7 +20,7 @@ Texture::~Texture()
 }
 
 // Gets the OpenGL texture ID.
-unsigned int Texture::GetId()
+unsigned int Texture::GetId() const
 {
     return m_textureID;
 }

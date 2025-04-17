@@ -96,7 +96,6 @@ void GameObject::Update(float dt) {
     for (auto& comp : components) {
         comp->Update(dt);
     }
-    std::cout << transform.position.x << std::endl;;
 }
 
 void GameObject::Start() {

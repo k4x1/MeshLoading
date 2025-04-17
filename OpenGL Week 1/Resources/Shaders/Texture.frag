@@ -49,7 +49,7 @@ in vec3 FragNormal;
 in vec3 FragPos;
 
 uniform sampler2D Texture0;
-uniform samplerCube skybox;
+layout(binding =5) uniform samplerCube skybox;
 
 uniform vec3 CameraPos;
 uniform float LightSpecularStrength = 1.0f;
@@ -159,7 +159,7 @@ void main()
 		TotalLightOutput += CalculateLightPoint(i);
 	}
 	TotalLightOutput += CalculateLightDirection();
-	TotalLightOutput += CalculateLightSpot();
+//	TotalLightOutput += CalculateLightSpot();
 
 	// Combine the lighting components
 	vec4 Light = vec4(Ambient + TotalLightOutput, 1.0f);
@@ -172,4 +172,5 @@ void main()
     vec4 ReflectionTexture = texture(skybox, ReflectDir);
     
     FinalColor = Light * mix(BaseTexture, ReflectionTexture, 0.5f);
+
 }

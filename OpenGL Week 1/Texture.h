@@ -27,7 +27,7 @@ public:
     ~Texture();
 
     // Gets the OpenGL texture ID.
-    unsigned int GetId();
+    unsigned int GetId() const;
 
     // Initializes the texture from a file.
     void InitTexture(const char* _filePath);

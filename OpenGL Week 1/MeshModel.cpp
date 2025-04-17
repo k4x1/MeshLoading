@@ -118,19 +118,20 @@ void MeshModel::Render(GLuint _shader)
     glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
-    
+    glBindTexture(GL_TEXTURE_2D, 0);
 
+    glUseProgram(0);
 
 }
 
 // Bind the texture
 void MeshModel::BindTexture()
 {
-    glActiveTexture(GL_TEXTURE5);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
     if (m_texture != NULL) {
-        glUniform1i(glGetUniformLocation(m_shader, "Texture5"), 4);
+        glUniform1i(glGetUniformLocation(m_shader, "Texture0"), 0);
     }
 
 }
