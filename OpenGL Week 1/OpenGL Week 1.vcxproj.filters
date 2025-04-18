@@ -105,10 +105,25 @@
     <ClCompile Include="CameraMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRegistry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TerrainComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHelpers.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabSystem.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRegistry.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
@@ -310,10 +325,25 @@
     <ClInclude Include="IInspectable.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRegistry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainComponent.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHelpers.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabSystem.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFactory.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRegistry.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>

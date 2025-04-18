@@ -13,6 +13,9 @@ public:
     void Unbind();
     void BindTexture(GLenum TextureUnit = GL_TEXTURE0);
     GLuint GetTextureID() const { return m_TextureID; }
+    int GetWidth()  const { return m_Width; }
+    int GetHeight() const { return m_Height; }
+
 
 private:
     GLuint m_FBO;

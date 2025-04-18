@@ -1,20 +1,38 @@
 #include "AssetManager.h"
-#include <filesystem>
+#include <iostream>
 
 std::vector<Asset> AssetManager::assets;
 
 void AssetManager::LoadAssets(const std::string& rootDir) {
     assets.clear();
-    for (auto& p : std::filesystem::recursive_directory_iterator(rootDir)) {
-        if (!p.is_regular_file()) continue;
-        std::string ext = p.path().extension().string();
-        AssetType type;
-        if (ext == ".png" || ext == ".jpg")         type = AssetType::Texture;
-        else if (ext == ".obj" || ext == ".fbx")    type = AssetType::Model;
-        else if (ext == ".lua" || ext == ".cs")    type = AssetType::Script;
-        else if (ext == ".prefab")                    type = AssetType::Prefab;
-        else continue;
-        assets.push_back({ type, p.path().filename().string(), p.path().string() });
+    try {
+        for (auto const& entry : fs::recursive_directory_iterator(rootDir)) {
+            // use the free function is_regular_file()
+            if (!fs::is_regular_file(entry.path()))
+                continue;
+
+            auto ext = entry.path().extension().string();
+            AssetType type;
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
+                type = AssetType::Texture;
+            else if (ext == ".obj" || ext == ".fbx" || ext == ".gltf")
+                type = AssetType::Model;
+            else if (ext == ".lua" || ext == ".cs" || ext == ".js")
+                type = AssetType::Script;
+            else if (ext == ".prefab" || ext == ".json")
+                type = AssetType::Prefab;
+            else
+                continue;
+
+            assets.push_back({
+                type,
+                entry.path().filename().string(),
+                entry.path().string()
+                });
+        }
+    }
+    catch (const fs::filesystem_error& e) {
+        std::cerr << "AssetManager filesystem error: " << e.what() << "\n";
     }
 }
 

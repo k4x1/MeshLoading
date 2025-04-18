@@ -1,6 +1,9 @@
+// AssetManager.h
 #pragma once
 #include <string>
 #include <vector>
+#include <filesystem>    
+namespace fs = std::filesystem;
 
 enum class AssetType { Texture, Model, Script, Prefab };
 
