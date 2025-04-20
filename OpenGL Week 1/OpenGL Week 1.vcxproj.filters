@@ -126,6 +126,21 @@
     <ClCompile Include="ScriptComponent.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="Dependencies\IMGUIZO\GraphEditor.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies\IMGUIZO\ImCurveEdit.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies\IMGUIZO\ImGradient.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies\IMGUIZO\ImGuizmo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -345,6 +360,24 @@
     </ClInclude>
     <ClInclude Include="ScriptComponent.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\GraphEditor.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\ImCurveEdit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\ImGradient.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\ImGuizmo.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\ImSequencer.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

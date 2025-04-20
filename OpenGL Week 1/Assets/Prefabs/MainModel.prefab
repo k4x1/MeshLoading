@@ -1,0 +1,29 @@
+{
+    "children": [],
+    "components": [
+        {
+            "model": "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj",
+            "texture": "",
+            "type": "MeshRenderer"
+        }
+    ],
+    "name": "MainModel",
+    "transform": {
+        "position": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ]
+    }
+}

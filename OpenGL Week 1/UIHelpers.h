@@ -1,25 +1,34 @@
-#pragma once
+﻿#pragma once
+#include <imgui.h>
+#include "FrameBuffer.h"
 #include "Scene.h"
 #include "GameObject.h"
-#include "FrameBuffer.h"
-#include "Camera.h"
+#include "ImGuizmo.h"
+
+
+enum class GizmoMode { Translate, Rotate, Scale };
+static GizmoMode currentGizmoMode = GizmoMode::Translate;
+enum class EditorState { Play, Pause, Stop };
 
 namespace UIHelpers {
-    // Call once at startup to load assets if needed
     void InitializeUI();
-
-    // Dockspace & main menu bar
     void ShowDockSpace();
 
-    // Individual windows
-    void DrawSceneViewWindow(FrameBuffer* editorFB, Camera* editorCam);
-    void DrawGameViewWindow(FrameBuffer* gameFB, Camera* gameCam, int& editorState);
+    // Note: EditorState used here
+    void DrawSceneViewWindow(FrameBuffer* editorFB,
+        GameObject* editorCamera,
+        Scene* scene,
+        GameObject* selected,
+        float deltaTime);
+
+    void DrawGameViewWindow(FrameBuffer* gameFB,
+        GameObject* editorCamera,
+        Scene* scene,
+        EditorState& state,
+        float deltaTime);
+
     void DrawInspectorWindow(GameObject*& selected);
     void DrawHierarchyWindow(Scene* scene, GameObject*& selected);
     void DrawProjectWindow();
-    void DrawConsoleWindow();
-
-    // Helper for tree nodes
-    void ShowGameObjectNode(GameObject* gameObject, GameObject*& selected);
+    void DrawDebugWindow(bool* p_open = nullptr);
 }
-

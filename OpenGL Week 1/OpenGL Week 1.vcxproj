@@ -72,12 +72,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
+    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUIZO;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
     <LibraryPath>$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
+    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUIZO;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
     <LibraryPath>$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -148,6 +148,11 @@
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="Dependencies\IMGUIZO\GraphEditor.cpp" />
+    <ClCompile Include="Dependencies\IMGUIZO\ImCurveEdit.cpp" />
+    <ClCompile Include="Dependencies\IMGUIZO\ImGradient.cpp" />
+    <ClCompile Include="Dependencies\IMGUIZO\ImGuizmo.cpp" />
+    <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_demo.cpp" />
     <ClCompile Include="Dependencies\IMGUI\imgui_draw.cpp" />
@@ -220,6 +225,12 @@
     <ClInclude Include="ComponentFactory.h" />
     <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\GraphEditor.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\ImCurveEdit.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\ImGradient.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\ImGuizmo.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\ImSequencer.h" />
+    <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h" />
     <ClInclude Include="Dependencies\IMGUI\imconfig.h" />
     <ClInclude Include="Dependencies\IMGUI\imgui.h" />
     <ClInclude Include="Dependencies\IMGUI\imgui_impl_glfw.h" />

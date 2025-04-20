@@ -19,6 +19,8 @@ public:
     virtual void Render(Camera* cam) override;
 
     virtual void OnInspectorGUI() override;
+    std::string modelFilePath;
+    std::string texturePath;
     float a;
     float b;
 };

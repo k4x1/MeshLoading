@@ -8,6 +8,8 @@
 #include <nlohmann/json.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>    // C++17
+namespace fs = std::filesystem;
 
 GameObject* PrefabSystem::Instantiate(const std::string& prefabPath) {
     // Open and parse the JSON prefab file
@@ -76,4 +78,44 @@ GameObject* PrefabSystem::Instantiate(const std::string& prefabPath) {
 
     // Kick off the recursion from the root JSON
     return deserialize(j);
+}
+
+
+bool PrefabSystem::SavePrefab(GameObject* root, const std::string& filepath) {
+    if (!root) {
+        std::cout << "[PrefabSystem] SavePrefab called with null root\n";
+        return false;
+    }
+
+    std::cout << "[PrefabSystem] Saving prefab for GameObject \""
+        << root->name << "\" to " << filepath << "\n";
+
+    // Ensure the directory exists:
+    fs::path filePathObj(filepath);
+    fs::path dir = filePathObj.parent_path();
+    if (!dir.empty() && !fs::exists(dir)) {
+        std::cout << "[PrefabSystem] Creating directory: " << dir.string() << "\n";
+        std::error_code ec;
+        if (!fs::create_directories(dir, ec)) {
+            std::cerr << "[PrefabSystem] ERROR: Failed to create directory "
+                << dir.string() << ": " << ec.message() << "\n";
+            return false;
+        }
+    }
+
+    // Serialize to JSON
+    nlohmann::json j = SerializeGameObject(root);
+
+    // Write file
+    std::ofstream out(filepath);
+    if (!out.is_open()) {
+        std::cerr << "[PrefabSystem] ERROR: Failed to open file for writing: "
+            << filepath << "\n";
+        return false;
+    }
+    out << j.dump(4);
+    out.close();
+
+    std::cout << "[PrefabSystem] Successfully wrote prefab JSON\n";
+    return true;
 }

@@ -9,16 +9,16 @@ void Camera::InitCamera(float width, float height) {
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-    glm::vec3 pos = owner->transform.position;
+    glm::vec3 pos       = owner->transform.position;
     glm::vec3 direction = owner->transform.GetForward();
-    glm::vec3 up = owner->transform.GetUp();
+    glm::vec3 up        = owner->transform.GetUp();
     m_view = glm::lookAt(pos, pos + direction, -up);
     return m_view;
 }
 
 
 glm::mat4 Camera::GetProjectionMatrix() {
-    m_projection = glm::perspective(glm::radians(m_FOV), m_width / m_height, 0.01f, 1000.0f);
+    m_projection = glm::perspective(glm::radians(m_FOV), m_width / m_height, 0.01f, 10000.0f);
     return m_projection;
 }
 

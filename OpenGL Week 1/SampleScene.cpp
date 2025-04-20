@@ -81,6 +81,9 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
 void SampleScene::Start()
 {
     Scene::Start();
+    Debug::Log("Something happened");
+    Debug::LogWarning("Watch out");
+    Debug::LogError("Uh‑oh!");
 }
 
 void SampleScene::Update()

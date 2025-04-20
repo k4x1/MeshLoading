@@ -1,8 +1,8 @@
 #include "GameObject.h"
-#include "ComponentRegistry.h" // if needed
+#include "ComponentRegistry.h" 
 #include "IInspectable.h"
 #include <glm/gtc/type_ptr.hpp>
-
+#include "ComponentFactory.h"
 // --- Transform conversion functions ---
 nlohmann::json TransformToJson(const Transform& t)
 {
@@ -109,20 +109,30 @@ void GameObject::Render(Camera* cam) {
         comp->Render(cam);
     }
 }
-
-nlohmann::json SerializeGameObject(GameObject* obj)
-{
+nlohmann::json SerializeGameObject(GameObject* obj) {
     nlohmann::json j;
     j["name"] = obj->name;
     j["transform"] = TransformToJson(obj->transform);
 
+    // 1) Components
+    j["components"] = nlohmann::json::array();
+    for (auto& compPtr : obj->components) {
+        Component* comp = compPtr.get();
+        auto compJson = ComponentFactory::Instance().Serialize(comp);
+        if (!compJson.is_null()) {
+            j["components"].push_back(compJson);
+        }
+    }
+
+    // 2) Children
     j["children"] = nlohmann::json::array();
-    for (GameObject* child : obj->children)
-    {
+    for (GameObject* child : obj->children) {
         j["children"].push_back(SerializeGameObject(child));
     }
+
     return j;
 }
+
 
 GameObject* DeserializeGameObject(const nlohmann::json& j)
 {
