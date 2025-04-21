@@ -11,7 +11,8 @@
 #include "ScriptComponent.h"
 
 extern GameObject* editorCamera;
-
+bool UIHelpers::g_SceneViewHovered = false;
+bool UIHelpers::g_GameViewHovered = false;
 namespace UIHelpers {
 
     void InitializeUI() {
@@ -54,7 +55,7 @@ namespace UIHelpers {
 
         // 2) Begin ImGui window
         ImGui::Begin("Scene View");
-
+        g_SceneViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
         // 2a) Draw the texture
         ImVec2 sz((float)editorFB->GetWidth(), (float)editorFB->GetHeight());
         ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
@@ -137,6 +138,7 @@ namespace UIHelpers {
         gameFB->Unbind();
 
         ImGui::Begin("Game View");
+        g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
         if (ImGui::Button("Play"))  state = EditorState::Play;
         ImGui::SameLine();
         if (ImGui::Button("Pause")) state = EditorState::Pause;
@@ -228,9 +230,29 @@ namespace UIHelpers {
         if (ImGui::Button("Save"))
             scene->SaveToFile(scene->sceneName + ".json");
         ImGui::SameLine();
-        if (ImGui::Button("Add Empty"))
-            scene->AddGameObject(new GameObject("Empty"));
 
+        if (ImGui::Button("Add Shape")){
+            ImGui::OpenPopup("AddShapePopup");
+        }
+
+        if (ImGui::BeginPopup("AddShapePopup")) {
+            if (ImGui::MenuItem("Empty")) {
+                scene->AddGameObject(new GameObject("Empty"));
+            }
+            if (ImGui::MenuItem("Cube")) {
+                if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Cube.prefab"))
+                    scene->AddGameObject(go);
+            }
+            if (ImGui::MenuItem("Sphere")) {
+                if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Sphere.prefab"))
+                    scene->AddGameObject(go);
+            }
+            if (ImGui::MenuItem("Capsule")) {
+                if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Capsule.prefab"))
+                    scene->AddGameObject(go);
+            }
+            ImGui::EndPopup();
+        }
         // allow dropping prefab onto blank area
         if (ImGui::BeginDragDropTarget()) {
             if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
@@ -258,6 +280,20 @@ namespace UIHelpers {
     void DrawInspectorWindow(GameObject*& selected) {
         ImGui::Begin("Inspector");
         if (selected) {
+            // —— Rename field ——————————————————————————————
+            // Copy into a local buffer, show InputText, and write back on edit
+            char buf[128];
+            strncpy_s(buf, selected->name.c_str(), sizeof(buf));
+            buf[sizeof(buf) - 1] = '\0';
+            if (ImGui::InputText("##Rename", buf, sizeof(buf))) {
+                selected->name = std::string(buf);
+            }
+            ImGui::SameLine();
+            ImGui::Text("Name");
+            ImGui::Separator();
+            // ————————————————————————————————————————————————————
+
+            // Draw the rest of the normal inspector:
             selected->OnInspectorGUI();
 
             ImGui::Separator();
@@ -266,7 +302,6 @@ namespace UIHelpers {
                 if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
                     int idx = *(int*)pl->Data;
                     auto& a = AssetManager::GetAssets()[idx];
-                    std::cout << "[UIHelpers] Inspector got asset: " << a.name << "\n";
                     if (a.type == AssetType::Script) {
                         selected->AddComponent<ScriptComponent>(a.path);
                     }
@@ -282,12 +317,15 @@ namespace UIHelpers {
         }
         ImGui::End();
     }
-
     void DrawProjectWindow() {
         ImGui::Begin("Project");
 
-        ImGui::TextUnformatted("• Drop a GameObject here to save a Prefab");
-        ImGui::TextUnformatted("• Drag a .prefab below into Hierarchy/Scene View");
+        // Keep track of which asset we want to rename:
+        static int   renameIndex = -1;
+        static char  renameBuf[128] = {};
+        static bool  showRenameModal = false;
+
+        ImGui::TextUnformatted("Drop a GameObject here to save a Prefab");
 
         // 1) drop‑target to save a live GameObject → prefab
         if (ImGui::BeginDragDropTarget()) {
@@ -305,24 +343,70 @@ namespace UIHelpers {
 
         ImGui::Separator();
 
-        // 2) list all assets; make only Prefabs drag sources
+        // 2) List all assets; add drag‑source *and* context menu
         const auto& assets = AssetManager::GetAssets();
         for (int i = 0; i < (int)assets.size(); ++i) {
             ImGui::PushID(i);
-            ImGui::TextUnformatted(assets[i].name.c_str());
-            if (assets[i].type == AssetType::Prefab) {
-                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-                    ImGui::SetDragDropPayload("ASSET_PAYLOAD", &i, sizeof(i));
-                    ImGui::Text("Instantiate %s", assets[i].name.c_str());
-                    ImGui::EndDragDropSource();
-                }
+
+            // selectable so BeginPopupContextItem will pick it up
+            ImGui::Selectable(assets[i].name.c_str(), false);
+
+            // drag‑source for instantiation
+            if (assets[i].type == AssetType::Prefab &&
+                ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+            {
+                ImGui::SetDragDropPayload("ASSET_PAYLOAD", &i, sizeof(i));
+                ImGui::Text("Instantiate %s", assets[i].name.c_str());
+                ImGui::EndDragDropSource();
             }
+
+            // right‑click menu
+            if (assets[i].type == AssetType::Prefab && ImGui::BeginPopupContextItem()) {
+                if (ImGui::MenuItem("Rename")) {
+                    renameIndex = i;
+                    strncpy_s(renameBuf, sizeof(renameBuf), assets[i].name.c_str(), _TRUNCATE);
+                    showRenameModal = true;
+                }
+                if (ImGui::MenuItem("Delete")) {
+                    fs::remove(assets[i].path);
+                    AssetManager::LoadAssets("Assets");
+                }
+                ImGui::EndPopup();
+            }
+
             ImGui::PopID();
+        }
+
+        // 3) Modal popup for renaming
+        if (showRenameModal &&
+            renameIndex >= 0 && renameIndex < (int)assets.size())
+        {
+            ImGui::OpenPopup("Rename Prefab");
+            showRenameModal = false;
+        }
+        if (ImGui::BeginPopupModal("Rename Prefab", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            ImGui::InputText("New Name", renameBuf, sizeof(renameBuf));
+            ImGui::TextDisabled("(.prefab extension is preserved)");
+
+            if (ImGui::Button("OK", ImVec2(80, 0))) {
+                auto oldPath = fs::path(assets[renameIndex].path);
+                auto newPath = oldPath.parent_path() /
+                    (std::string(renameBuf) + oldPath.extension().string());
+                std::error_code ec;
+                fs::rename(oldPath, newPath, ec);
+                if (ec) std::cerr << "Rename failed: " << ec.message() << "\n";
+                AssetManager::LoadAssets("Assets");
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(80, 0))) {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
         }
 
         ImGui::End();
     }
-
 
 
     void UIHelpers::DrawDebugWindow(bool* p_open) {

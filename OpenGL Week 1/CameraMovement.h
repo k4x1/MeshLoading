@@ -13,9 +13,11 @@ public:
 private:
     float movementSpeed;
     float mouseSensitivity;
-    bool firstMouse;
     float lastX;
     float lastY;
     float yaw;
     float pitch;
+    bool  firstMouse;
+    bool  capturingMouse = false;
 };
+
