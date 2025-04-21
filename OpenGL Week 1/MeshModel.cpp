@@ -1,7 +1,7 @@
 
 #include "MeshModel.h"
 #include "Camera.h"
-
+#include "Debug.h"      
 #include "tiny_obj_loader_impl.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -104,24 +104,34 @@ void MeshModel::Update(float DeltaTime)
 }
 
 // Render function
-void MeshModel::Render(GLuint _shader)
+void MeshModel::Render(GLuint shader)
 {
- 
-    glUseProgram(_shader);
-    glCullFace(GL_BACK);
-    glDepthFunc(GL_LESS);
+    // 1) Activate the program
+    glUseProgram(shader);
 
+    // 2) Bind our texture (if any) to unit 0 and tell the shader about it
+    if (m_texture != 0) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_texture);
+        GLint loc = glGetUniformLocation(shader, "Texture0");
+        if (loc >= 0) glUniform1i(loc, 0);
+    }
 
+    // 3) Upload the Model matrix  
+    glUniformMatrix4fv(
+        glGetUniformLocation(shader, "ModelMat"),
+        1, GL_FALSE,
+        glm::value_ptr(m_modelMatrix)
+    );
 
-    glUniformMatrix4fv(glGetUniformLocation(_shader, "ModelMat"), 1, GL_FALSE, &m_modelMatrix[0][0]);
-   
+    // 4) Draw the VAO
     glBindVertexArray(VAO);
     glDrawArrays(m_drawType, 0, m_drawCount);
     glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
+    // 5) Clean up
+    // (no glBindTexture(…,0) here!)
     glUseProgram(0);
-
 }
 
 // Bind the texture

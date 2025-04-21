@@ -6,15 +6,15 @@
             "name": "CameraObject",
             "transform": {
                 "position": [
-                    0.0,
-                    0.0,
-                    0.0
+                    7.2956342697143555,
+                    -2.7829933166503906,
+                    3.3618083000183105
                 ],
                 "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
+                    0.8614652156829834,
+                    0.17996947467327118,
+                    0.4648215174674988,
+                    -0.09710627794265747
                 ],
                 "scale": [
                     1.0,
@@ -27,16 +27,18 @@
             "children": [],
             "components": [
                 {
-                    "model": "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj",
-                    "texture": "",
-                    "type": "MeshRenderer"
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
                 }
             ],
             "name": "MainModel",
             "transform": {
                 "position": [
                     0.0,
-                    0.0,
+                    500.0,
                     0.0
                 ],
                 "rotation": [

@@ -13,7 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-
+#include "ShaderManager.h"
 void SampleScene::InitialSetup(GLFWwindow* _window)
 {
     Scene::InitialSetup(_window);
@@ -81,9 +81,7 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
 void SampleScene::Start()
 {
     Scene::Start();
-    Debug::Log("Something happened");
-    Debug::LogWarning("Watch out");
-    Debug::LogError("Uh‑oh!");
+
 }
 
 void SampleScene::Update()
@@ -180,15 +178,21 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 }
 void SampleScene::InitializeModels()
 {
+    if (fs::exists(sceneName + ".json")) {
+        std::cout << "[SampleScene] Loading from " << sceneName << "\n";
+     //   LoadFromFile(sceneName + ".json");
+    }
     GameObject* mainModelGO = new GameObject("MainModel");
-    auto* renderer = mainModelGO->AddComponent<MeshRenderer>(
-        glm::vec3(0.0f, 500.0f, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.05f),
+    mainModelGO->transform.position = glm::vec3(0, 500, 0);
+    mainModelGO->transform.scale = glm::vec3(0.05f);
+    auto* mr = mainModelGO->AddComponent<MeshRenderer>(
+        glm::vec3(0), glm::vec3(0), glm::vec3(1),
         "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
     );
-    renderer->SetShader(Program_Texture);
-    renderer->SetTexture(ancientTex.GetId());
+    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
+    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
+    mr->fragShaderPath = "Resources/Shaders/Texture.frag";
+    mr->Reload();
     AddGameObject(mainModelGO);
 }
 

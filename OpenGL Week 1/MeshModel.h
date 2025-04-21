@@ -64,6 +64,13 @@ public:
 
     // Calculates the model matrix based on position, rotation, and scale.
     glm::mat4 CalculateModelMatrix();
+    GLuint GetVAO() const { return VAO; }
+
+    /// How many vertices to draw
+    GLsizei GetDrawCount() const { return m_drawCount; }
+
+    /// GL primitive type (e.g. GL_TRIANGLES)
+    GLenum GetDrawType() const { return m_drawType; }
 
     glm::mat4 m_modelMatrix;
 protected:

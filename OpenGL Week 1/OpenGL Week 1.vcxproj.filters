@@ -141,6 +141,9 @@
     <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -378,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

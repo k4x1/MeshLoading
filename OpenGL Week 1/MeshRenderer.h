@@ -1,26 +1,41 @@
-#pragma once
-
+﻿#pragma once
 #include "MeshModel.h"
-#include <gtc/type_ptr.hpp>
+#include "Component.h"
+#include <filesystem>
+#include <memory>
 #include <string>
+#include "Texture.h"
+namespace fs = std::filesystem;
 
-class GameObject;
-class Component;
-class Camera;
-
-class MeshRenderer : public Component, public MeshModel {
+class MeshRenderer : public Component {
 public:
-    MeshRenderer(const glm::vec3& position,
-        const glm::vec3& rotation,
-        const glm::vec3& scale,
-        const std::string& modelFilePath);
+    MeshRenderer(const glm::vec3& pos,
+        const glm::vec3& rot,
+        const glm::vec3& scl,
+        const std::string& modelPath);
 
-    virtual void Update(float deltaTime) override;
-    virtual void Render(Camera* cam) override;
+    void Update(float dt) override;
+    void Render(Camera* cam) override;
+    void OnInspectorGUI() override;
 
-    virtual void OnInspectorGUI() override;
+    // public so factory/inspector can touch them:
     std::string modelFilePath;
-    std::string texturePath;
-    float a;
-    float b;
+    std::string textureFilePath;
+    std::string vertShaderPath;
+    std::string fragShaderPath;
+    Texture texture;
+    void Reload();  // rebuilds mesh/texture/shader
+
+private:
+    std::unique_ptr<MeshModel> mesh;
+    GLuint shaderProgram = 0;
+    GLuint textureID = 0;
+
+    // timestamps for change‑detection
+    fs::file_time_type _modelTime;
+    fs::file_time_type _texTime;
+    fs::file_time_type _vertTime;
+    fs::file_time_type _fragTime;
+
+    void _checkFileUpdates();
 };
