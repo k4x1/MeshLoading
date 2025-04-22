@@ -4,7 +4,7 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
-
+#include "Camera.h"
 std::vector<DebugEntry> Debug::s_entries;
 std::mutex              Debug::s_mutex;
 
@@ -57,4 +57,44 @@ const std::vector<DebugEntry>& Debug::GetEntries() {
 void Debug::ClearEntries() {
     std::lock_guard<std::mutex> lock(s_mutex);
     s_entries.clear();
+}
+
+void Debug::DrawWireBox(const glm::mat4& M,
+    const glm::vec3& h,
+    Camera* cam)
+{
+    // compute corners
+    glm::vec3 corners[8] = {
+      {-h.x,-h.y,-h.z},{ h.x,-h.y,-h.z},
+      { h.x, h.y,-h.z},{-h.x, h.y,-h.z},
+      {-h.x,-h.y, h.z},{ h.x,-h.y, h.z},
+      { h.x, h.y, h.z},{-h.x, h.y, h.z}
+    };
+    glm::vec4 world[8];
+    for (int i = 0; i < 8; i++) world[i] = M * glm::vec4(corners[i], 1.0f);
+
+    // set up matrices
+    glm::mat4 V = cam->GetViewMatrix();
+    glm::mat4 P = cam->GetProjectionMatrix();
+
+    glMatrixMode(GL_PROJECTION); glPushMatrix(); glLoadMatrixf(glm::value_ptr(P));
+    glMatrixMode(GL_MODELVIEW);  glPushMatrix(); glLoadMatrixf(glm::value_ptr(V));
+
+    glDisable(GL_DEPTH_TEST);
+    glColor3f(1, 1, 0);
+    glBegin(GL_LINES);
+    auto L = [&](int a, int b) {
+        glVertex3fv(glm::value_ptr(glm::vec3(world[a])));
+        glVertex3fv(glm::value_ptr(glm::vec3(world[b])));
+        };
+    // edges
+    L(0, 1); L(1, 2); L(2, 3); L(3, 0);
+    L(4, 5); L(5, 6); L(6, 7); L(7, 4);
+    for (int i = 0; i < 4; i++) L(i, i + 4);
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION); glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
