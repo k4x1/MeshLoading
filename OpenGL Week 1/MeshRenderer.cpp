@@ -5,6 +5,7 @@
 #include "UIHelpers.h"
 #include "ComponentFactory.h"
 #include "Debug.h"      
+#include "InspectorSlotRegistry.h"
 MeshRenderer::MeshRenderer(const glm::vec3& pos,
     const glm::vec3& rot,
     const glm::vec3& scl,
@@ -146,32 +147,20 @@ void MeshRenderer::OnInspectorGUI() {
 static bool meshReg = []() {
     ComponentFactory::Instance().Register(
         "MeshRenderer",
-
-        // creator: read either the new keys or fall back to the old ones
-        [](const nlohmann::json& js, GameObject* owner)->Component* {
-            std::string modelPath = js.value("modelFilePath",
-                js.value("model", ""));
-            std::string texPath = js.value("textureFilePath",
-                js.value("texture", "Resources/Textures/blankTex.png"));
-            std::string vertPath = js.value("vertShaderPath",
-                js.value("vertShader", "Resources/Shaders/Texture.vert"));
-            std::string fragPath = js.value("fragShaderPath",
-                js.value("fragShader", "Resources/Shaders/Texture.frag"));
-
+        // JSON deserializer
+        [](auto& js, GameObject* owner)->Component* {
+            std::string m = js.value("modelFilePath", "");
             auto* mr = owner->AddComponent<MeshRenderer>(
-                glm::vec3(0), glm::vec3(0), glm::vec3(1),
-                modelPath
-            );
-            mr->textureFilePath = texPath;
-            mr->vertShaderPath = vertPath;
-            mr->fragShaderPath = fragPath;
+                glm::vec3(0), glm::vec3(0), glm::vec3(1), m);
+            mr->textureFilePath = js.value("textureFilePath", "");
+            mr->vertShaderPath = js.value("vertShaderPath", "");
+            mr->fragShaderPath = js.value("fragShaderPath", "");
             mr->Reload();
             return mr;
         },
-
-        // serializer: only write the new, unambiguous keys
-        [](Component* comp)->nlohmann::json {
-            if (auto* mr = dynamic_cast<MeshRenderer*>(comp)) {
+        // serializer
+        [](Component* c)->nlohmann::json {
+            if (auto* mr = dynamic_cast<MeshRenderer*>(c)) {
                 return {
                     {"modelFilePath",   mr->modelFilePath},
                     {"textureFilePath", mr->textureFilePath},
@@ -182,5 +171,43 @@ static bool meshReg = []() {
             return nullptr;
         }
     );
+
+    InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
+        "Model",
+        [](MeshRenderer* mr) { return mr->modelFilePath; },
+        [](MeshRenderer* mr, const Asset& a) {
+            mr->modelFilePath = a.path;
+            mr->Reload();
+        },
+        { AssetType::Model }
+    );
+    InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
+        "Texture",
+        [](MeshRenderer* mr) { return mr->textureFilePath; },
+        [](MeshRenderer* mr, const Asset& a) {
+            mr->textureFilePath = a.path;
+            mr->Reload();
+        },
+        { AssetType::Texture }
+    );
+    InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
+        "Vertex Shader",
+        [](MeshRenderer* mr) { return mr->vertShaderPath; },
+        [](MeshRenderer* mr, const Asset& a) {
+            mr->vertShaderPath = a.path;
+            mr->Reload();
+        },
+        { AssetType::Script }
+    );
+    InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
+        "Fragment Shader",
+        [](MeshRenderer* mr) { return mr->fragShaderPath; },
+        [](MeshRenderer* mr, const Asset& a) {
+            mr->fragShaderPath = a.path;
+            mr->Reload();
+        },
+        { AssetType::Script }
+    );
+
     return true;
     }();

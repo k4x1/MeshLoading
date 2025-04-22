@@ -13,7 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-#include "ShaderManager.h"
 void SampleScene::InitialSetup(GLFWwindow* _window)
 {
     Scene::InitialSetup(_window);
@@ -61,13 +60,13 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
     // Other scene objects
     InitializeModels();
     SetupLights();
-    {
+ /*   {
         auto* terrainGO = new GameObject("Terrain");
         terrainGO->AddComponent<TerrainComponent>(
             HeightMapInfo{ "Resources/Heightmaps/heightmap.raw",512,512,1.0f }, 0.2f
         );
         AddGameObject(terrainGO);
-    }
+    }*/
     SetupQuad();
 
     // Post-processing quad
@@ -180,9 +179,9 @@ void SampleScene::InitializeModels()
 {
     if (fs::exists(sceneName + ".json")) {
         std::cout << "[SampleScene] Loading from " << sceneName << "\n";
-     //   LoadFromFile(sceneName + ".json");
+        LoadFromFile(sceneName + ".json");
     }
-    GameObject* mainModelGO = new GameObject("MainModel");
+    /*GameObject* mainModelGO = new GameObject("MainModel");
     mainModelGO->transform.position = glm::vec3(0, 500, 0);
     mainModelGO->transform.scale = glm::vec3(0.05f);
     auto* mr = mainModelGO->AddComponent<MeshRenderer>(
@@ -191,9 +190,20 @@ void SampleScene::InitializeModels()
     );
     mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
     mr->vertShaderPath = "Resources/Shaders/Texture.vert";
+    mr->fragShaderPath = "Resources/Shaders/Texture.frag";*/
+
+    GameObject* a = new GameObject("Sphere");
+    a->transform.position = glm::vec3(0, 500, 0);
+    a->transform.scale = glm::vec3(0.05f);
+    auto* mr = a->AddComponent<MeshRenderer>(
+        glm::vec3(0), glm::vec3(0), glm::vec3(1),
+        "Assets/Models/Cube.obj"
+    );
+    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
+    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
     mr->fragShaderPath = "Resources/Shaders/Texture.frag";
     mr->Reload();
-    AddGameObject(mainModelGO);
+    AddGameObject(a);
 }
 
 void SampleScene::SetupLights() {

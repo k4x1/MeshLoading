@@ -31,6 +31,7 @@ namespace UIHelpers {
     void DrawHierarchyWindow(Scene* scene, GameObject*& selected);
     void DrawProjectWindow();
     void DrawDebugWindow(bool* p_open = nullptr);
+    void ShowGameObjectNode(GameObject* obj, GameObject*& selected, Scene* scene);
     extern bool g_SceneViewHovered;
     extern bool g_GameViewHovered;
 }

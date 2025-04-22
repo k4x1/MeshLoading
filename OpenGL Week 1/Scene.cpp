@@ -42,10 +42,15 @@ void Scene::AddGameObject(GameObject* obj) {
 }
 
 void Scene::RemoveGameObject(GameObject* obj) {
-    auto it = std::find(gameObjects.begin(), gameObjects.end(), obj);
-    if (it != gameObjects.end()) {
-        gameObjects.erase(it);
+    if (obj->parent) {
+        auto& sib = obj->parent->children;
+        sib.erase(std::remove(sib.begin(), sib.end(), obj), sib.end());
     }
+    gameObjects.erase(
+        std::remove(gameObjects.begin(), gameObjects.end(), obj),
+        gameObjects.end()
+    );
+    delete obj;
 }
 
 void Scene::SaveToFile(const std::string& filePath) {

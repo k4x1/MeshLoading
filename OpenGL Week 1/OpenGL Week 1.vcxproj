@@ -162,6 +162,7 @@
     <ClCompile Include="Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
+    <ClCompile Include="InspectorSlotRegistry.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
@@ -175,7 +176,6 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScriptComponent.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="source.cpp" />
@@ -244,6 +244,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="IInspectable.h" />
+    <ClInclude Include="InspectorSlotRegistry.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PrefabSystem.h" />
@@ -258,7 +259,6 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScriptComponent.h" />
     <ClInclude Include="ShaderLoader.h" />
-    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="TerrainComponent.h" />

@@ -1,6 +1,14 @@
 {
     "children": [],
-    "components": [],
+    "components": [
+        {
+            "fragShaderPath": "Resources/Shaders/Texture.frag",
+            "modelFilePath": "Assets/Models/Cube.obj",
+            "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+            "type": "MeshRenderer",
+            "vertShaderPath": "Resources/Shaders/Texture.vert"
+        }
+    ],
     "name": "Cube",
     "transform": {
         "position": [

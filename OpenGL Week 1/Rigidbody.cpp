@@ -8,18 +8,18 @@ void Rigidbody::Start() {
     using namespace reactphysics3d;
 
     // Build RP3D transform from our GameObject’s Transform
-    Vector3       rpPos(
+    Vector3 rpPos(
         owner->transform.position.x,
         owner->transform.position.y,
         owner->transform.position.z
     );
-    Quaternion    rpRot(
+    Quaternion rpRot(
         owner->transform.rotation.x,
         owner->transform.rotation.y,
         owner->transform.rotation.z,
         owner->transform.rotation.w
     );
-    Transform     rp3dTransform(rpPos, rpRot);
+    reactphysics3d::Transform rp3dTransform(rpPos, rpRot);
 
     // Create the body
     body = PhysicsEngine::Instance().GetWorld()->createRigidBody(rp3dTransform);
