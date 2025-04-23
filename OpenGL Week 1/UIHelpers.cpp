@@ -10,6 +10,7 @@
 #include "PrefabSystem.h"
 #include "ScriptComponent.h"
 #include "InspectorSlotRegistry.h"
+#include "ComponentFactory.h"
 extern GameObject* editorCamera;
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
@@ -174,6 +175,7 @@ namespace UIHelpers {
                 // remove & delete from scene
                 scene->RemoveGameObject(obj);
                 ImGui::EndPopup();
+                if (open) ImGui::TreePop();
                 ImGui::PopID();
                 return; // don’t draw children of something we just deleted
             }
@@ -192,37 +194,30 @@ namespace UIHelpers {
 
         ImGui::PopID();
     }
-
-    void DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
+    void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
         ImGui::Begin("Hierarchy");
 
         if (ImGui::Button("Save"))
             scene->SaveToFile(scene->sceneName + ".json");
         ImGui::SameLine();
-
-        if (ImGui::Button("Add Shape")){
+        if (ImGui::Button("Add Shape"))
             ImGui::OpenPopup("AddShapePopup");
-        }
-
         if (ImGui::BeginPopup("AddShapePopup")) {
-            if (ImGui::MenuItem("Empty")) {
+            if (ImGui::MenuItem("Empty"))
                 scene->AddGameObject(new GameObject("Empty"));
-            }
-            if (ImGui::MenuItem("Cube")) {
+            if (ImGui::MenuItem("Cube"))
                 if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Cube.prefab"))
                     scene->AddGameObject(go);
-            }
-            if (ImGui::MenuItem("Sphere")) {
+            if (ImGui::MenuItem("Sphere"))
                 if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Sphere.prefab"))
                     scene->AddGameObject(go);
-            }
-            if (ImGui::MenuItem("Capsule")) {
+            if (ImGui::MenuItem("Capsule"))
                 if (auto* go = PrefabSystem::Instantiate("Assets/Prefabs/Capsule.prefab"))
                     scene->AddGameObject(go);
-            }
             ImGui::EndPopup();
         }
-        // allow dropping prefab onto blank area
+
+        // blank‑space drop target for root‑level prefab instantiation
         if (ImGui::BeginDragDropTarget()) {
             if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
                 int idx = *(int*)pl->Data;
@@ -230,21 +225,91 @@ namespace UIHelpers {
                 if (a.type == AssetType::Prefab) {
                     GameObject* go = PrefabSystem::Instantiate(a.path);
                     scene->AddGameObject(go);
-                    std::cout << "[UIHelpers] Instantiated prefab '"
-                        << a.name << "' as root\n";
                 }
             }
             ImGui::EndDragDropTarget();
         }
 
-        // draw the tree
-        for (auto* obj : scene->gameObjects) {
+        // recursive node‑drawer captures scene & selected by reference
+        std::function<void(GameObject*)> drawNode = [&](GameObject* obj) {
+            ImGui::PushID(obj);
+            ImGuiTreeNodeFlags flags = obj->children.empty()
+                ? ImGuiTreeNodeFlags_Leaf
+                : 0;
+            if (obj == selected) flags |= ImGuiTreeNodeFlags_Selected;
+
+            bool open = ImGui::TreeNodeEx(obj->name.c_str(), flags);
+
+            // single‐click to select
+            if (ImGui::IsItemClicked())
+                selected = obj;
+
+            // double‐click to frame camera
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+                glm::vec3 target = obj->transform.position;
+                float dist = 10.0f;
+                editorCamera->transform.position = target + glm::vec3(0, 0, dist);
+                glm::vec3 forward = glm::normalize(target - editorCamera->transform.position);
+                editorCamera->transform.rotation = glm::quatLookAt(forward, -glm::vec3(0, 1, 0));
+            }
+
+            if (ImGui::BeginPopupContextItem()) {
+                if (ImGui::MenuItem("Delete")) {
+                    if (selected == obj) selected = nullptr;
+                    scene->RemoveGameObject(obj);
+                    ImGui::EndPopup();
+                    if (open)        
+                        ImGui::TreePop();
+                    ImGui::PopID();
+                    return;
+                }
+                ImGui::EndPopup();
+            }
+            // drag source for reparenting
+            if (ImGui::BeginDragDropSource()) {
+                ImGui::SetDragDropPayload("DND_GAMEOBJECT", &obj, sizeof(obj));
+                ImGui::Text("Dragging %s", obj->name.c_str());
+                ImGui::EndDragDropSource();
+            }
+
+            // drag target: reparent or prefab‑under‑node
+            if (ImGui::BeginDragDropTarget()) {
+                if (auto pl = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
+                    GameObject* dropped = *(GameObject**)pl->Data;
+                    if (dropped->parent) {
+                        auto& sib = dropped->parent->children;
+                        sib.erase(std::remove(sib.begin(), sib.end(), dropped), sib.end());
+                    }
+                    dropped->parent = obj;
+                    obj->children.push_back(dropped);
+                }
+                if (auto pl2 = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
+                    int idx = *(int*)pl2->Data;
+                    auto& a = AssetManager::GetAssets()[idx];
+                    if (a.type == AssetType::Prefab) {
+                        GameObject* go = PrefabSystem::Instantiate(a.path);
+                        obj->AddChild(go);
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            if (open) {
+                for (auto* child : obj->children)
+                    drawNode(child);
+                ImGui::TreePop();
+            }
+
+            ImGui::PopID();
+            };
+
+        // draw all root objects
+        for (auto* obj : scene->gameObjects)
             if (!obj->parent)
-                ShowGameObjectNode(obj, selected, scene);
-        }
+                drawNode(obj);
+
         ImGui::End();
     }
-
 
     void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
         ImGui::Begin("Inspector");
@@ -263,16 +328,11 @@ namespace UIHelpers {
 
             // —— Transform ——————————————————————————————
             if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-                // Position
                 ImGui::DragFloat3("Position", glm::value_ptr(selected->transform.position), 0.1f);
-
-                // Rotation (in degrees)
                 glm::vec3 euler = glm::degrees(glm::eulerAngles(selected->transform.rotation));
                 if (ImGui::DragFloat3("Rotation", glm::value_ptr(euler), 0.5f)) {
                     selected->transform.rotation = glm::quat(glm::radians(euler));
                 }
-
-                // Scale
                 ImGui::DragFloat3("Scale", glm::value_ptr(selected->transform.scale), 0.1f);
             }
             ImGui::Separator();
@@ -283,7 +343,7 @@ namespace UIHelpers {
                 Component* comp = compPtr.get();
                 std::string label = typeid(*comp).name();
                 if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-                    // 1) asset slots that you’ve registered for this component
+                    // 1) any asset‑slots you registered
                     for (auto& slot : InspectorSlotRegistry::GetSlotsFor(comp)) {
                         ImGui::Text("%s", slot.label.c_str());
                         ImGui::SameLine();
@@ -296,7 +356,8 @@ namespace UIHelpers {
                                 auto& a = AssetManager::GetAssets()[idx];
                                 if (std::find(slot.acceptedTypes.begin(),
                                     slot.acceptedTypes.end(),
-                                    a.type) != slot.acceptedTypes.end())
+                                    a.type)
+                                    != slot.acceptedTypes.end())
                                 {
                                     slot.setter(comp, a);
                                 }
@@ -306,13 +367,41 @@ namespace UIHelpers {
                         ImGui::PopID();
                     }
                     ImGui::Separator();
-                    // 2) component’s own fields
+                    // 2) the component’s own fields
                     comp->OnInspectorGUI();
                     ImGui::Separator();
                 }
             }
 
-            // —— Add new script or prefab child ——————————————————
+         // —— Add Component popup ——————————————————————
+            if (ImGui::Button("Add Component…"))
+                ImGui::OpenPopup("AddComponentPopup");
+
+            if (ImGui::BeginPopup("AddComponentPopup")) {
+                std::cout << "[UI]  AddComponentPopup opened, registry size="
+                    << ComponentFactory::Instance().GetRegistry().size() << "\n";
+
+                for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
+                    if (ImGui::MenuItem(typeName.c_str())) {
+                        std::cout << "[UI]  MenuItem clicked: \"" << typeName << "\"\n";
+                        Component* newComp = ComponentFactory::Instance().Create(
+                            typeName,
+                            nlohmann::json::object(),
+                            selected
+                        );
+                        std::cout <<
+                            "[UI]  After Create: newComp=" << newComp << "\n";
+
+                        // only close the popup after we’ve logged
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+                ImGui::EndPopup();
+            }
+
+            ImGui::Separator();
+
+            // —— Drag‑drop to add scripts / prefabs ——————————————————
             ImGui::Text("Drag asset here to add:");
             if (ImGui::BeginDragDropTarget()) {
                 if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
@@ -333,6 +422,8 @@ namespace UIHelpers {
         }
         ImGui::End();
     }
+
+    
     void UIHelpers::DrawProjectWindow() {
         ImGui::Begin("Project");
 

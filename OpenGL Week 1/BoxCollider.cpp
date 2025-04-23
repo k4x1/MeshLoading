@@ -19,7 +19,7 @@ void BoxCollider::OnInspectorGUI() {
 }
 
 void BoxCollider::Render(Camera* cam) {
-    DebugDraw::DrawWireBox(owner->GetWorldMatrix(), halfExtents, cam);
+    Debug::DrawWireBox(owner->GetWorldMatrix(), halfExtents, cam);
 }
 
 nlohmann::json BoxCollider::Serialize(Component* comp) {
@@ -34,12 +34,14 @@ nlohmann::json BoxCollider::Serialize(Component* comp) {
 static bool _bcReg = []() {
     ComponentFactory::Instance().Register(
         "BoxCollider",
+        // deserializer
         [](const nlohmann::json& js, GameObject* owner)->Component* {
             auto* bc = owner->AddComponent<BoxCollider>();
-            auto v = js.value("halfExtents", std::vector<float>{1, 1, 1});
-            bc->halfExtents = { v[0],v[1],v[2] };
+            auto  v = js.value("halfExtents", std::vector<float>{1, 1, 1});
+            bc->halfExtents = { v[0], v[1], v[2] };
             return bc;
         },
+        // serializer
         [](Component* c) { return BoxCollider::Serialize(c); }
     );
     return true;

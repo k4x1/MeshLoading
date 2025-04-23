@@ -17,13 +17,22 @@ MeshRenderer::MeshRenderer(const glm::vec3& pos,
 {
     Debug::Log("[MeshRenderer] Ctor: model=" + modelFilePath + " tex=" + textureFilePath);
     Reload();
-    _modelTime = fs::last_write_time(modelFilePath);
-    _texTime = fs::last_write_time(textureFilePath);
-    _vertTime = fs::last_write_time(vertShaderPath);
-    _fragTime = fs::last_write_time(fragShaderPath);
+    if (!modelFilePath.empty() && fs::exists(modelFilePath))
+        _modelTime = fs::last_write_time(modelFilePath);
+    if (!textureFilePath.empty() && fs::exists(textureFilePath))
+        _texTime = fs::last_write_time(textureFilePath);
+    if (!vertShaderPath.empty() && fs::exists(vertShaderPath))
+        _vertTime = fs::last_write_time(vertShaderPath);
+    if (!fragShaderPath.empty() && fs::exists(fragShaderPath))
+        _fragTime = fs::last_write_time(fragShaderPath);
 }
 
 void MeshRenderer::Reload() {
+    if (modelFilePath.empty() || !fs::exists(modelFilePath)) {
+        Debug::LogWarning("[MeshRenderer] Reload skipped: invalid modelFilePath=\""
+            + modelFilePath + '"');
+        return;
+    }
     if (shaderProgram) {
         glDeleteProgram(shaderProgram);
     }
@@ -71,11 +80,13 @@ void MeshRenderer::Update(float dt) {
     _checkFileUpdates();
 
     // 2) keep model matrix in sync
-    if (owner)
+    if (owner && mesh)
         mesh->m_modelMatrix = owner->GetWorldMatrix();
 }
 
 void MeshRenderer::Render(Camera* cam) {
+    if (!mesh || !shaderProgram)
+        return;
     glUseProgram(shaderProgram);
 
     GLint locVP = glGetUniformLocation(shaderProgram, "VPMatrix");
@@ -145,20 +156,26 @@ void MeshRenderer::OnInspectorGUI() {
     }
 }
 static bool meshReg = []() {
+    // 1) Tell the ComponentFactory about our type so
+    //    "Add Component → MeshRenderer" will appear
     ComponentFactory::Instance().Register(
         "MeshRenderer",
-        // JSON deserializer
-        [](auto& js, GameObject* owner)->Component* {
-            std::string m = js.value("modelFilePath", "");
+
+        // how to create one from JSON when loading a scene
+        [](const nlohmann::json& js, GameObject* owner)->Component* {
+            std::string path = js.value("modelFilePath", "");
             auto* mr = owner->AddComponent<MeshRenderer>(
-                glm::vec3(0), glm::vec3(0), glm::vec3(1), m);
+                glm::vec3(0), glm::vec3(0), glm::vec3(1),
+                path
+            );
             mr->textureFilePath = js.value("textureFilePath", "");
             mr->vertShaderPath = js.value("vertShaderPath", "");
             mr->fragShaderPath = js.value("fragShaderPath", "");
             mr->Reload();
             return mr;
         },
-        // serializer
+
+        // how to serialize it back to JSON when saving a scene
         [](Component* c)->nlohmann::json {
             if (auto* mr = dynamic_cast<MeshRenderer*>(c)) {
                 return {
@@ -172,14 +189,15 @@ static bool meshReg = []() {
         }
     );
 
+    // 2) Hook up our Inspector‑slots so you can drag & drop assets
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Model",
-        [](MeshRenderer* mr) { return mr->modelFilePath; },
-        [](MeshRenderer* mr, const Asset& a) {
+        /* getter */   [](MeshRenderer* mr) { return mr->modelFilePath; },
+        /* setter */   [](MeshRenderer* mr, const Asset& a) {
             mr->modelFilePath = a.path;
             mr->Reload();
         },
-        { AssetType::Model }
+        /* accepts */{ AssetType::Model }
     );
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Texture",

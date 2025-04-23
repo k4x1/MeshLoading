@@ -9,7 +9,7 @@
 #include "UIHelpers.h"
 
 CameraMovement::CameraMovement()
-    : movementSpeed(100.0f),
+    : movementSpeed(20.0f),
     mouseSensitivity(0.1f),
     firstMouse(true),
     lastX(400.0f),

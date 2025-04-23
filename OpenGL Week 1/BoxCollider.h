@@ -11,6 +11,6 @@ public:
     void Start() override;
     void OnInspectorGUI() override;
     void Render(class Camera* cam) override;
-
+    reactphysics3d::BoxShape* shape = nullptr;
     static nlohmann::json Serialize(Component* comp);
 };
