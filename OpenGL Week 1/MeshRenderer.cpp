@@ -1,11 +1,20 @@
-﻿#include "MeshRenderer.h"
+﻿// MeshRenderer.cpp
+#include "MeshRenderer.h"
 #include "ShaderLoader.h"
-#include <glm/gtc/type_ptr.hpp>
-#include <tiny_obj_loader.h>
-#include "UIHelpers.h"
 #include "ComponentFactory.h"
-#include "Debug.h"      
 #include "InspectorSlotRegistry.h"
+#include <tiny_obj_loader.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
+#include <filesystem>
+#include <iostream>
+#include "GameObject.h"
+#include "Camera.h"
+
+namespace fs = std::filesystem;
+
+//— public API —//
+
 MeshRenderer::MeshRenderer(const glm::vec3& pos,
     const glm::vec3& rot,
     const glm::vec3& scl,
@@ -15,42 +24,29 @@ MeshRenderer::MeshRenderer(const glm::vec3& pos,
     vertShaderPath("Resources/Shaders/Texture.vert"),
     fragShaderPath("Resources/Shaders/Texture.frag")
 {
-    Debug::Log("[MeshRenderer] Ctor: model=" + modelFilePath + " tex=" + textureFilePath);
     Reload();
-    if (!modelFilePath.empty() && fs::exists(modelFilePath))
-        _modelTime = fs::last_write_time(modelFilePath);
-    if (!textureFilePath.empty() && fs::exists(textureFilePath))
-        _texTime = fs::last_write_time(textureFilePath);
-    if (!vertShaderPath.empty() && fs::exists(vertShaderPath))
-        _vertTime = fs::last_write_time(vertShaderPath);
-    if (!fragShaderPath.empty() && fs::exists(fragShaderPath))
-        _fragTime = fs::last_write_time(fragShaderPath);
+    if (fs::exists(modelFilePath))   _modelTime = fs::last_write_time(modelFilePath);
+    if (fs::exists(textureFilePath)) _texTime = fs::last_write_time(textureFilePath);
+    if (fs::exists(vertShaderPath))  _vertTime = fs::last_write_time(vertShaderPath);
+    if (fs::exists(fragShaderPath))  _fragTime = fs::last_write_time(fragShaderPath);
 }
 
 void MeshRenderer::Reload() {
-    if (modelFilePath.empty() || !fs::exists(modelFilePath)) {
-        Debug::LogWarning("[MeshRenderer] Reload skipped: invalid modelFilePath=\""
-            + modelFilePath + '"');
+    if (!fs::exists(modelFilePath)) {
+        std::cerr << "[MeshRenderer] invalid model path: " << modelFilePath << "\n";
         return;
     }
-    if (shaderProgram) {
-        glDeleteProgram(shaderProgram);
-    }
+
+    if (shaderProgram) glDeleteProgram(shaderProgram);
 
     mesh = std::make_unique<MeshModel>(glm::vec3(0), glm::vec3(0), glm::vec3(1), modelFilePath);
-
-    mesh->SetTexture(textureID);
-
     texture.InitTexture(textureFilePath.c_str());
     textureID = texture.GetId();
-
     mesh->SetTexture(textureID);
 
     shaderProgram = ShaderLoader::CreateProgram(vertShaderPath.c_str(), fragShaderPath.c_str());
-
     mesh->SetShader(shaderProgram);
 }
-
 
 void MeshRenderer::_checkFileUpdates() {
     try {
@@ -70,52 +66,38 @@ void MeshRenderer::_checkFileUpdates() {
             Reload();
         }
     }
-    catch (fs::filesystem_error& e) {
-        // ignore missing files / permissions errors
-    }
+    catch (fs::filesystem_error&) { /* ignore */ }
 }
 
 void MeshRenderer::Update(float dt) {
-    // 1) Watch disk for changes
     _checkFileUpdates();
-
-    // 2) keep model matrix in sync
     if (owner && mesh)
         mesh->m_modelMatrix = owner->GetWorldMatrix();
 }
 
 void MeshRenderer::Render(Camera* cam) {
-    if (!mesh || !shaderProgram)
-        return;
+    if (!mesh || !shaderProgram) return;
+
     glUseProgram(shaderProgram);
 
-    GLint locVP = glGetUniformLocation(shaderProgram, "VPMatrix");
-    if (locVP >= 0) {
+    // VP
+    if (GLint loc = glGetUniformLocation(shaderProgram, "VPMatrix"); loc >= 0) {
         glm::mat4 VP = cam->GetProjectionMatrix() * cam->GetViewMatrix();
-        glUniformMatrix4fv(locVP, 1, GL_FALSE, glm::value_ptr(VP));
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(VP));
     }
 
-    GLint locM = glGetUniformLocation(shaderProgram, "ModelMat");
-    if (locM >= 0) {
-        glUniformMatrix4fv(locM, 1, GL_FALSE, glm::value_ptr(mesh->m_modelMatrix));
+    // Model
+    if (GLint loc = glGetUniformLocation(shaderProgram, "ModelMat"); loc >= 0) {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mesh->m_modelMatrix));
     }
 
-    // Texture binding
-    GLint beforeBind = 0;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &beforeBind);
-
+    // Texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-
-    GLint locTex = glGetUniformLocation(shaderProgram, "Texture0");
-    if (locTex >= 0) {
-        glUniform1i(locTex, 0);
+    if (GLint loc = glGetUniformLocation(shaderProgram, "Texture0"); loc >= 0) {
+        glUniform1i(loc, 0);
     }
 
-    GLint afterBind = 0;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &afterBind);
-
-    // Draw
     glBindVertexArray(mesh->GetVAO());
     glDrawArrays(mesh->GetDrawType(), 0, mesh->GetDrawCount());
     glBindVertexArray(0);
@@ -123,109 +105,68 @@ void MeshRenderer::Render(Camera* cam) {
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
 }
+
 void MeshRenderer::OnInspectorGUI() {
-    // identical to before: edit paths & call Reload() immediately
     char buf[256];
 
-    strncpy_s(buf, sizeof(buf), modelFilePath.c_str(), _TRUNCATE);
+    // Model path
+    strncpy_s(buf, modelFilePath.c_str(), sizeof(buf));
     if (ImGui::InputText("Model (.obj)", buf, sizeof(buf))) {
-        modelFilePath = buf;
-        Reload();
-        _modelTime = fs::last_write_time(modelFilePath);
+        modelFilePath = buf; Reload(); _modelTime = fs::last_write_time(modelFilePath);
     }
 
-    strncpy_s(buf, sizeof(buf), textureFilePath.c_str(), _TRUNCATE);
+    // Texture path
+    strncpy_s(buf, textureFilePath.c_str(), sizeof(buf));
     if (ImGui::InputText("Texture file", buf, sizeof(buf))) {
-        textureFilePath = buf;
-        Reload();
-        _texTime = fs::last_write_time(textureFilePath);
+        textureFilePath = buf; Reload(); _texTime = fs::last_write_time(textureFilePath);
     }
 
-    strncpy_s(buf, sizeof(buf), vertShaderPath.c_str(), _TRUNCATE);
+    // Vertex shader
+    strncpy_s(buf, vertShaderPath.c_str(), sizeof(buf));
     if (ImGui::InputText("Vertex Shader", buf, sizeof(buf))) {
-        vertShaderPath = buf;
-        Reload();
-        _vertTime = fs::last_write_time(vertShaderPath);
+        vertShaderPath = buf; Reload(); _vertTime = fs::last_write_time(vertShaderPath);
     }
 
-    strncpy_s(buf, sizeof(buf), fragShaderPath.c_str(), _TRUNCATE);
+    // Fragment shader
+    strncpy_s(buf, fragShaderPath.c_str(), sizeof(buf));
     if (ImGui::InputText("Fragment Shader", buf, sizeof(buf))) {
-        fragShaderPath = buf;
-        Reload();
-        _fragTime = fs::last_write_time(fragShaderPath);
+        fragShaderPath = buf; Reload(); _fragTime = fs::last_write_time(fragShaderPath);
     }
 }
-static bool meshReg = []() {
-    // 1) Tell the ComponentFactory about our type so
-    //    "Add Component → MeshRenderer" will appear
-    ComponentFactory::Instance().Register(
-        "MeshRenderer",
+REGISTER_SERIALIZABLE_COMPONENT(MeshRenderer);
 
-        // how to create one from JSON when loading a scene
-        [](const nlohmann::json& js, GameObject* owner)->Component* {
-            std::string path = js.value("modelFilePath", "");
-            auto* mr = owner->AddComponent<MeshRenderer>(
-                glm::vec3(0), glm::vec3(0), glm::vec3(1),
-                path
-            );
-            mr->textureFilePath = js.value("textureFilePath", "");
-            mr->vertShaderPath = js.value("vertShaderPath", "");
-            mr->fragShaderPath = js.value("fragShaderPath", "");
-            mr->Reload();
-            return mr;
-        },
-
-        // how to serialize it back to JSON when saving a scene
-        [](Component* c)->nlohmann::json {
-            if (auto* mr = dynamic_cast<MeshRenderer*>(c)) {
-                return {
-                    {"modelFilePath",   mr->modelFilePath},
-                    {"textureFilePath", mr->textureFilePath},
-                    {"vertShaderPath",  mr->vertShaderPath},
-                    {"fragShaderPath",  mr->fragShaderPath}
-                };
-            }
-            return nullptr;
-        }
-    );
-
-    // 2) Hook up our Inspector‑slots so you can drag & drop assets
+static bool _meshInspectorSlots = [] {
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Model",
-        /* getter */   [](MeshRenderer* mr) { return mr->modelFilePath; },
-        /* setter */   [](MeshRenderer* mr, const Asset& a) {
-            mr->modelFilePath = a.path;
-            mr->Reload();
+        [](MeshRenderer* mr) { return mr->modelFilePath; },
+        [](MeshRenderer* mr, Asset const& a) {
+            mr->modelFilePath = a.path; mr->Reload();
         },
-        /* accepts */{ AssetType::Model }
+        { AssetType::Model }
     );
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Texture",
         [](MeshRenderer* mr) { return mr->textureFilePath; },
-        [](MeshRenderer* mr, const Asset& a) {
-            mr->textureFilePath = a.path;
-            mr->Reload();
+        [](MeshRenderer* mr, Asset const& a) {
+            mr->textureFilePath = a.path; mr->Reload();
         },
         { AssetType::Texture }
     );
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Vertex Shader",
         [](MeshRenderer* mr) { return mr->vertShaderPath; },
-        [](MeshRenderer* mr, const Asset& a) {
-            mr->vertShaderPath = a.path;
-            mr->Reload();
+        [](MeshRenderer* mr, Asset const& a) {
+            mr->vertShaderPath = a.path; mr->Reload();
         },
         { AssetType::Script }
     );
     InspectorSlotRegistry::RegisterSlot<MeshRenderer>(
         "Fragment Shader",
         [](MeshRenderer* mr) { return mr->fragShaderPath; },
-        [](MeshRenderer* mr, const Asset& a) {
-            mr->fragShaderPath = a.path;
-            mr->Reload();
+        [](MeshRenderer* mr, Asset const& a) {
+            mr->fragShaderPath = a.path; mr->Reload();
         },
         { AssetType::Script }
     );
-
     return true;
     }();

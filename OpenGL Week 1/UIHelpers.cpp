@@ -310,124 +310,161 @@ namespace UIHelpers {
 
         ImGui::End();
     }
-
     void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
         ImGui::Begin("Inspector");
-        if (selected) {
-            // —— Rename field ——————————————————————————————
-            char buf[128];
-            strncpy_s(buf, selected->name.c_str(), sizeof(buf));
-            buf[sizeof(buf) - 1] = '\0';
-            if (ImGui::InputText("##Rename", buf, sizeof(buf))) {
-                selected->name = buf;
+        if (!selected) {
+            ImGui::Text("Nothing selected.");
+            ImGui::End();
+            return;
+        }
+
+        // —— Rename field ——————————————————————————————
+        char buf[128];
+        strncpy_s(buf, selected->name.c_str(), sizeof(buf));
+        buf[sizeof(buf) - 1] = '\0';
+        if (ImGui::InputText("##Rename", buf, sizeof(buf))) {
+            selected->name = buf;
+        }
+        ImGui::SameLine();
+        ImGui::Text("Name");
+        ImGui::Separator();
+
+        // —— Transform ——————————————————————————————
+        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::DragFloat3("Position", glm::value_ptr(selected->transform.position), 0.1f);
+            glm::vec3 euler = glm::degrees(glm::eulerAngles(selected->transform.rotation));
+            if (ImGui::DragFloat3("Rotation", glm::value_ptr(euler), 0.5f)) {
+                selected->transform.rotation = glm::quat(glm::radians(euler));
             }
-            ImGui::SameLine();
-            ImGui::Text("Name");
-            ImGui::Separator();
-            // ————————————————————————————————————————————————————
+            ImGui::DragFloat3("Scale", glm::value_ptr(selected->transform.scale), 0.1f);
+        }
+        ImGui::Separator();
 
-            // —— Transform ——————————————————————————————
-            if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-                ImGui::DragFloat3("Position", glm::value_ptr(selected->transform.position), 0.1f);
-                glm::vec3 euler = glm::degrees(glm::eulerAngles(selected->transform.rotation));
-                if (ImGui::DragFloat3("Rotation", glm::value_ptr(euler), 0.5f)) {
-                    selected->transform.rotation = glm::quat(glm::radians(euler));
-                }
-                ImGui::DragFloat3("Scale", glm::value_ptr(selected->transform.scale), 0.1f);
-            }
-            ImGui::Separator();
-            // ————————————————————————————————————————————————————
+        // —— Components + asset-slots + right-click to remove —————————————————
+        for (int i = 0; i < (int)selected->components.size(); ++i) {
+            Component* comp = selected->components[i].get();
+            const char* label = typeid(*comp).name();
 
-            // —— Components + asset‑slots ——————————————————————
-            for (auto& compPtr : selected->components) {
-                Component* comp = compPtr.get();
-                std::string label = typeid(*comp).name();
-                if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-                    // 1) any asset‑slots you registered
-                    for (auto& slot : InspectorSlotRegistry::GetSlotsFor(comp)) {
-                        ImGui::Text("%s", slot.label.c_str());
-                        ImGui::SameLine();
-                        ImGui::PushID(slot.label.c_str());
-                        std::string cur = slot.getter(comp);
-                        if (ImGui::Button(cur.empty() ? "<none>" : cur.c_str(), ImVec2(-1, 0))) {}
-                        if (ImGui::BeginDragDropTarget()) {
-                            if (auto pd = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
-                                int idx = *(int*)pd->Data;
-                                auto& a = AssetManager::GetAssets()[idx];
-                                if (std::find(slot.acceptedTypes.begin(),
-                                    slot.acceptedTypes.end(),
-                                    a.type)
-                                    != slot.acceptedTypes.end())
-                                {
-                                    slot.setter(comp, a);
-                                }
-                            }
-                            ImGui::EndDragDropTarget();
-                        }
-                        ImGui::PopID();
-                    }
-                    ImGui::Separator();
-                    // 2) the component’s own fields
-                    comp->OnInspectorGUI();
-                    ImGui::Separator();
-                }
-            }
+            // Ensure each header has a unique ImGui ID
+            ImGui::PushID(comp);
 
-         // —— Add Component popup ——————————————————————
-            if (ImGui::Button("Add Component…"))
-                ImGui::OpenPopup("AddComponentPopup");
+            // Draw the collapsible header
+            bool open = ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_DefaultOpen);
 
-            if (ImGui::BeginPopup("AddComponentPopup")) {
-                std::cout << "[UI]  AddComponentPopup opened, registry size="
-                    << ComponentFactory::Instance().GetRegistry().size() << "\n";
-
-                for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
-                    if (ImGui::MenuItem(typeName.c_str())) {
-                        std::cout << "[UI]  MenuItem clicked: \"" << typeName << "\"\n";
-                        Component* newComp = ComponentFactory::Instance().Create(
-                            typeName,
-                            nlohmann::json::object(),
-                            selected
-                        );
-                        std::cout <<
-                            "[UI]  After Create: newComp=" << newComp << "\n";
-
-                        // only close the popup after we’ve logged
-                        ImGui::CloseCurrentPopup();
-                    }
+            // Right-click context menu on that header
+            if (ImGui::BeginPopupContextItem()) {
+                if (ImGui::MenuItem("Remove Component")) {
+                    selected->RemoveComponent(comp);
+                    ImGui::EndPopup();
+                    ImGui::PopID();
+                    break;  // stop iterating—component list has changed
                 }
                 ImGui::EndPopup();
             }
 
-            ImGui::Separator();
-
-            // —— Drag‑drop to add scripts / prefabs ——————————————————
-            ImGui::Text("Drag asset here to add:");
-            if (ImGui::BeginDragDropTarget()) {
-                if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
-                    int idx = *(int*)pl->Data;
-                    auto& a = AssetManager::GetAssets()[idx];
-                    if (a.type == AssetType::Script) {
-                        selected->AddComponent<ScriptComponent>(a.path);
+            if (open) {
+                // 1) Any asset-slots you registered:
+                for (auto& slot : InspectorSlotRegistry::GetSlotsFor(comp)) {
+                    ImGui::Text("%s", slot.label.c_str());
+                    ImGui::SameLine();
+                    ImGui::PushID(slot.label.c_str());
+                    std::string cur = slot.getter(comp);
+                    if (ImGui::Button(cur.empty() ? "<none>" : cur.c_str(), ImVec2(-1, 0))) {}
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (auto pd = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
+                            int idx = *(int*)pd->Data;
+                            const Asset& a = AssetManager::GetAssets()[idx];
+                            if (std::find(slot.acceptedTypes.begin(),
+                                slot.acceptedTypes.end(),
+                                a.type) != slot.acceptedTypes.end())
+                            {
+                                slot.setter(comp, a);
+                            }
+                        }
+                        ImGui::EndDragDropTarget();
                     }
-                    else if (a.type == AssetType::Prefab) {
-                        selected->AddChild(PrefabSystem::Instantiate(a.path));
-                    }
+                    ImGui::PopID();
                 }
-                ImGui::EndDragDropTarget();
+                ImGui::Separator();
+
+                // 2) The component’s own fields:
+                comp->OnInspectorGUI();
+                ImGui::Separator();
             }
+
+            ImGui::PopID();
         }
-        else {
-            ImGui::Text("Nothing selected.");
+
+        // —— Add Component popup ——————————————————————
+        if (ImGui::Button("Add Component…"))
+            ImGui::OpenPopup("AddComponentPopup");
+
+        if (ImGui::BeginPopup("AddComponentPopup")) {
+            for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
+                if (ImGui::MenuItem(typeName.c_str())) {
+                    ComponentFactory::Instance().Create(typeName, nlohmann::json::object(), selected);
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
         }
+
+        ImGui::Separator();
+
+        // —— Drag-drop to add scripts / prefabs ——————————————————
+        ImGui::Text("Drag asset here to add:");
+        if (ImGui::BeginDragDropTarget()) {
+            if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
+                int idx = *(int*)pl->Data;
+                const Asset& a = AssetManager::GetAssets()[idx];
+                if (a.type == AssetType::Script) {
+                    selected->AddComponent<ScriptComponent>(a.path);
+                }
+                else if (a.type == AssetType::Prefab) {
+                    selected->AddChild(PrefabSystem::Instantiate(a.path));
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImGui::End();
     }
-
     
     void UIHelpers::DrawProjectWindow() {
         ImGui::Begin("Project");
 
-        // --- Drag‐target for saving a live GameObject as a prefab ---
+        // —— New Folder button + modal —————————————
+        if (ImGui::Button("New Folder")) {
+            ImGui::OpenPopup("Create New Folder");
+        }
+        ImGui::SameLine();
+
+        if (ImGui::BeginPopupModal("Create New Folder", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            static char folderName[128] = "";
+            ImGui::InputText("Folder Name", folderName, sizeof(folderName));
+            if (ImGui::Button("OK", ImVec2(80, 0))) {
+                fs::path newDir = fs::path("Assets") / folderName;
+                std::error_code ec;
+                if (!fs::create_directory(newDir, ec)) {
+                    std::cerr << "[UIHelpers] Failed to create folder: "
+                        << newDir.string() << " (" << ec.message() << ")\n";
+                }
+                else {
+                    AssetManager::LoadAssets("Assets");
+                }
+                folderName[0] = '\0';
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(80, 0))) {
+                folderName[0] = '\0';
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::Separator();
+
         ImGui::TextUnformatted("Drop a GameObject here to save a Prefab");
         if (ImGui::BeginDragDropTarget()) {
             if (auto pl = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
@@ -441,72 +478,87 @@ namespace UIHelpers {
             }
             ImGui::EndDragDropTarget();
         }
+
         ImGui::Separator();
 
-        // --- List all assets ---
-        const auto& assets = AssetManager::GetAssets();
-        for (int i = 0; i < (int)assets.size(); ++i) {
-            const Asset& a = assets[i];
-            ImGui::PushID(i);
+        // —— Recursive folder+file tree ——————————————
+        std::function<void(const fs::path&)> drawFolder =
+            [&](const fs::path& dir)
+            {
+                for (auto& entry : fs::directory_iterator(dir)) {
+                    const auto name = entry.path().filename().string();
 
-            // Show asset name
-            ImGui::Selectable(a.name.c_str(), false);
+                    if (entry.is_directory()) {
+                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+                        ImGui::PushID(entry.path().string().c_str());
+                        bool open = ImGui::TreeNodeEx(name.c_str(), flags, "%s/", name.c_str());
 
-            // 1) Make it a drag‑source for ANY asset
-            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-                ImGui::SetDragDropPayload("ASSET_PAYLOAD", &i, sizeof(i));
-                ImGui::Text("%s (%s)", a.name.c_str(),
-                    a.type == AssetType::Texture ? "Texture" :
-                    a.type == AssetType::Model ? "Model" :
-                    a.type == AssetType::Script ? "Script" :
-                    a.type == AssetType::Prefab ? "Prefab" : "Unknown");
-                ImGui::EndDragDropSource();
-            }
+                        // context menu on folder
+                        if (ImGui::BeginPopupContextItem()) {
+                            if (ImGui::MenuItem("Rename Folder")) {
+                                // TODO: implement rename-folder logic
+                            }
+                            if (ImGui::MenuItem("Delete Folder")) {
+                                std::error_code ec;
+                                fs::remove_all(entry.path(), ec);
+                                if (ec)
+                                    std::cerr << "[UIHelpers] Failed to delete folder: "
+                                    << entry.path().string() << "\n";
+                                AssetManager::LoadAssets("Assets");
+                            }
+                            ImGui::EndPopup();
+                        }
 
-            // 2) Context‐menu on *any* asset
-            if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::MenuItem("Rename")) {
-                    static char buf[128];
-                    strncpy_s(buf, a.name.c_str(), sizeof(buf));
-                    ImGui::OpenPopup("Rename Asset");
-                    ImGui::SetNextWindowPos(ImGui::GetMousePos());
-                    // store renameIndex / buf somewhere...
+                        if (open) {
+                            drawFolder(entry.path());
+                            ImGui::TreePop();
+                        }
+                        ImGui::PopID();
+                    }
+                    else {
+                        // it's a file
+                        ImGui::PushID(entry.path().string().c_str());
+                        ImGui::Selectable(name.c_str(), false);
+
+                        // drag-source for asset
+                        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+                            const auto& assets = AssetManager::GetAssets();
+                            for (int i = 0; i < (int)assets.size(); ++i) {
+                                if (assets[i].path == entry.path().string()) {
+                                    ImGui::SetDragDropPayload("ASSET_PAYLOAD", &i, sizeof(i));
+                                    ImGui::Text("%s", name.c_str());
+                                    break;
+                                }
+                            }
+                            ImGui::EndDragDropSource();
+                        }
+
+                        // context menu on file
+                        if (ImGui::BeginPopupContextItem()) {
+                            if (ImGui::MenuItem("Rename File")) {
+                                // TODO: implement rename-file logic
+                            }
+                            if (ImGui::MenuItem("Delete File")) {
+                                std::error_code ec;
+                                fs::remove(entry.path(), ec);
+                                if (ec)
+                                    std::cerr << "[UIHelpers] Failed to delete file: "
+                                    << entry.path().string() << "\n";
+                                AssetManager::LoadAssets("Assets");
+                            }
+                            ImGui::EndPopup();
+                        }
+
+                        ImGui::PopID();
+                    }
                 }
-                if (ImGui::MenuItem("Delete")) {
-                    fs::remove(a.path);
-                    AssetManager::LoadAssets("Assets");
-                    ImGui::EndPopup();
-                    ImGui::PopID();
-                    // immediately break out of this loop since assets[] has changed
-                    break;
-                }
-                if (ImGui::MenuItem("Reveal in Explorer")) {
-                  //  Utils::OpenInExplorer(a.path);
-                }
-                ImGui::EndPopup();
-            }
+            };
 
-            ImGui::PopID();
-        }
-
-        // 3) (Optional) Rename‑modal
-        if (ImGui::BeginPopupModal("Rename Asset", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-            static char renameBuf[128] = "";
-            ImGui::InputText("New Name", renameBuf, sizeof(renameBuf));
-            if (ImGui::Button("OK", ImVec2(80, 0))) {
-                // compute new path, rename file, reload assets...
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(80, 0))) {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
+        // draw starting at the root Assets folder:
+        drawFolder("Assets");
 
         ImGui::End();
     }
-
     void UIHelpers::DrawDebugWindow(bool* p_open) {
         ImGui::Begin("Console", p_open, ImGuiWindowFlags_HorizontalScrollbar);
 

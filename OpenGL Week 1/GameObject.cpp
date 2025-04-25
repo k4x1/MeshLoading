@@ -1,4 +1,4 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
 #include "ComponentRegistry.h" 
 #include "IInspectable.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -80,12 +80,19 @@ void GameObject::OnInspectorGUI() {
     // Add component button and popup:
     if (ImGui::Button("Add Component"))
         ImGui::OpenPopup("AddComponentPopup");
-
     if (ImGui::BeginPopup("AddComponentPopup")) {
-        for (const auto& entry : ComponentRegistry::Instance().GetRegistry()) {
-            if (ImGui::MenuItem(entry.first.c_str())) {
-                Component* newComp = entry.second();
-                components.emplace_back(newComp);
+        // iterate the factory registry
+        for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
+            if (ImGui::MenuItem(typeName.c_str())) {
+                // create with empty JSON + this as owner
+                Component* newComp =
+                    ComponentFactory::Instance().Create(typeName, {}, this);
+                if (newComp) {
+                    // we already set owner inside Create or in your macro,
+                    // but to be safe:
+                    newComp->owner = this;
+                    components.emplace_back(newComp);
+                }
             }
         }
         ImGui::EndPopup();
@@ -132,24 +139,36 @@ nlohmann::json SerializeGameObject(GameObject* obj) {
 
     return j;
 }
-
-
 GameObject* DeserializeGameObject(const nlohmann::json& j)
 {
     GameObject* obj = new GameObject(j.value("name", "Unnamed"));
 
+    // --- transform (you already had this) ---
     if (j.contains("transform"))
-    {
         TransformFromJson(j["transform"], obj->transform);
-    }
 
-    if (j.contains("children"))
+    // --- components  ← ADD THIS ENTIRE BLOCK ---
+    if (j.contains("components") && j["components"].is_array())
     {
-        for (const auto& childJson : j["children"])
+        for (auto& compJson : j["components"])
         {
-            GameObject* child = DeserializeGameObject(childJson);
-            obj->AddChild(child);
+            std::string type = compJson.value("type", "");
+            Component* c = ComponentFactory::Instance()
+                .Create(type, compJson, obj);
+            if (!c) {
+                std::cerr << "[Deserialize] Unknown component type: "
+                    << type << "\n";
+            }
+            // owner->AddComponentPointer(...) is called
+            // inside your REGISTER_SERIALIZABLE_COMPONENT magic
         }
     }
+
+    // --- children (you already had this) ---
+    if (j.contains("children"))
+        for (auto& childJson : j["children"])
+            obj->AddChild(DeserializeGameObject(childJson));
+
     return obj;
 }
+

@@ -68,7 +68,10 @@ public:
         components.emplace_back(comp);
         return comp;
     }
-
+    void AddComponentPointer(Component* c) {
+        c->owner = this;
+        components.emplace_back(c);
+    }
     template<typename T>
     T* GetComponent() {
         for (const auto& comp : components) {
@@ -78,12 +81,12 @@ public:
         return nullptr;
     }
 
-    template<typename T>
-    void RemoveComponent() {
+   // template<typename T>
+    void RemoveComponent(Component* comp) {
         components.erase(
             std::remove_if(components.begin(), components.end(),
-                [](const std::unique_ptr<Component>& comp) {
-                    return dynamic_cast<T*>(comp.get()) != nullptr;
+                [comp](const std::unique_ptr<Component>& up) {
+                    return up.get() == comp;
                 }),
             components.end()
         );

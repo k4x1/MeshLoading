@@ -5,8 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "Component.h"
 #include <iostream>
-
-class GameObject;
+#include "GameObject.h"      
 using CompCreator = std::function<Component* (const nlohmann::json& params, GameObject* owner)>;
 using CompSerializer = std::function<nlohmann::json(Component* comp)>;
 
@@ -26,7 +25,7 @@ public:
         CompCreator    c,
         CompSerializer s)
     {
-        registry[typeName] = { std::move(c), std::move(s) };
+        registry_[typeName] = { std::move(c), std::move(s) };
     }
 
     Component* Create(const std::string& typeName,
@@ -36,33 +35,30 @@ public:
         std::cout << "[ComponentFactory] Create() entry for type=\""
             << typeName << "\" owner=" << owner << std::endl;
 
-        auto it = registry.find(typeName);
-        if (it == registry.end()) {
+        auto it = registry_.find(typeName);
+        if (it == registry_.end()) {
             std::cout << "[ComponentFactory]  → NO SUCH TYPE\n";
             return nullptr;
         }
 
-        Component* comp = nullptr;
         try {
-            comp = it->second.create(params, owner);
+            Component* comp = it->second.create(params, owner);
             std::cout << "[ComponentFactory]  → created "
                 << comp << " (owner=" << comp->owner << ")\n";
-            
+            return comp;
         }
         catch (const std::exception& ex) {
             std::cout << "[ComponentFactory]  **EXCEPTION** " << ex.what() << std::endl;
+            return nullptr;
         }
-        return comp;
     }
 
-
-    // expose the map so UI can iterate over it
     const std::map<std::string, CompEntry>& GetRegistry() const {
-        return registry;
+        return registry_;
     }
 
     nlohmann::json Serialize(Component* comp) const {
-        for (auto& [typeName, entry] : registry) {
+        for (auto& [typeName, entry] : registry_) {
             nlohmann::json j = entry.serialize(comp);
             if (!j.is_null()) {
                 j["type"] = typeName;
@@ -73,5 +69,25 @@ public:
     }
 
 private:
-    std::map<std::string, CompEntry> registry;
+    std::map<std::string, CompEntry> registry_;
 };
+#define REGISTER_SERIALIZABLE_COMPONENT(TYPE)                                \
+namespace {                                                                  \
+  static bool _##TYPE##_registered = []{                                     \
+    ComponentFactory::Instance().Register(                                   \
+      #TYPE,                                                                 \
+      /* creator */                                                          \
+      [](const nlohmann::json& j, GameObject* owner)->Component* {          \
+        /* this will call TYPE() — so ensure TYPE has a default ctor */      \
+        TYPE* c = owner->AddComponent<TYPE>();                              \
+        c->Deserialize(j);                                                   \
+        return c;                                                            \
+      },                                                                     \
+      /* serializer */                                                       \
+      [](Component* base)->nlohmann::json {                                  \
+        return static_cast<ISerializableComponent*>(base)->Serialize();     \
+      }                                                                      \
+    );                                                                       \
+    return true;                                                             \
+  }();                                                                        \
+}

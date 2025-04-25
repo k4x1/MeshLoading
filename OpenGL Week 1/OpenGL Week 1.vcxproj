@@ -164,6 +164,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="InspectorSlotRegistry.cpp" />
+    <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="IInspectable.h" />
     <ClInclude Include="InspectorSlotRegistry.h" />
+    <ClInclude Include="LightSystem.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEngine.h" />

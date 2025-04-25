@@ -191,7 +191,7 @@ void SampleScene::InitializeModels()
     mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
     mr->vertShaderPath = "Resources/Shaders/Texture.vert";
     mr->fragShaderPath = "Resources/Shaders/Texture.frag";*/
-
+/*
     GameObject* a = new GameObject("Sphere");
     a->transform.position = glm::vec3(0, 500, 0);
     a->transform.scale = glm::vec3(0.05f);
@@ -203,7 +203,7 @@ void SampleScene::InitializeModels()
     mr->vertShaderPath = "Resources/Shaders/Texture.vert";
     mr->fragShaderPath = "Resources/Shaders/Texture.frag";
     mr->Reload();
-    AddGameObject(a);
+    AddGameObject(a);*/
 }
 
 void SampleScene::SetupLights() {

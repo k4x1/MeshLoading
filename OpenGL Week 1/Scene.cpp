@@ -85,9 +85,8 @@ void Scene::LoadFromFile(const std::string& filePath) {
         delete obj;
     }
     gameObjects.clear();
-
-    if (j.contains("gameObjects") && j["gameObjects"].is_array()) {
-        for (const auto& objJson : j["gameObjects"]) {
+    if (j.contains("gameObjects")) {
+        for (auto& objJson : j["gameObjects"]) {
             GameObject* obj = DeserializeGameObject(objJson);
             gameObjects.push_back(obj);
         }
