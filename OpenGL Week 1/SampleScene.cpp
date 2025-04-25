@@ -58,7 +58,11 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
     // Other scene objects
-    InitializeModels();
+    if (fs::exists("Assets/" + sceneName + ".json")) {
+        std::cout << "[SampleScene] Loading from " << sceneName << "\n";
+        LoadFromFile("Assets/" + sceneName + ".json");
+    }
+
     SetupLights();
  /*   {
         auto* terrainGO = new GameObject("Terrain");
@@ -68,16 +72,16 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
         AddGameObject(terrainGO);
     }*/
     SetupQuad();
-    GameObject* mainModelGO = new GameObject("MainModel");
-    mainModelGO->transform.position = glm::vec3(0, 500, 0);
-    mainModelGO->transform.scale = glm::vec3(0.05f);
-    auto* mr = mainModelGO->AddComponent<MeshRenderer>(
-        glm::vec3(0), glm::vec3(0), glm::vec3(1),
-        "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
-    );
-    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
-    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
-    mr->fragShaderPath = "Resources/Shaders/Texture.frag";
+    //GameObject* mainModelGO = new GameObject("MainModel");
+    //mainModelGO->transform.position = glm::vec3(0, 500, 0);
+    //mainModelGO->transform.scale = glm::vec3(0.05f);
+    //auto* mr = mainModelGO->AddComponent<MeshRenderer>(
+    //    glm::vec3(0), glm::vec3(0), glm::vec3(1),
+    //    "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
+    //);
+    //mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
+    //mr->vertShaderPath = "Resources/Shaders/Texture.vert";
+    //mr->fragShaderPath = "Resources/Shaders/Texture.frag";
     // Post-processing quad
     SetupQuad();
     gameFrameBuffer = new FrameBuffer(800, 800);
@@ -92,7 +96,7 @@ void SampleScene::Start()
 
 }
 
-void SampleScene::Update()
+void SampleScene::Update(float dt)
 {
     double current = glfwGetTime();
     deltaTime = static_cast<float>(current - lastFrame);
@@ -110,7 +114,7 @@ void SampleScene::Update()
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_RELEASE)
         tabPressed = false;
 
-    Scene::Update();
+    Scene::Update(dt);
 }
 void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 {
@@ -184,27 +188,7 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     glBindVertexArray(0);
     glUseProgram(0);
 }
-void SampleScene::InitializeModels()
-{
-    if (fs::exists("Assets/"+sceneName + ".json")) {
-        std::cout << "[SampleScene] Loading from " << sceneName << "\n";
-        LoadFromFile(sceneName + ".json");
-    }
 
-/*
-    GameObject* a = new GameObject("Sphere");
-    a->transform.position = glm::vec3(0, 500, 0);
-    a->transform.scale = glm::vec3(0.05f);
-    auto* mr = a->AddComponent<MeshRenderer>(
-        glm::vec3(0), glm::vec3(0), glm::vec3(1),
-        "Assets/Models/Cube.obj"
-    );
-    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
-    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
-    mr->fragShaderPath = "Resources/Shaders/Texture.frag";
-    mr->Reload();
-    AddGameObject(a);*/
-}
 
 void SampleScene::SetupLights() {
     constexpr unsigned int SHADOW_W = 2048;

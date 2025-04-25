@@ -6,52 +6,6 @@
             "name": "CameraObject",
             "transform": {
                 "position": [
-                    7.2956342697143555,
-                    -2.7829933166503906,
-                    3.3618083000183105
-                ],
-                "rotation": [
-                    0.8614652156829834,
-                    0.17996947467327118,
-                    0.4648215174674988,
-                    -0.09710627794265747
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "children": [],
-            "components": [],
-            "name": "MainModel",
-            "transform": {
-                "position": [
-                    0.0,
-                    500.0,
-                    0.0
-                ],
-                "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "children": [],
-            "components": [],
-            "name": "Terrain",
-            "transform": {
-                "position": [
                     0.0,
                     0.0,
                     0.0
@@ -78,13 +32,27 @@
                     "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
                     "type": "MeshRenderer",
                     "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
                 }
             ],
             "name": "Sphere",
             "transform": {
                 "position": [
-                    0.12493884563446045,
-                    493.26202392578125,
+                    0.0,
+                    500.0,
                     0.0
                 ],
                 "rotation": [
@@ -109,44 +77,27 @@
                     "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
                     "type": "MeshRenderer",
                     "vertShaderPath": "Resources/Shaders/Texture.vert"
-                }
-            ],
-            "name": "Cube",
-            "transform": {
-                "position": [
-                    -77.15290069580078,
-                    131.32228088378906,
-                    -466.1110534667969
-                ],
-                "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "children": [],
-            "components": [
+                },
                 {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
-                    "modelFilePath": "Assets/Models/Cube.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
                 }
             ],
             "name": "Cube",
             "transform": {
                 "position": [
-                    4.06045389175415,
-                    -1.2776670455932617,
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "rotation": [

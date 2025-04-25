@@ -3,7 +3,7 @@
 #include "IInspectable.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "ComponentFactory.h"
-// --- Transform conversion functions ---
+#include "Rigidbody.h"  
 nlohmann::json TransformToJson(const Transform& t)
 {
     return nlohmann::json{
@@ -103,6 +103,10 @@ void GameObject::Update(float dt) {
     for (auto& comp : components) {
         comp->Update(dt);
     }
+}
+
+void GameObject::FixedUpdate(float fixedDt)
+{
 }
 
 void GameObject::Start() {

@@ -1,4 +1,5 @@
-﻿#define GLM_ENABLE_EXPERIMENTAL
+﻿// main.cpp
+#define GLM_ENABLE_EXPERIMENTAL
 #include <memory>
 #include <iostream>
 
@@ -17,6 +18,8 @@
 #include "CameraMovement.h"
 #include "InputManager.h"
 #include "UIHelpers.h"
+
+constexpr float FIXED_DT = 1.0f / 60.0f;
 
 std::unique_ptr<SampleScene> editScene;
 std::unique_ptr<SampleScene> runtimeScene;
@@ -66,43 +69,48 @@ int main() {
     editorCamera->AddComponent<CameraMovement>();
 
     // — Framebuffers for Scene / Game views —
-    editorFrameBuffer = new FrameBuffer(800, 800);
-    editorFrameBuffer->Initialize();
-    gameFrameBuffer = new FrameBuffer(800, 800);
-    gameFrameBuffer->Initialize();
+    editorFrameBuffer = new FrameBuffer(800, 800); editorFrameBuffer->Initialize();
+    gameFrameBuffer = new FrameBuffer(800, 800); gameFrameBuffer->Initialize();
 
-    // — Editor state —
+    // — Editor state & timing —
     EditorState state = EditorState::Stop;
     double      lastTime = glfwGetTime();
+    float       accumulator = 0.0f;
 
     while (!glfwWindowShouldClose(Window)) {
         // — Poll & timing —
         glfwPollEvents();
         InputManager::Instance().Update();
         double now = glfwGetTime();
-        float  dt = float(now - lastTime);
+        float  frameDt = float(now - lastTime);
         lastTime = now;
+        accumulator += frameDt;
 
-        // — Play / Stop logic —
+        // — Fixed‐step updates —
+        while (accumulator >= FIXED_DT) {
+            if (state == EditorState::Play && runtimeScene) {
+                runtimeScene->FixedUpdate(FIXED_DT);
+            }
+            else {
+                editScene->FixedUpdate(FIXED_DT);
+            }
+            accumulator -= FIXED_DT;
+        }
+
+        // — Variable‐timestep Update (for e.g. animation, editor UI) —
         if (state == EditorState::Play) {
-            // on transition into Play
             if (!runtimeScene) {
-                // 1) snapshot editScene to JSON
-                constexpr const char* TMP = "TempScene.json";
-                editScene->SaveToFile(TMP);
-
-                // 2) build fresh runtimeScene
+                editScene->SaveToFile("TempScene.json");
                 runtimeScene = std::make_unique<SampleScene>();
                 runtimeScene->InitialSetup(Window);
-                runtimeScene->LoadFromFile(TMP);
+                runtimeScene->LoadFromFile("TempScene.json");
                 runtimeScene->Start();
             }
-            // 3) drive only runtimeScene update
-            runtimeScene->Update();
+            runtimeScene->Update(frameDt);
         }
         else {
-            // leave editScene untouched, destroy runtime
             runtimeScene.reset();
+            editScene->Update(frameDt);
         }
 
         // — Start new ImGui frame —
@@ -119,17 +127,17 @@ int main() {
             editorCamera,
             editScene.get(),
             selectedGameObject,
-            dt);
+            frameDt);
 
         // 2) Game View: runtimeScene when playing, editScene otherwise
         UIHelpers::DrawGameViewWindow(
             gameFrameBuffer,
-            editorCamera, /* you can swap in a dedicated in‐game camera too */
+            editorCamera,
             (state == EditorState::Play ? runtimeScene.get() : editScene.get()),
             state,
-            dt);
+            frameDt);
 
-        // rest of your panels:
+        // — other panels —
         UIHelpers::DrawInspectorWindow(selectedGameObject);
         UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject);
         UIHelpers::DrawProjectWindow();

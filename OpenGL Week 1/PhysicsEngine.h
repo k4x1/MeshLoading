@@ -7,6 +7,9 @@ public:
     reactphysics3d::PhysicsCommon& GetCommon();
     reactphysics3d::PhysicsWorld* GetWorld();
 
+    void Update(float dt);
+
+
 private:
     PhysicsEngine();
     ~PhysicsEngine();

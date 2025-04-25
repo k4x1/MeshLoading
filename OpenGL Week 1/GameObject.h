@@ -93,6 +93,7 @@ public:
     }
 
     void Update(float dt);
+    void FixedUpdate(float fixedDt);
     void Start();
     void Render(Camera* cam);
 };

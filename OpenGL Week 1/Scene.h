@@ -30,8 +30,11 @@ public:
 
     virtual void InitialSetup(GLFWwindow* _window);
     virtual void Start();
-    virtual void Update();
+    virtual void Update(float dt);
+    virtual void FixedUpdate(float fixedDt);
     virtual void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr);
+
+
     FrameBuffer* GetFrameBuffer();
 
 

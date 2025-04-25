@@ -6,29 +6,6 @@
             "name": "CameraObject",
             "transform": {
                 "position": [
-                    7.2956342697143555,
-                    -2.7829933166503906,
-                    3.3618083000183105
-                ],
-                "rotation": [
-                    0.8614652156829834,
-                    0.17996947467327118,
-                    0.4648215174674988,
-                    -0.09710627794265747
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "children": [],
-            "components": [],
-            "name": "Terrain",
-            "transform": {
-                "position": [
                     0.0,
                     0.0,
                     0.0
@@ -55,6 +32,20 @@
                     "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
                     "type": "MeshRenderer",
                     "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
                 }
             ],
             "name": "Sphere",
@@ -86,6 +77,20 @@
                     "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
                     "type": "MeshRenderer",
                     "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
                 }
             ],
             "name": "Cube",

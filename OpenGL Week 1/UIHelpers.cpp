@@ -124,39 +124,33 @@ namespace UIHelpers {
         ImGui::End();
     }
 
-
     void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
         GameObject* gameCamera,
         Scene* scene,
         EditorState& state,
-        float        deltaTime)
+        float       deltaTime)
     {
-        // 1) update & render your in-game camera into the FBO
+        // 1) advance the in-game camera and render the shared scene
         gameCamera->Update(deltaTime);
         gameFB->Bind();
         scene->Render(gameFB, gameCamera->GetComponent<Camera>());
         gameFB->Unbind();
 
-        // 2) ImGui window
+        // 2) UI
         ImGui::Begin("Game View");
         g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
-        // 2a) Play/Pause/Stop toolbar
+        if (ImGui::Button("Stop"))  state = EditorState::Stop;
+        ImGui::SameLine();
         if (ImGui::Button("Play"))  state = EditorState::Play;
         ImGui::SameLine();
         if (ImGui::Button("Pause")) state = EditorState::Pause;
-        ImGui::SameLine();
-        if (ImGui::Button("Stop"))  state = EditorState::Stop;
 
-        // 2b) big green indicator when in Play
-        if (state == EditorState::Play) {
+        if (state == EditorState::Play)
             ImGui::TextColored({ 0,1,0,1 }, "● PLAY MODE");
-        }
 
-        // 2c) draw the game texture
         ImVec2 sz{ (float)gameFB->GetWidth(), (float)gameFB->GetHeight() };
         ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), sz);
-
         ImGui::End();
     }
 

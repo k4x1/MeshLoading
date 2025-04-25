@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <nlohmann/json.hpp>
-
+#include "PhysicsEngine.h"
 
 void Scene::InitialSetup(GLFWwindow* _window) {
     Window = _window;
@@ -17,14 +17,18 @@ void Scene::Start()
     }
 }
 
-void Scene::Update() {
-    float dt = 0.016f;
+void Scene::Update(float dt) {
     for (GameObject* obj : gameObjects) {
 
         obj->Update(dt);
     }
 }
+void Scene::FixedUpdate(float fixedDt) {
+    PhysicsEngine::Instance().Update(fixedDt);
 
+    for (auto* go : gameObjects)
+        go->FixedUpdate(fixedDt);
+}
 void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     Camera* renderCamera = (_camera != nullptr) ? _camera : camera;
     for (GameObject* obj : gameObjects) {

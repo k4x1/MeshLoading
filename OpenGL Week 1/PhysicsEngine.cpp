@@ -20,3 +20,6 @@ reactphysics3d::PhysicsCommon& PhysicsEngine::GetCommon() {
 reactphysics3d::PhysicsWorld* PhysicsEngine::GetWorld() {
     return m_world;
 }
+void PhysicsEngine::Update(float dt) {
+    m_world->update(dt);
+}

@@ -71,23 +71,24 @@ public:
 private:
     std::map<std::string, CompEntry> registry_;
 };
-#define REGISTER_SERIALIZABLE_COMPONENT(TYPE)                                \
-namespace {                                                                  \
-  static bool _##TYPE##_registered = []{                                     \
-    ComponentFactory::Instance().Register(                                   \
-      #TYPE,                                                                 \
-      /* creator */                                                          \
-      [](const nlohmann::json& j, GameObject* owner)->Component* {          \
-        /* this will call TYPE() — so ensure TYPE has a default ctor */      \
-        TYPE* c = owner->AddComponent<TYPE>();                              \
-        c->Deserialize(j);                                                   \
-        return c;                                                            \
-      },                                                                     \
-      /* serializer */                                                       \
-      [](Component* base)->nlohmann::json {                                  \
-        return static_cast<ISerializableComponent*>(base)->Serialize();     \
-      }                                                                      \
-    );                                                                       \
-    return true;                                                             \
-  }();                                                                        \
+#define REGISTER_SERIALIZABLE_COMPONENT(TYPE)                                       \
+namespace {                                                                         \
+  static bool _##TYPE##_registered = []{                                            \
+    ComponentFactory::Instance().Register(                                          \
+      #TYPE,                                                                        \
+      /* creator */                                                                 \
+      [](const nlohmann::json& j, GameObject* owner)->Component* {                 \
+        TYPE* c = owner->AddComponent<TYPE>();                                     \
+        c->Deserialize(j);                                                          \
+        return c;                                                                   \
+      },                                                                            \
+      /* serializer */                                                              \
+      [](Component* base)->nlohmann::json {                                         \
+        if (TYPE* p = dynamic_cast<TYPE*>(base))                                    \
+          return p->Serialize();                                                    \
+        return nullptr;  /* not a TYPE, so skip */                                  \
+      }                                                                             \
+    );                                                                              \
+    return true;                                                                    \
+  }();                                                                               \
 }
