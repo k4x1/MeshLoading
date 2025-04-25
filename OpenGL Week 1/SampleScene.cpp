@@ -13,7 +13,8 @@
 #include <iostream>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-void SampleScene::InitialSetup(GLFWwindow* _window)
+//using fs = 
+void SampleScene::InitialSetup(GLFWwindow* _window, bool autoLoad)
 {
     Scene::InitialSetup(_window);
     Window = _window;
@@ -57,10 +58,12 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
     };
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
-    // Other scene objects
-    if (fs::exists("Assets/" + sceneName + ".json")) {
-        std::cout << "[SampleScene] Loading from " << sceneName << "\n";
-        LoadFromFile("Assets/" + sceneName + ".json");
+    if (autoLoad) {
+        std::string persistent = "Assets/" + sceneName + ".json";
+        if (std::filesystem::exists(persistent)) {
+            std::cout << "[SampleScene] Auto-loading “" << persistent << "”\n";
+            LoadFromFile(persistent);
+        }
     }
 
     SetupLights();

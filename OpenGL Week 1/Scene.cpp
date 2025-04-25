@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "PhysicsEngine.h"
 
-void Scene::InitialSetup(GLFWwindow* _window) {
+void Scene::InitialSetup(GLFWwindow* _window, bool autoLoad) {
     Window = _window;
     camera= new Camera();
 }

@@ -28,7 +28,7 @@ public:
 
     std::string sceneName = "scene";
 
-    virtual void InitialSetup(GLFWwindow* _window);
+    virtual void InitialSetup(GLFWwindow* _window, bool autoLoad = true);
     virtual void Start();
     virtual void Update(float dt);
     virtual void FixedUpdate(float fixedDt);

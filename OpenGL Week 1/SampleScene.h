@@ -14,9 +14,9 @@
 
 class SampleScene : public Scene {
 public:
-    void InitialSetup(GLFWwindow* _window) override;
+    void InitialSetup(GLFWwindow* _window, bool autoLoad = true) override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(float dts) override;
     void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr) override;
     virtual ~SampleScene();
 

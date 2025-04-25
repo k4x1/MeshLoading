@@ -52,7 +52,7 @@
             "transform": {
                 "position": [
                     0.0,
-                    500.0,
+                    10.0,
                     0.0
                 ],
                 "rotation": [
@@ -87,29 +87,29 @@
                     "type": "BoxCollider"
                 },
                 {
-                    "isKinematic": false,
+                    "isKinematic": true,
                     "mass": 1.0,
                     "type": "Rigidbody",
-                    "useGravity": true
+                    "useGravity": false
                 }
             ],
             "name": "Cube",
             "transform": {
                 "position": [
                     0.0,
-                    0.0,
+                    -13.5,
                     0.0
                 ],
                 "rotation": [
-                    1.0,
+                    0.9999143481254578,
                     0.0,
-                    0.0,
+                    -0.013089596293866634,
                     0.0
                 ],
                 "scale": [
+                    10.0,
                     1.0,
-                    1.0,
-                    1.0
+                    10.0
                 ]
             }
         }

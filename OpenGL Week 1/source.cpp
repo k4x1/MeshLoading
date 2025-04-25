@@ -58,21 +58,21 @@ int main() {
 
     UIHelpers::InitializeUI();
 
-    // — Build our edit scene once —
+    // — Build our edit scene once (Editor never runs Start/Update on it) —
     editScene = std::make_unique<SampleScene>();
-    editScene->InitialSetup(Window);
+    editScene->InitialSetup(Window, true);
 
-    // — Editor camera (for gizmos/hierarchy) —
+    // — Editor camera for gizmos/hierarchy —
     editorCamera = new GameObject("EditorCamera");
     editorCamera->transform.position = glm::vec3(0, 500, 0);
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
 
-    // — Framebuffers for Scene / Game views —
+    // — Framebuffers —
     editorFrameBuffer = new FrameBuffer(800, 800); editorFrameBuffer->Initialize();
     gameFrameBuffer = new FrameBuffer(800, 800); gameFrameBuffer->Initialize();
 
-    // — Editor state & timing —
+    // — State & timing —
     EditorState state = EditorState::Stop;
     double      lastTime = glfwGetTime();
     float       accumulator = 0.0f;
@@ -86,42 +86,40 @@ int main() {
         lastTime = now;
         accumulator += frameDt;
 
-        // — Fixed‐step updates —
-        while (accumulator >= FIXED_DT) {
-            if (state == EditorState::Play && runtimeScene) {
+        if (state == EditorState::Play && runtimeScene) {
+            while (accumulator >= FIXED_DT) {
                 runtimeScene->FixedUpdate(FIXED_DT);
+                accumulator -= FIXED_DT;
             }
-            else {
-                editScene->FixedUpdate(FIXED_DT);
-            }
-            accumulator -= FIXED_DT;
         }
 
-        // — Variable‐timestep Update (for e.g. animation, editor UI) —
         if (state == EditorState::Play) {
             if (!runtimeScene) {
+                // snapshot edit→TempScene
                 editScene->SaveToFile("TempScene.json");
+
+                // build **runtime** without auto-load of the persistent file
                 runtimeScene = std::make_unique<SampleScene>();
-                runtimeScene->InitialSetup(Window);
-                runtimeScene->LoadFromFile("TempScene.json");
+                runtimeScene->InitialSetup(Window, /*autoLoad=*/false);
+
+                // now bring in the TempScene and run Start()
+                runtimeScene->LoadFromFile("Assets/TempScene.json");
                 runtimeScene->Start();
             }
+            runtimeScene->FixedUpdate(FIXED_DT);
             runtimeScene->Update(frameDt);
         }
         else {
             runtimeScene.reset();
-            editScene->Update(frameDt);
         }
 
-        // — Start new ImGui frame —
+        // — ImGui frame —
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // — Dockspace & windows —
         UIHelpers::ShowDockSpace();
 
-        // 1) Scene View: always editScene + editorCamera
+        // 1) Scene View → always shows **editScene** (no logic)
         UIHelpers::DrawSceneViewWindow(
             editorFrameBuffer,
             editorCamera,
@@ -129,7 +127,7 @@ int main() {
             selectedGameObject,
             frameDt);
 
-        // 2) Game View: runtimeScene when playing, editScene otherwise
+        // 2) Game View → shows **runtimeScene** in Play, else editScene (still no logic on editScene)
         UIHelpers::DrawGameViewWindow(
             gameFrameBuffer,
             editorCamera,
@@ -137,13 +135,13 @@ int main() {
             state,
             frameDt);
 
-        // — other panels —
+        // — Other panels —
         UIHelpers::DrawInspectorWindow(selectedGameObject);
         UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject);
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
 
-        // — Render ImGui —
+        // — Render & swap —
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Window);
