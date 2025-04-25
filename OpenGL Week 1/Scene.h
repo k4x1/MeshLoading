@@ -34,6 +34,13 @@ public:
     virtual void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr);
     FrameBuffer* GetFrameBuffer();
 
+
+    nlohmann::json ToJson() const;
+    void           FromJson(const nlohmann::json& j);
+    std::string    ToString() const;
+    void           FromString(const std::string& s);
+
+
     void AddGameObject(GameObject* obj);
     void RemoveGameObject(GameObject* obj);
 

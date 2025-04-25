@@ -53,21 +53,49 @@ void Scene::RemoveGameObject(GameObject* obj) {
     delete obj;
 }
 
-void Scene::SaveToFile(const std::string& filePath) {
+
+nlohmann::json Scene::ToJson() const {
+    nlohmann::json j;
+    j["gameObjects"] = nlohmann::json::array();
+    for (auto* go : gameObjects)
+        j["gameObjects"].push_back(SerializeGameObject(go));
+    return j;
+}
+
+void Scene::FromJson(const nlohmann::json& j) {
+    // clear existing
+    for (auto* go : gameObjects) delete go;
+    gameObjects.clear();
+
+    // rebuild
+    for (auto& objJ : j["gameObjects"])
+        gameObjects.push_back(DeserializeGameObject(objJ));
+}
+
+std::string Scene::ToString() const {
+    return ToJson().dump();
+}
+
+void Scene::FromString(const std::string& s) {
+    FromJson(nlohmann::json::parse(s));
+}
+void Scene::SaveToFile(const std::string& fileName) {
+    namespace fs = std::filesystem;
+    fs::path outPath = fs::path("Assets") / fileName;
+
     nlohmann::json j;
     j["gameObjects"] = nlohmann::json::array();
     for (GameObject* obj : gameObjects) {
         j["gameObjects"].push_back(SerializeGameObject(obj));
     }
 
-    std::ofstream outFile(filePath);
+    std::ofstream outFile(outPath);
     if (!outFile.is_open()) {
-        std::cerr << "Failed to open file for saving: " << filePath << std::endl;
+        std::cerr << "Failed to open file for saving: " << outPath << std::endl;
         return;
     }
     outFile << j.dump(4);
-    std::cout << "Saved file to: " << filePath << std::endl;
-    outFile.close();
+    std::cout << "Saved scene to: " << outPath << std::endl;
 }
 
 void Scene::LoadFromFile(const std::string& filePath) {

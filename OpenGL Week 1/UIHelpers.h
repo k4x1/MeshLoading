@@ -14,7 +14,6 @@ namespace UIHelpers {
     void InitializeUI();
     void ShowDockSpace();
 
-    // Note: EditorState used here
     void DrawSceneViewWindow(FrameBuffer* editorFB,
         GameObject* editorCamera,
         Scene* scene,
@@ -22,11 +21,10 @@ namespace UIHelpers {
         float deltaTime);
 
     void DrawGameViewWindow(FrameBuffer* gameFB,
-        GameObject* editorCamera,
+        GameObject* gameCam,
         Scene* scene,
         EditorState& state,
         float deltaTime);
-
     void DrawInspectorWindow(GameObject*& selected);
     void DrawHierarchyWindow(Scene* scene, GameObject*& selected);
     void DrawProjectWindow();

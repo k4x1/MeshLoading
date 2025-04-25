@@ -68,7 +68,16 @@ void SampleScene::InitialSetup(GLFWwindow* _window)
         AddGameObject(terrainGO);
     }*/
     SetupQuad();
-
+    GameObject* mainModelGO = new GameObject("MainModel");
+    mainModelGO->transform.position = glm::vec3(0, 500, 0);
+    mainModelGO->transform.scale = glm::vec3(0.05f);
+    auto* mr = mainModelGO->AddComponent<MeshRenderer>(
+        glm::vec3(0), glm::vec3(0), glm::vec3(1),
+        "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
+    );
+    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
+    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
+    mr->fragShaderPath = "Resources/Shaders/Texture.frag";
     // Post-processing quad
     SetupQuad();
     gameFrameBuffer = new FrameBuffer(800, 800);
@@ -118,7 +127,7 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     cam->Matrix(0.01f, 1000.0f, Program_Texture, "VPMatrix");
 
     // 2a) Skybox
-    skybox->Render(cam->m_view, cam->m_projection);
+    skybox->Render(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
     // 2b) Lit textured pass
     glUseProgram(Program_Texture);
@@ -177,20 +186,11 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 }
 void SampleScene::InitializeModels()
 {
-    if (fs::exists(sceneName + ".json")) {
+    if (fs::exists("Assets/"+sceneName + ".json")) {
         std::cout << "[SampleScene] Loading from " << sceneName << "\n";
         LoadFromFile(sceneName + ".json");
     }
-    /*GameObject* mainModelGO = new GameObject("MainModel");
-    mainModelGO->transform.position = glm::vec3(0, 500, 0);
-    mainModelGO->transform.scale = glm::vec3(0.05f);
-    auto* mr = mainModelGO->AddComponent<MeshRenderer>(
-        glm::vec3(0), glm::vec3(0), glm::vec3(1),
-        "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
-    );
-    mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
-    mr->vertShaderPath = "Resources/Shaders/Texture.vert";
-    mr->fragShaderPath = "Resources/Shaders/Texture.frag";*/
+
 /*
     GameObject* a = new GameObject("Sphere");
     a->transform.position = glm::vec3(0, 500, 0);

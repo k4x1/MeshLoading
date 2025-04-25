@@ -42,52 +42,50 @@ namespace UIHelpers {
         ImGui::DockSpace(ImGui::GetID("MyDockSpace"));
         ImGui::End();
     }
-    void DrawSceneViewWindow(FrameBuffer* editorFB,
-        GameObject*       /*editorCamera*/,
+    void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
+        GameObject* editorCamera,
         Scene* scene,
         GameObject* selected,
-        float             deltaTime)
+        float       deltaTime)
     {
-        // 1) Render 3D scene into our FBO
+        // 1) update & render your editor camera into the FBO
         editorCamera->Update(deltaTime);
         editorFB->Bind();
         scene->Render(editorFB, editorCamera->GetComponent<Camera>());
         editorFB->Unbind();
 
-        // 2) Begin ImGui window
+        // 2) ImGui window
         ImGui::Begin("Scene View");
         g_SceneViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
-        // 2a) Draw the texture
-        ImVec2 sz((float)editorFB->GetWidth(), (float)editorFB->GetHeight());
+
+        // 2a) draw the texture
+        ImVec2 sz{ (float)editorFB->GetWidth(), (float)editorFB->GetHeight() };
         ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
 
-        // 2b) Grab its on‑screen rectangle
+        // 2b) gizmo setup
         ImVec2 img_min = ImGui::GetItemRectMin();
         ImVec2 img_max = ImGui::GetItemRectMax();
         ImVec2 img_sz{ img_max.x - img_min.x, img_max.y - img_min.y };
 
-        // 3) Setup ImGuizmo
         ImGuizmo::BeginFrame();
         ImGuizmo::Enable(selected != nullptr);
         ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetRect(img_min.x, img_min.y, img_sz.x, img_sz.y);
 
-        // 4) Fetch camera matrices
         Camera* cam = editorCamera->GetComponent<Camera>();
         glm::mat4 view = cam->GetViewMatrix();
         glm::mat4 proj = cam->GetProjectionMatrix();
-        proj[1][1] *= -1.0f; // flip Y for ImGui
+        proj[1][1] *= -1.0f;   // flip Y for ImGuizmo
 
-        // 5) If an object is selected, draw gizmo
         if (selected) {
             ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
             glm::mat4 model = selected->GetWorldMatrix();
 
-            // confine draw
+            // confine draw to the scene-view rectangle
             ImGui::PushClipRect(img_min, img_max, true);
-            bool depth = glIsEnabled(GL_DEPTH_TEST);
-            if (depth) glDisable(GL_DEPTH_TEST);
+            bool wasDepth = glIsEnabled(GL_DEPTH_TEST);
+            if (wasDepth) glDisable(GL_DEPTH_TEST);
 
             ImGuizmo::Manipulate(glm::value_ptr(view),
                 glm::value_ptr(proj),
@@ -95,7 +93,7 @@ namespace UIHelpers {
                 ImGuizmo::LOCAL,
                 glm::value_ptr(model));
 
-            if (depth) glEnable(GL_DEPTH_TEST);
+            if (wasDepth) glEnable(GL_DEPTH_TEST);
             ImGui::PopClipRect();
 
             if (ImGuizmo::IsUsing()) {
@@ -110,7 +108,7 @@ namespace UIHelpers {
             }
         }
 
-        // 6) Allow dropping a .prefab anywhere into the scene view
+        // 3) drag-and-drop prefabs into scene
         if (ImGui::BeginDragDropTarget()) {
             if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
                 int idx = *(int*)pl->Data;
@@ -118,8 +116,6 @@ namespace UIHelpers {
                 if (a.type == AssetType::Prefab) {
                     GameObject* go = PrefabSystem::Instantiate(a.path);
                     scene->AddGameObject(go);
-                    std::cout << "[UIHelpers] Instantiated prefab '"
-                        << a.name << "' into Scene View\n";
                 }
             }
             ImGui::EndDragDropTarget();
@@ -127,30 +123,43 @@ namespace UIHelpers {
 
         ImGui::End();
     }
-    void DrawGameViewWindow(FrameBuffer* gameFB,
-        GameObject*,
+
+
+    void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
+        GameObject* gameCamera,
         Scene* scene,
         EditorState& state,
-        float         deltaTime)
+        float        deltaTime)
     {
-        editorCamera->Update(deltaTime);
+        // 1) update & render your in-game camera into the FBO
+        gameCamera->Update(deltaTime);
         gameFB->Bind();
-        scene->Render(gameFB, editorCamera->GetComponent<Camera>());
+        scene->Render(gameFB, gameCamera->GetComponent<Camera>());
         gameFB->Unbind();
 
+        // 2) ImGui window
         ImGui::Begin("Game View");
         g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
+
+        // 2a) Play/Pause/Stop toolbar
         if (ImGui::Button("Play"))  state = EditorState::Play;
         ImGui::SameLine();
         if (ImGui::Button("Pause")) state = EditorState::Pause;
         ImGui::SameLine();
         if (ImGui::Button("Stop"))  state = EditorState::Stop;
 
-        ImVec2 sz((float)gameFB->GetWidth(), (float)gameFB->GetHeight());
+        // 2b) big green indicator when in Play
+        if (state == EditorState::Play) {
+            ImGui::TextColored({ 0,1,0,1 }, "● PLAY MODE");
+        }
+
+        // 2c) draw the game texture
+        ImVec2 sz{ (float)gameFB->GetWidth(), (float)gameFB->GetHeight() };
         ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), sz);
-        ImGui::Text("This is where the scene is rendered.");
+
         ImGui::End();
     }
+
     void UIHelpers::ShowGameObjectNode(GameObject* obj, GameObject*& sel, Scene* scene) {
         ImGui::PushID(obj);
 

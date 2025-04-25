@@ -1,84 +1,50 @@
 ﻿#define GLM_ENABLE_EXPERIMENTAL
-
 #include <memory>
 #include <iostream>
 
-// GLFW / GLEW
 #include <glew.h>
 #include <GLFW/glfw3.h>
-
-// GLM
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-// ImGui
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-
-// Your engine headers
 #include "SampleScene.h"
 #include "FrameBuffer.h"
 #include "GameObject.h"
 #include "CameraMovement.h"
 #include "InputManager.h"
-#include "UIHelpers.h"   // brings in EditorState
+#include "UIHelpers.h"
 
-std::unique_ptr<Scene> CurrentScene;
+std::unique_ptr<SampleScene> editScene;
+std::unique_ptr<SampleScene> runtimeScene;
+
 GLFWwindow* Window = nullptr;
 FrameBuffer* editorFrameBuffer = nullptr;
-FrameBuffer* frameBuffer = nullptr;
+FrameBuffer* gameFrameBuffer = nullptr;
 GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
-int emptyObjCount = 0;
-static bool showDebugWindow = true;
 
-enum class SceneType { Game };
-
-void switchScene(SceneType sceneType) {
-    if (sceneType == SceneType::Game) {
-        CurrentScene = std::make_unique<SampleScene>();
-        std::cout << "Switched to SampleScene\n";
-        CurrentScene->InitialSetup(Window);
-    }
-}
-
-int main()
-{
-    // --- GLFW init ---
-    if (!glfwInit()) {
-        std::cerr << "GLFW init failed\n";
-        return -1;
-    }
+int main() {
+    // — GLFW / OpenGL init —
+    if (!glfwInit()) return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    // --- Window & context ---
-    Window = glfwCreateWindow(800, 800, "First OpenGL Window", nullptr, nullptr);
-    if (!Window) {
-        std::cerr << "Window creation failed\n";
-        glfwTerminate();
-        return -1;
-    }
+    Window = glfwCreateWindow(800, 800, "Editor", nullptr, nullptr);
     glfwMakeContextCurrent(Window);
-
-    // --- GLEW init (after context!) ---
     glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "GLEW init failed\n";
-        glfwTerminate();
-        return -1;
-    }
+    if (glewInit() != GLEW_OK) return -1;
     glEnable(GL_MULTISAMPLE);
 
-    // --- Input setup ---
     InputManager::SetCallbacks(Window);
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-    // --- ImGui setup ---
+    // — ImGui init —
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -86,86 +52,99 @@ int main()
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
+
     UIHelpers::InitializeUI();
 
-    // --- Scene & camera setup ---
-    EditorState currentState = EditorState::Play;
-    CurrentScene = std::make_unique<SampleScene>();
+    // — Build our edit scene once —
+    editScene = std::make_unique<SampleScene>();
+    editScene->InitialSetup(Window);
 
-    editorCamera = new GameObject("Camera");
-    editorCamera->transform.position = glm::vec3(0.0f, 500.0f, 0.0f);
+    // — Editor camera (for gizmos/hierarchy) —
+    editorCamera = new GameObject("EditorCamera");
+    editorCamera->transform.position = glm::vec3(0, 500, 0);
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
 
-    // --- Framebuffers ---
-    frameBuffer = new FrameBuffer(800, 800);
-    frameBuffer->Initialize();
+    // — Framebuffers for Scene / Game views —
     editorFrameBuffer = new FrameBuffer(800, 800);
     editorFrameBuffer->Initialize();
+    gameFrameBuffer = new FrameBuffer(800, 800);
+    gameFrameBuffer->Initialize();
 
-    // --- Initial scene load ---
-    CurrentScene->InitialSetup(Window);
-    editorCamera->Start();
-
-    // --- Main loop timing ---
-    double lastTime = glfwGetTime();
+    // — Editor state —
+    EditorState state = EditorState::Stop;
+    double      lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(Window)) {
-        // Poll + input
+        // — Poll & timing —
         glfwPollEvents();
         InputManager::Instance().Update();
-
-        // Compute deltaTime
         double now = glfwGetTime();
-        float  deltaTime = static_cast<float>(now - lastTime);
+        float  dt = float(now - lastTime);
         lastTime = now;
 
-        // Scene update
-        switch (currentState) {
-        case EditorState::Play:
-            CurrentScene->Update();
-            break;
-        case EditorState::Pause:    
-            break;
-        case EditorState::Stop:
-            switchScene(SceneType::Game);
-            currentState = EditorState::Play;
-            break;
+        // — Play / Stop logic —
+        if (state == EditorState::Play) {
+            // on transition into Play
+            if (!runtimeScene) {
+                // 1) snapshot editScene to JSON
+                constexpr const char* TMP = "TempScene.json";
+                editScene->SaveToFile(TMP);
+
+                // 2) build fresh runtimeScene
+                runtimeScene = std::make_unique<SampleScene>();
+                runtimeScene->InitialSetup(Window);
+                runtimeScene->LoadFromFile(TMP);
+                runtimeScene->Start();
+            }
+            // 3) drive only runtimeScene update
+            runtimeScene->Update();
+        }
+        else {
+            // leave editScene untouched, destroy runtime
+            runtimeScene.reset();
         }
 
-        // Start ImGui
+        // — Start new ImGui frame —
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // UI
+        // — Dockspace & windows —
         UIHelpers::ShowDockSpace();
-        UIHelpers::DrawSceneViewWindow(editorFrameBuffer,
-            editorCamera,
-            CurrentScene.get(),
-            selectedGameObject,
-            deltaTime);
-        UIHelpers::DrawGameViewWindow(frameBuffer,
-            editorCamera,
-            CurrentScene.get(),
-            currentState,
-            deltaTime);
-        UIHelpers::DrawInspectorWindow(selectedGameObject);
-        UIHelpers::DrawHierarchyWindow(CurrentScene.get(), selectedGameObject);
-        UIHelpers::DrawProjectWindow();
-        UIHelpers::DrawDebugWindow(&showDebugWindow);
 
-        // Render
+        // 1) Scene View: always editScene + editorCamera
+        UIHelpers::DrawSceneViewWindow(
+            editorFrameBuffer,
+            editorCamera,
+            editScene.get(),
+            selectedGameObject,
+            dt);
+
+        // 2) Game View: runtimeScene when playing, editScene otherwise
+        UIHelpers::DrawGameViewWindow(
+            gameFrameBuffer,
+            editorCamera, /* you can swap in a dedicated in‐game camera too */
+            (state == EditorState::Play ? runtimeScene.get() : editScene.get()),
+            state,
+            dt);
+
+        // rest of your panels:
+        UIHelpers::DrawInspectorWindow(selectedGameObject);
+        UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject);
+        UIHelpers::DrawProjectWindow();
+        UIHelpers::DrawDebugWindow(nullptr);
+
+        // — Render ImGui —
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Window);
     }
 
-    // Cleanup
-    delete frameBuffer;
+    // — Cleanup —
     delete editorFrameBuffer;
+    delete gameFrameBuffer;
     delete editorCamera;
-
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
