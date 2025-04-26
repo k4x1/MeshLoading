@@ -119,7 +119,6 @@ int main() {
         ImGui::NewFrame();
         UIHelpers::ShowDockSpace();
 
-        // 1) Scene View → always shows **editScene** (no logic)
         UIHelpers::DrawSceneViewWindow(
             editorFrameBuffer,
             editorCamera,
@@ -127,27 +126,27 @@ int main() {
             selectedGameObject,
             frameDt);
 
-        // 2) Game View → shows **runtimeScene** in Play, else editScene (still no logic on editScene)
+        GameObject* gameCamGO = (state == EditorState::Play && runtimeScene)
+            ? runtimeScene->camera->owner
+            : editScene->camera->owner;
+
         UIHelpers::DrawGameViewWindow(
             gameFrameBuffer,
-            editorCamera,
+            gameCamGO,
             (state == EditorState::Play ? runtimeScene.get() : editScene.get()),
             state,
             frameDt);
 
-        // — Other panels —
         UIHelpers::DrawInspectorWindow(selectedGameObject);
         UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject);
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
 
-        // — Render & swap —
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Window);
     }
 
-    // — Cleanup —
     delete editorFrameBuffer;
     delete gameFrameBuffer;
     delete editorCamera;

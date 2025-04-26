@@ -14,27 +14,45 @@
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 //using fs = 
-void SampleScene::InitialSetup(GLFWwindow* _window, bool autoLoad)
-{
-    Scene::InitialSetup(_window);
-    Window = _window;
 
-    // Basic OpenGL state
+void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
+    // base init
+    Scene::InitialSetup(window);
+    Window = window;
+
+    // GL state
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0, 0, 0, 1);
     glViewport(0, 0, 800, 800);
 
-    // Camera GameObject
+    // 1) Optional persistent load
+    if (autoLoad) {
+        std::string path = "Assets/" + sceneName + ".json";
+        if (fs::exists(path)) {
+            LoadFromFile(path);
+        }
+    }
+
+    // 2) Find first Camera component in loaded scene
+    for (auto* go : gameObjects) {
+        if (go->GetComponent<Camera>()) {
+            camera->owner = go;
+            break;
+        }
+    }
+
+    // 3) Fallback: create a default camera if none found
     if (!camera->owner) {
         GameObject* camGO = new GameObject("CameraObject");
-        camGO->transform.position = glm::vec3(0.0f);
-        camera->owner = camGO;
-        camGO->AddComponent<CameraMovement>();
+        camGO->AddComponent<Camera>();
         AddGameObject(camGO);
+        camera->owner = camGO;
     }
+
+    // 4) Initialize camera’s projection parameters
     camera->InitCamera(800, 800);
 
-    // Shader programs
+    // — load shaders/textures/skybox —
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
@@ -42,12 +60,10 @@ void SampleScene::InitialSetup(GLFWwindow* _window, bool autoLoad)
     shadowMappingShader = ShaderLoader::CreateProgram("Resources/Shaders/ShadowMapping.vert", "Resources/Shaders/ShadowMapping.frag");
     mainRenderingShader = ShaderLoader::CreateProgram("Resources/Shaders/MainRendering.vert", "Resources/Shaders/MainRendering.frag");
 
-    // Textures
     ancientTex.InitTexture("Resources/Textures/PolygonAncientWorlds_Texture_01_A.png");
     scifiTex.InitTexture("Resources/Textures/PolygonScifiWorlds_Texture_01_B.png");
     blankTex.InitTexture("Resources/Textures/blankTex.png");
 
-    // Skybox
     std::vector<std::string> faces = {
         "Resources/Textures/skybox/Right.png",
         "Resources/Textures/skybox/Left.png",
@@ -58,40 +74,18 @@ void SampleScene::InitialSetup(GLFWwindow* _window, bool autoLoad)
     };
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
-    if (autoLoad) {
-        std::string persistent = "Assets/" + sceneName + ".json";
-        if (std::filesystem::exists(persistent)) {
-            std::cout << "[SampleScene] Auto-loading “" << persistent << "”\n";
-            LoadFromFile(persistent);
-        }
-    }
-
-    SetupLights();
- /*   {
-        auto* terrainGO = new GameObject("Terrain");
-        terrainGO->AddComponent<TerrainComponent>(
-            HeightMapInfo{ "Resources/Heightmaps/heightmap.raw",512,512,1.0f }, 0.2f
-        );
-        AddGameObject(terrainGO);
-    }*/
-    SetupQuad();
-    //GameObject* mainModelGO = new GameObject("MainModel");
-    //mainModelGO->transform.position = glm::vec3(0, 500, 0);
-    //mainModelGO->transform.scale = glm::vec3(0.05f);
-    //auto* mr = mainModelGO->AddComponent<MeshRenderer>(
-    //    glm::vec3(0), glm::vec3(0), glm::vec3(1),
-    //    "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj"
-    //);
-    //mr->textureFilePath = "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png";
-    //mr->vertShaderPath = "Resources/Shaders/Texture.vert";
-    //mr->fragShaderPath = "Resources/Shaders/Texture.frag";
-    // Post-processing quad
-    SetupQuad();
+    // frame-buffer for post-processing pass
     gameFrameBuffer = new FrameBuffer(800, 800);
     gameFrameBuffer->Initialize();
-    // Finalize
+
+    // Setup helpers
+    SetupLights();
+    SetupQuad();
+
+    // Finally fire any Start() logic
     Start();
 }
+
 
 void SampleScene::Start()
 {

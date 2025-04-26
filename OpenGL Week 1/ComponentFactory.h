@@ -37,13 +37,13 @@ public:
 
         auto it = registry_.find(typeName);
         if (it == registry_.end()) {
-            std::cout << "[ComponentFactory]  → NO SUCH TYPE\n";
+            std::cout << "[ComponentFactory] NO SUCH TYPE\n";
             return nullptr;
         }
 
         try {
             Component* comp = it->second.create(params, owner);
-            std::cout << "[ComponentFactory]  → created "
+            std::cout << "[ComponentFactory] created "
                 << comp << " (owner=" << comp->owner << ")\n";
             return comp;
         }
@@ -76,19 +76,17 @@ namespace {                                                                     
   static bool _##TYPE##_registered = []{                                            \
     ComponentFactory::Instance().Register(                                          \
       #TYPE,                                                                        \
-      /* creator */                                                                 \
-      [](const nlohmann::json& j, GameObject* owner)->Component* {                 \
-        TYPE* c = owner->AddComponent<TYPE>();                                     \
+      [](const nlohmann::json& j, GameObject* owner)->Component* {                  \
+        TYPE* c = owner->AddComponent<TYPE>();                                      \
         c->Deserialize(j);                                                          \
         return c;                                                                   \
       },                                                                            \
-      /* serializer */                                                              \
       [](Component* base)->nlohmann::json {                                         \
         if (TYPE* p = dynamic_cast<TYPE*>(base))                                    \
           return p->Serialize();                                                    \
-        return nullptr;  /* not a TYPE, so skip */                                  \
+        return nullptr;                                                             \
       }                                                                             \
     );                                                                              \
     return true;                                                                    \
-  }();                                                                               \
-}
+  }();                                                                              \
+}                                                                                   \
