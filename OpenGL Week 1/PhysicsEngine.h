@@ -2,18 +2,17 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <vector>
 #include <glm.hpp>
-
-class reactphysics3d::PhysicsWorld;
+#include "EnginePluginAPI.h"
 class GameObject;
 namespace Physics {
 
-    struct RaycastHit {
+    struct ENGINE_API RaycastHit {
         GameObject* object = nullptr;
-        glm::vec3   point;
-        glm::vec3   normal;
+        glm::vec3   point = glm::vec3(0);
+        glm::vec3   normal = glm::vec3(0);
         float       distance = 0.0f;
     };
-    class PhysicsEngine {
+    class ENGINE_API PhysicsEngine {
     public:
         static PhysicsEngine& Instance();
         reactphysics3d::PhysicsCommon& GetCommon();

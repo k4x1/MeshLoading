@@ -7,25 +7,19 @@
 #include "FrameBuffer.h"
 #include "ShadowMap.h"
 #include "Light.h"
-#include "HeightMapInfo.h"
-#include "TerrainComponent.h"
 #include "CameraMovement.h"
 #include <iostream>
 #include <fstream>
 #include <gtc/type_ptr.hpp>
-//using fs = 
 
 void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
-    // base init
     Scene::InitialSetup(window);
     Window = window;
 
-    // GL state
     glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0, 1);
     glViewport(0, 0, 800, 800);
 
-    // 1) Optional persistent load
     if (autoLoad) {
         std::string path = "Assets/" + sceneName + ".json";
         if (fs::exists(path)) {
@@ -33,7 +27,6 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
         }
     }
 
-    // 2) Find first Camera component in loaded scene
     for (auto* go : gameObjects) {
         if (go->GetComponent<Camera>()) {
             camera->owner = go;

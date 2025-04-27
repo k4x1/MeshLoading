@@ -8,7 +8,7 @@
 #include <string>
 #include <glm.hpp>
 
-class Skybox : public MeshModel {
+class ENGINE_API Skybox : public MeshModel {
 public:
     Skybox(const std::string& objFilePath, const std::vector<std::string>& faces);
     void Render(const glm::mat4& view, const glm::mat4& projection);

@@ -32,4 +32,4 @@ void Camera::Matrix(float nearPlane, float farPlane, GLuint shaderID, const char
         glUniformMatrix4fv(glGetUniformLocation(shaderID, uniform), 1, GL_FALSE, glm::value_ptr(VP));
     }
 }
-REGISTER_SERIALIZABLE_COMPONENT(Camera);
+

@@ -26,7 +26,7 @@ namespace UIHelpers {
         EditorState& state,
         float deltaTime);
     void DrawInspectorWindow(GameObject*& selected);
-    void DrawHierarchyWindow(Scene* scene, GameObject*& selected);
+    void DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObject* editorCamera);
     void DrawProjectWindow();
     void DrawDebugWindow(bool* p_open = nullptr);
     void ShowGameObjectNode(GameObject* obj, GameObject*& selected, Scene* scene);

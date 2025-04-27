@@ -10,7 +10,7 @@
 #include "PrefabSystem.h"
 #include "InspectorSlotRegistry.h"
 #include "ComponentFactory.h"
-extern GameObject* editorCamera;
+#include "Debug.h"
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
 namespace UIHelpers {
@@ -196,7 +196,7 @@ namespace UIHelpers {
 
         ImGui::PopID();
     }
-    void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected) {
+    void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObject* editorCamera) {
         ImGui::Begin("Hierarchy");
 
         if (ImGui::Button("Save"))

@@ -1,13 +1,12 @@
 #pragma once
-
-// Library Includes
 #include <glew.h>
 #include <glfw3.h>
 #include <iostream>
 #include <string>
 #include <vector>
+#include "EnginePluginAPI.h"
 
-class ShaderLoader
+class ENGINE_API ShaderLoader
 {
 public:
     static GLuint CreateProgram(const char* vertexShaderFilename, const char* fragmentShaderFilename);

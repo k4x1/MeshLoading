@@ -6,15 +6,17 @@
 #include "Component.h"
 #include <iostream>
 #include "GameObject.h"      
+#include "EnginePluginAPI.h"
+
 using CompCreator = std::function<Component* (const nlohmann::json& params, GameObject* owner)>;
 using CompSerializer = std::function<nlohmann::json(Component* comp)>;
 
-struct CompEntry {
+struct ENGINE_API CompEntry {
     CompCreator    create;
     CompSerializer serialize;
 };
 
-class ComponentFactory {
+class ENGINE_API ComponentFactory {
 public:
     static ComponentFactory& Instance() {
         static ComponentFactory inst;

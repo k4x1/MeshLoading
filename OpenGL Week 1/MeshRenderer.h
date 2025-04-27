@@ -8,7 +8,7 @@
 #include <glm.hpp>  
 namespace fs = std::filesystem;
 
-class MeshRenderer : public ISerializableComponent {
+class ENGINE_API MeshRenderer : public ISerializableComponent {
 public:
   //  MeshRenderer() = default;
     MeshRenderer(

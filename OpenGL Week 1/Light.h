@@ -8,24 +8,25 @@
 //#include "Component.h"
 //#include "ComponentFactory.h"
 //#include "GameObject.h"
+#include "EnginePluginAPI.h"
 
-struct Light {
+struct ENGINE_API Light {
     glm::vec3 color{ 1.0f,1.0f,1.0f };
     float     specularStrength{ 1.0f };
 };
 
-struct PointLight : Light {
+struct ENGINE_API PointLight : Light {
     glm::vec3 position{ 0.0f };
     float     attenuationConstant{ 1.0f };
     float     attenuationLinear{ 0.0f };
     float     attenuationExponent{ 0.0f };
 };
 
-struct DirectionalLight : Light {
+struct ENGINE_API DirectionalLight : Light {
     glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
 };
 
-struct SpotLight : Light {
+struct ENGINE_API SpotLight : Light {
     glm::vec3 position{ 0.0f };
     glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
     float     innerCutoff{ 0.0f };
@@ -35,7 +36,7 @@ struct SpotLight : Light {
     float     attenuationExponent{ 0.0f };
 };
 
-//class DirectionalLightComponent : public Component {
+//class ENGINE_API DirectionalLightComponent : public Component {
 //public:
 //    Light     base;
 //    glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
@@ -57,7 +58,7 @@ struct SpotLight : Light {
 //        };
 //    }
 //}; 
-//class PointLightComponent : public Component, public PointLight {
+//class ENGINE_API PointLightComponent : public Component, public PointLight {
 //public:
 //    void OnInspectorGUI() override {
 //        ImGui::ColorEdit3("Color", glm::value_ptr(color));
@@ -81,7 +82,7 @@ struct SpotLight : Light {
 //        };
 //    }
 //};  
-//class SpotLightComponent : public Component, public SpotLight {
+//class ENGINE_API SpotLightComponent : public Component, public SpotLight {
 //public:
 //    void OnInspectorGUI() override {
 //        ImGui::ColorEdit3("Color", glm::value_ptr(color));

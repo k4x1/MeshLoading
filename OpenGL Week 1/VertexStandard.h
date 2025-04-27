@@ -1,9 +1,7 @@
-
-
-
 #pragma once
 #include <glm.hpp>
-struct VertexStandard
+#include "EnginePluginAPI.h"
+struct ENGINE_API VertexStandard
 {
 public:
     glm::vec3 position;

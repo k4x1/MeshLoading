@@ -1,10 +1,11 @@
 #pragma once
 #include "IInspectable.h"
 #include <nlohmann/json.hpp>
+#include "EnginePluginAPI.h"
 
 class GameObject;
 
-class Component : public IInspectable {
+class ENGINE_API Component : public IInspectable {
 public:
     GameObject* owner = nullptr;
 
@@ -16,7 +17,7 @@ public:
 };
 
 
-struct ISerializableComponent : Component {
+class ENGINE_API ISerializableComponent : public Component {
     virtual nlohmann::json Serialize() const = 0;
     virtual void            Deserialize(const nlohmann::json& j) = 0;
 };

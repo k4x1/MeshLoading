@@ -5,15 +5,18 @@
 #include <vector>
 #include <string>
 #include <typeindex>
+#include "EnginePluginAPI.h"
 
-struct AssetSlot {
-    std::string                              label;
+struct ENGINE_API AssetSlot {
+    std::string                              label = " ";
     std::function<std::string(Component*)>   getter;
     std::function<void(Component*, const Asset&)> setter;
     std::vector<AssetType>                   acceptedTypes;
 };
 
-class InspectorSlotRegistry {
+
+
+class ENGINE_API InspectorSlotRegistry {
 public:
     template<typename Comp>
     static void RegisterSlot(

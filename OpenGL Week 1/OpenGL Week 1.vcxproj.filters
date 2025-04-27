@@ -5,22 +5,16 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="NonUsed">
-      <UniqueIdentifier>{878ef5ac-8a34-4727-89a7-a6c3cb9adb9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component">
-      <UniqueIdentifier>{e1331d46-4f3a-4071-a98a-5bdeddf49cd4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{263d828b-95c0-4af4-ab1d-85cc41ac8d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,13 +33,7 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SampleScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HeightMapInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameBuffer.cpp">
@@ -60,44 +48,11 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tiny_obj_loader_impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshModel.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshRenderer.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraMovement.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainComponent.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetManager.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="UIHelpers.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="PrefabSystem.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentFactory.cpp">
-      <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Source Files</Filter>
@@ -153,6 +108,33 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeshModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraMovement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Texture.vert">
@@ -178,33 +160,6 @@
     </None>
     <None Include="Resources\Shaders\Terrain.vert">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\Color.vert">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\Color.frag">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\InstanceOutline.vert">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\Noise.frag">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\Noise.vert">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\Outline.frag">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\Outline.vert">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="Resources\Shaders\PostProcessing.frag">
-      <Filter>NonUsed</Filter>
-    </None>
-    <None Include="PerlinNoise.h">
-      <Filter>NonUsed</Filter>
     </None>
     <None Include="Resources\Shaders\ShadowMappingInstance.vert">
       <Filter>Resource Files</Filter>
@@ -268,12 +223,6 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HeightMapInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SampleScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -289,56 +238,14 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="All.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshModel.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshRenderer.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraMovement.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="IInspectable.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainComponent.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetManager.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="UIHelpers.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="PrefabSystem.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentFactory.h">
-      <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollider.h">
       <Filter>Header Files</Filter>
@@ -405,6 +312,42 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IInspectable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMovement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

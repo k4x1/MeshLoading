@@ -12,9 +12,8 @@
 #include <gtx/quaternion.hpp>
 #include <imgui.h>
 #include <nlohmann/json.hpp>
-
+#include "Component.h"
 class Camera;
-class Component;
 
 struct Transform {
     glm::vec3 position{ 0.0f };

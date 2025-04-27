@@ -1,21 +1,20 @@
-// AssetManager.h
 #pragma once
 #include <string>
 #include <vector>
 #include <filesystem>    
+#include "EnginePluginAPI.h"
 namespace fs = std::filesystem;
 
-enum class AssetType { Texture, Model, Script, Prefab };
+enum class ENGINE_API AssetType { Texture, Model, Script, Prefab };
 
-struct Asset {
-    AssetType    type;
-    std::string  name;
-    std::string  path;
+struct ENGINE_API Asset {
+    AssetType    type = AssetType::Script;
+    std::string  name = "amongus";
+    std::string  path = "";
 };
 
-class AssetManager {
+class ENGINE_API AssetManager {
 public:
-    // Scan 'rootDir' (e.g. "Assets/") for known asset extensions
     static void LoadAssets(const std::string& rootDir);
     static const std::vector<Asset>& GetAssets();
 

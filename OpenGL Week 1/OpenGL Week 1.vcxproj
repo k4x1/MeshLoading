@@ -122,6 +122,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
+xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
+
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -141,6 +147,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
+xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
+
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
@@ -164,7 +176,7 @@
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="InspectorSlotRegistry.cpp" />
     <ClCompile Include="LightSystem.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
@@ -173,42 +185,29 @@
     <ClCompile Include="SampleScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="HeightMapInfo.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MeshModel.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="TerrainComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="tiny_obj_loader_impl.cpp" />
     <ClCompile Include="UIHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PerlinNoise.h" />
     <None Include="Resources\Shaders\ComputeParticles.comp" />
     <None Include="Resources\Shaders\GeometryPass.frag" />
     <None Include="Resources\Shaders\GeometryPass.vert" />
-    <None Include="Resources\Shaders\InstanceOutline.vert" />
     <None Include="Resources\Shaders\InstanceTexture.frag" />
     <None Include="Resources\Shaders\InstanceTexture.vert" />
-    <None Include="Resources\Shaders\Color.frag" />
-    <None Include="Resources\Shaders\Color.vert" />
     <None Include="Resources\Shaders\LightingPass.frag" />
     <None Include="Resources\Shaders\LightingPass.vert" />
     <None Include="Resources\Shaders\LightSource.frag" />
     <None Include="Resources\Shaders\LightSource.vert" />
     <None Include="Resources\Shaders\MainRendering.frag" />
     <None Include="Resources\Shaders\MainRendering.vert" />
-    <None Include="Resources\Shaders\Noise.frag" />
-    <None Include="Resources\Shaders\Noise.vert" />
-    <None Include="Resources\Shaders\Outline.frag" />
-    <None Include="Resources\Shaders\Outline.vert" />
     <None Include="Resources\Shaders\Particle.frag" />
     <None Include="Resources\Shaders\Particle.vert" />
-    <None Include="Resources\Shaders\PostProcessing.frag" />
     <None Include="Resources\Shaders\Quad.vert" />
     <None Include="Resources\Shaders\ShadowMapping.frag" />
     <None Include="Resources\Shaders\ShadowMapping.vert" />
@@ -258,19 +257,15 @@
     <ClInclude Include="SampleScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="HeightMapInfo.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MeshModel.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
-    <ClInclude Include="TerrainComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UIHelpers.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexStandard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

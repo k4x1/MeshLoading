@@ -5,7 +5,8 @@
 #include <nlohmann/json.hpp>
 #include "GameObject.h"
 #include "ComponentFactory.h"
-class Rigidbody : public ISerializableComponent {
+
+class ENGINE_API Rigidbody : public ISerializableComponent {
 public:
     float mass = 1.0f;
     bool  isKinematic = false;

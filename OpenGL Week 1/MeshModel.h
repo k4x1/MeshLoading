@@ -9,9 +9,10 @@
 #include "VertexStandard.h"
 #include "Component.h"
 #include "Light.h"
+#include "EnginePluginAPI.h"
 
 class Camera;
-class MeshModel
+class ENGINE_API MeshModel
 {
 public:
     // Constructor that initializes the model with position, rotation, scale, and file path.

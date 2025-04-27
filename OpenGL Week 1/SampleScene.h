@@ -12,7 +12,7 @@
 #include "Skybox.h"
 #include "ShadowMap.h"
 
-class SampleScene : public Scene {
+class ENGINE_API SampleScene : public Scene {
 public:
     void InitialSetup(GLFWwindow* _window, bool autoLoad = true) override;
     void Start() override;
@@ -73,13 +73,8 @@ private:
 
     GLFWwindow* Window = nullptr;
 
-    // Helper functions.
-    void InitializeModels();
     void SetupLights();
-    void SetupTerrain();
     void SetupQuad();
 
     void RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& dirLight);
-    void RenderSceneWithShadows(Camera* _camera);
-    void RenderPostProcessing();
 };

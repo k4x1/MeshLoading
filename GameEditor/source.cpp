@@ -1,22 +1,5 @@
-﻿#define GLM_ENABLE_EXPERIMENTAL
-#include <memory>
-#include <iostream>
+﻿#include "All.h"
 
-#include <glew.h>
-#include <glfw3.h>
-#include <gtc/matrix_transform.hpp>
-#include <gtx/quaternion.hpp>
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include "SampleScene.h"
-#include "FrameBuffer.h"
-#include "GameObject.h"
-#include "CameraMovement.h"
-#include "InputManager.h"
-#include "UIHelpers.h"
 
 constexpr float FIXED_DT = 1.0f / 60.0f;
 
@@ -137,7 +120,7 @@ int main() {
             frameDt);
 
         UIHelpers::DrawInspectorWindow(selectedGameObject);
-        UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject);
+        UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject, editorCamera);
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
 

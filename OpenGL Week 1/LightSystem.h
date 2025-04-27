@@ -3,18 +3,19 @@
 //#include <glew.h>
 //#include <glfw3.h>
 //#include <glm/glm.hpp>
+//#include "EnginePluginAPI.h"
 //class Scene;
 //class DirectionalLightComponent;
 //class PointLightComponent;
 //class SpotLightComponent;
 //
-//struct GatheredLights {
+//struct ENGINE_API GatheredLights {
 //    std::vector<DirectionalLightComponent*> dirs;
 //    std::vector<PointLightComponent*>       points;
 //    std::vector<SpotLightComponent*>        spots;
 //};
 //
-//class LightSystem {
+//class ENGINE_API LightSystem {
 //public:
 //    // Scan the scene once per frame
 //    static GatheredLights Collect(Scene* scene);

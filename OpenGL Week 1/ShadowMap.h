@@ -3,7 +3,8 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <iostream>
-class ShadowMap {
+#include "EnginePluginAPI.h"
+class ENGINE_API ShadowMap {
 public:
     ShadowMap(unsigned int width = 4096, unsigned int height = 4096);
     ~ShadowMap();

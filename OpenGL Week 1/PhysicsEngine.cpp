@@ -1,10 +1,10 @@
 ﻿#include "PhysicsEngine.h"
 #include "GameObject.h"
-using namespace Physics;
-PhysicsEngine& PhysicsEngine::Instance() {
+using namespace Physics;PhysicsEngine& PhysicsEngine::Instance() {
     static PhysicsEngine inst;
     return inst;
 }
+
 
 PhysicsEngine::PhysicsEngine() {
     m_world = m_common.createPhysicsWorld();

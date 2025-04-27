@@ -1,8 +1,9 @@
 #pragma once
 #include "Component.h"  
 #include <glm.hpp>
+#include "EnginePluginAPI.h"
 
-class CameraMovement : public Component{
+class ENGINE_API  CameraMovement : public Component{
 public:
     CameraMovement();
 

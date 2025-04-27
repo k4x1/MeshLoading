@@ -7,7 +7,7 @@
 
 
 
-class ParticleSystem {
+class ENGINE_API ParticleSystem {
 public:
     ParticleSystem(Camera* Cam, GLuint Program_Render, GLuint Program_Compute, glm::vec3 Origin);
     ~ParticleSystem();

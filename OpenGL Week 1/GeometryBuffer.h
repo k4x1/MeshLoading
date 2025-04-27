@@ -5,7 +5,9 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
-class GeometryBuffer
+#include "EnginePluginAPI.h"
+
+class ENGINE_API  GeometryBuffer
 {
 public:
 	GeometryBuffer();

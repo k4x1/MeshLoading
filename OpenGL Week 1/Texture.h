@@ -13,8 +13,9 @@ Mail : kazuo.andrade@mds.ac.nz
 
 #pragma once
 #include <iostream>
+#include "EnginePluginAPI.h"
 
-class Texture
+class ENGINE_API Texture
 {
 private:
     unsigned int m_textureID; // OpenGL texture ID

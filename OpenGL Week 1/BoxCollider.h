@@ -5,7 +5,8 @@
 #include <glm.hpp>
 #include "GameObject.h"
 #include "ComponentFactory.h"
-class BoxCollider : public ISerializableComponent {
+#include "EnginePluginAPI.h"
+class ENGINE_API BoxCollider : public ISerializableComponent {
 public:
     bool   m_attached = false;
     glm::vec3 halfExtents{ 1,1,1 };

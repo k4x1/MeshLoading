@@ -4,8 +4,9 @@
 #include <glew.h>     
 #include <unordered_map>
 #include <glfw3.h>
+#include "EnginePluginAPI.h"
 
-class InputManager {
+class ENGINE_API InputManager {
 public:
   
 

@@ -5,18 +5,18 @@
 #include <vector>
 #include <mutex>
 #include <glm.hpp>      
-
+#include "EnginePluginAPI.h"
 class Camera;                  
 
-enum class DebugLevel { Info, Warning, Error, Exception, Assertion };
+enum class ENGINE_API DebugLevel { Info, Warning, Error, Exception, Assertion };
 
-struct DebugEntry {
+struct ENGINE_API DebugEntry {
     std::string timestamp;
     DebugLevel  level;
     std::string message;
 };
 
-class Debug {
+class ENGINE_API Debug {
 public:
     static void Log(const std::string& message);
     static void LogWarning(const std::string& message);

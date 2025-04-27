@@ -19,7 +19,7 @@
 #include <imgui.h>  
 #include "FrameBuffer.h"
 
-class Scene {
+class ENGINE_API Scene {
 public:
     GLFWwindow* Window;
     Camera* camera;

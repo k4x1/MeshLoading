@@ -1,5 +1,3 @@
-#ifndef CAMERA_CLASS_H
-#define CAMERA_CLASS_H
 #pragma once
 
 #include <glew.h>
@@ -8,16 +6,19 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <nlohmann/json.hpp>      
-#include "Component.h"           
+#include "Component.h"     
+#include "ComponentFactory.h"
 #include "GameObject.h"   
+#include "EnginePluginAPI.h"
 
-class Camera : public ISerializableComponent {
+class ENGINE_API Camera : public ISerializableComponent {
 public:
     float m_FOV = 90.0f;
     float m_width = 800.0f;
     float m_height = 800.0f;
 
-    glm::mat4 m_view, m_projection;
+    glm::mat4 m_view = glm::mat4(0);
+    glm::mat4  m_projection = glm::mat4(0);
 
     Camera() = default;
     virtual ~Camera() = default;
@@ -44,5 +45,4 @@ public:
     }
 };
 
-
-#endif // CAMERA_CLASS_H
+REGISTER_SERIALIZABLE_COMPONENT(Camera);

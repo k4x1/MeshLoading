@@ -2,8 +2,9 @@
 #include <glew.h>
 #include <glm.hpp>
 #include <iostream>
+#include "EnginePluginAPI.h"
 
-class FrameBuffer {
+class ENGINE_API FrameBuffer {
 public:
     FrameBuffer(int width, int height);
     ~FrameBuffer();
