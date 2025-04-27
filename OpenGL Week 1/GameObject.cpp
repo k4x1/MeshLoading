@@ -1,7 +1,6 @@
 ﻿#include "GameObject.h"
-#include "ComponentRegistry.h" 
 #include "IInspectable.h"
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/type_ptr.hpp>
 #include "ComponentFactory.h"
 #include "Rigidbody.h"  
 nlohmann::json TransformToJson(const Transform& t)

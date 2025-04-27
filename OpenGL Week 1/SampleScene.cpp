@@ -12,7 +12,7 @@
 #include "CameraMovement.h"
 #include <iostream>
 #include <fstream>
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/type_ptr.hpp>
 //using fs = 
 
 void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {

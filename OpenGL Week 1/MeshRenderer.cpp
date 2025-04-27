@@ -4,7 +4,7 @@
 #include "ComponentFactory.h"
 #include "InspectorSlotRegistry.h"
 #include <tiny_obj_loader.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <filesystem>
 #include <iostream>

@@ -72,13 +72,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUIZO;$(ProjectDir)/Dependencies/reactphysics3d;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
-    <LibraryPath>$(ProjectDir)/Dependencies/reactphysics3d;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)</OutDir>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLM;$(ProjectDir)/Dependencies/GLEW;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/TOL;$(ProjectDir)/Dependencies/nlohmann;$(ProjectDir)/Dependencies/IMGUIZO;$(ProjectDir)/Dependencies/reactphysics3d;$(ProjectDir)/Dependencies/IMGUI</IncludePath>
-    <LibraryPath>$(ProjectDir)/Dependencies/reactphysics3d;$(ProjectDir)/Dependencies/STB;$(ProjectDir)/Dependencies/GLFW;$(ProjectDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -143,24 +143,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImCurveEdit.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGuizmo.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="CameraMovement.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
-    <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="Debug.cpp" />
-    <ClCompile Include="Dependencies\IMGUIZO\GraphEditor.cpp" />
-    <ClCompile Include="Dependencies\IMGUIZO\ImCurveEdit.cpp" />
-    <ClCompile Include="Dependencies\IMGUIZO\ImGradient.cpp" />
-    <ClCompile Include="Dependencies\IMGUIZO\ImGuizmo.cpp" />
-    <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_impl_glfw.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_tables.cpp" />
-    <ClCompile Include="Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="InspectorSlotRegistry.cpp" />
@@ -222,29 +221,30 @@
     <None Include="Resources\Shaders\Texture.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGuizmo.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImSequencer.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZO\ImZoomSlider.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imconfig.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="All.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CameraMovement.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentFactory.h" />
-    <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="Debug.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\GraphEditor.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\ImCurveEdit.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\ImGradient.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\ImGuizmo.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\ImSequencer.h" />
-    <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h" />
-    <ClInclude Include="Dependencies\IMGUI\imconfig.h" />
-    <ClInclude Include="Dependencies\IMGUI\imgui.h" />
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_glfw.h" />
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3.h" />
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="Dependencies\IMGUI\imgui_internal.h" />
-    <ClInclude Include="Dependencies\IMGUI\imstb_rectpack.h" />
-    <ClInclude Include="Dependencies\IMGUI\imstb_textedit.h" />
-    <ClInclude Include="Dependencies\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="EnginePluginAPI.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeometryBuffer.h" />
     <ClInclude Include="IInspectable.h" />

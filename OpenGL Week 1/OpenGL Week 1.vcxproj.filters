@@ -81,27 +81,6 @@
     <ClCompile Include="Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_tables.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_widgets.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_impl_glfw.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUI\imgui_impl_opengl3.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="CameraMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -120,24 +99,6 @@
     <ClCompile Include="ComponentFactory.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRegistry.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUIZO\GraphEditor.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUIZO\ImCurveEdit.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUIZO\ImGradient.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUIZO\ImGuizmo.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -152,6 +113,42 @@
     </ClCompile>
     <ClCompile Include="Rigidbody.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_glfw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImCurveEdit.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGuizmo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp">
+      <Filter>ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -316,33 +313,6 @@
     <ClInclude Include="Debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3_loader.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imgui_internal.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imstb_rectpack.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imstb_textedit.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imstb_truetype.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imconfig.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imgui.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_glfw.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUI\imgui_impl_opengl3.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="CameraMovement.h">
       <Filter>Component</Filter>
     </ClInclude>
@@ -367,27 +337,6 @@
     <ClInclude Include="ComponentFactory.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRegistry.h">
-      <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\GraphEditor.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\ImCurveEdit.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\ImGradient.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\ImGuizmo.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\ImSequencer.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="BoxCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -402,6 +351,57 @@
     </ClInclude>
     <ClInclude Include="Rigidbody.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginePluginAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZO\ImZoomSlider.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGuizmo.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImSequencer.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

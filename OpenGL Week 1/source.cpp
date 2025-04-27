@@ -4,9 +4,9 @@
 #include <iostream>
 
 #include <glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <glfw3.h>
+#include <gtc/matrix_transform.hpp>
+#include <gtx/quaternion.hpp>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>

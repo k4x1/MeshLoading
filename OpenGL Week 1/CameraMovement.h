@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"  
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class CameraMovement : public Component{
 public:

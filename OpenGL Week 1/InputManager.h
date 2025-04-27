@@ -3,7 +3,7 @@
 
 #include <glew.h>     
 #include <unordered_map>
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 
 class InputManager {
 public:

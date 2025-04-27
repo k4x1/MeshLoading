@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include "Texture.h"
-#include <glm/glm.hpp>  
+#include <glm.hpp>  
 namespace fs = std::filesystem;
 
 class MeshRenderer : public ISerializableComponent {

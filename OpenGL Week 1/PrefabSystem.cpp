@@ -6,8 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/quaternion.hpp>
+#include <gtc/type_ptr.hpp>
 #include <filesystem>    // C++17
 namespace fs = std::filesystem;
 

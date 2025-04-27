@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <reactphysics3d/reactphysics3d.h>
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class reactphysics3d::PhysicsWorld;
 class GameObject;

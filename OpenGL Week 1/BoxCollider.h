@@ -2,7 +2,7 @@
 #include "Component.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include <nlohmann/json.hpp>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include "GameObject.h"
 #include "ComponentFactory.h"
 class BoxCollider : public ISerializableComponent {

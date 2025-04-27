@@ -1,7 +1,7 @@
 #include "TerrainComponent.h"
 #include "ShaderLoader.h"
 #include "Camera.h"
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/type_ptr.hpp>
 #include "Texture.h"
 #include "VertexStandard.h"
 // constructor

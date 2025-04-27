@@ -2,9 +2,9 @@
 #include "CameraMovement.h"
 #include "InputManager.h"  
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/constants.hpp>
-#include <glm/gtx/quaternion.hpp>  
+#include <gtc/matrix_transform.hpp>
+#include <gtc/constants.hpp>
+#include <gtx/quaternion.hpp>  
 #include "GameObject.h"
 #include "UIHelpers.h"
 

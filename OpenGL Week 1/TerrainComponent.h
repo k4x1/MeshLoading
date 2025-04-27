@@ -6,7 +6,7 @@
 #include "ShaderLoader.h"
 #include "Light.h"
 #include <glew.h>    // For GLuint
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class Camera;
 

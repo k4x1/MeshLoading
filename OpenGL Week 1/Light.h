@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm.hpp>
+#include <gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 #include <vector>        

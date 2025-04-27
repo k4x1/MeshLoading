@@ -4,7 +4,7 @@
 #include <exception>
 #include <vector>
 #include <mutex>
-#include <glm/glm.hpp>      
+#include <glm.hpp>      
 
 class Camera;                  
 

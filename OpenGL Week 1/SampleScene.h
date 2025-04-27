@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include <glew.h>
 #include <glfw3.h>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include <string>
 #include "ShaderLoader.h"
 #include "Camera.h"
