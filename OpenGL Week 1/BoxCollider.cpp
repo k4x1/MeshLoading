@@ -13,7 +13,7 @@ void BoxCollider::Update(float dt)
         auto* rb = owner->GetComponent<Rigidbody>();
         if (rb && rb->body) {
             // now safe to create the shape and attach
-            auto& common = PhysicsEngine::Instance().GetCommon();
+            auto& common = Physics::PhysicsEngine::Instance().GetCommon();
             shape = common.createBoxShape(
                 reactphysics3d::Vector3{ halfExtents.x, halfExtents.y, halfExtents.z });
             rb->body->addCollider(shape, reactphysics3d::Transform::identity());

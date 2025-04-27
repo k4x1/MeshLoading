@@ -24,7 +24,7 @@ void Scene::Update(float dt) {
     }
 }
 void Scene::FixedUpdate(float fixedDt) {
-    PhysicsEngine::Instance().Update(fixedDt);
+    Physics::PhysicsEngine::Instance().Update(fixedDt);
 
     for (auto* go : gameObjects)
         go->FixedUpdate(fixedDt);

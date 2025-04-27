@@ -178,7 +178,6 @@
     <ClCompile Include="MeshModel.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="ScriptComponent.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
@@ -265,7 +264,6 @@
     <ClInclude Include="MeshModel.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="ScriptComponent.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />

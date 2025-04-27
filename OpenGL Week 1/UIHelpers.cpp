@@ -8,7 +8,6 @@
 #include "Camera.h"
 #include "AssetManager.h"
 #include "PrefabSystem.h"
-#include "ScriptComponent.h"
 #include "InspectorSlotRegistry.h"
 #include "ComponentFactory.h"
 extern GameObject* editorCamera;
@@ -313,14 +312,35 @@ namespace UIHelpers {
 
         ImGui::End();
     }
+
     void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
         ImGui::Begin("Inspector");
+
+        ImGui::TextWrapped("Drag a script asset (*.script) here to add it to this GameObject:");
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (auto pd = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD"))
+            {
+                int idx = *(int*)pd->Data;
+                const auto& a = AssetManager::GetAssets()[idx];
+                if (a.type == AssetType::Script && selected)
+                {
+                    namespace fs = std::filesystem;
+                    std::string typeName = fs::path(a.path).stem().string();
+                    Component* comp = ComponentFactory::Instance()
+                        .Create(typeName, nlohmann::json::object(), selected);
+                    if (!comp)
+                        std::cerr << "[Inspector] No component for type: " << typeName << "\n";
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         if (!selected) {
             ImGui::Text("Nothing selected.");
             ImGui::End();
             return;
         }
-
         // —— Rename field ——————————————————————————————
         char buf[128];
         strncpy_s(buf, selected->name.c_str(), sizeof(buf));
@@ -343,30 +363,25 @@ namespace UIHelpers {
         }
         ImGui::Separator();
 
-        // —— Components + asset-slots + right-click to remove —————————————————
+        // —— Components + asset‐slots + right‐click to remove —————————————————
         for (int i = 0; i < (int)selected->components.size(); ++i) {
             Component* comp = selected->components[i].get();
-            const char* label = typeid(*comp).name();
-
-            // Ensure each header has a unique ImGui ID
             ImGui::PushID(comp);
+            bool open = ImGui::CollapsingHeader(typeid(*comp).name(), ImGuiTreeNodeFlags_DefaultOpen);
 
-            // Draw the collapsible header
-            bool open = ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_DefaultOpen);
-
-            // Right-click context menu on that header
+            // Right‐click to remove
             if (ImGui::BeginPopupContextItem()) {
                 if (ImGui::MenuItem("Remove Component")) {
                     selected->RemoveComponent(comp);
                     ImGui::EndPopup();
                     ImGui::PopID();
-                    break;  // stop iterating—component list has changed
+                    break;
                 }
                 ImGui::EndPopup();
             }
 
             if (open) {
-                // 1) Any asset-slots you registered:
+                // any registered asset‐slots (e.g. for textures, models…)
                 for (auto& slot : InspectorSlotRegistry::GetSlotsFor(comp)) {
                     ImGui::Text("%s", slot.label.c_str());
                     ImGui::SameLine();
@@ -375,33 +390,25 @@ namespace UIHelpers {
                     if (ImGui::Button(cur.empty() ? "<none>" : cur.c_str(), ImVec2(-1, 0))) {}
                     if (ImGui::BeginDragDropTarget()) {
                         if (auto pd = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
-                            int idx = *(int*)pd->Data;
-                            const Asset& a = AssetManager::GetAssets()[idx];
-                            if (std::find(slot.acceptedTypes.begin(),
-                                slot.acceptedTypes.end(),
-                                a.type) != slot.acceptedTypes.end())
-                            {
-                                slot.setter(comp, a);
-                            }
+                            int idx2 = *(int*)pd->Data;
+                            const Asset& a2 = AssetManager::GetAssets()[idx2];
+                            if (std::find(slot.acceptedTypes.begin(), slot.acceptedTypes.end(), a2.type) != slot.acceptedTypes.end())
+                                slot.setter(comp, a2);
                         }
                         ImGui::EndDragDropTarget();
                     }
                     ImGui::PopID();
                 }
                 ImGui::Separator();
-
-                // 2) The component’s own fields:
+                // component’s own fields
                 comp->OnInspectorGUI();
                 ImGui::Separator();
             }
-
             ImGui::PopID();
         }
 
-        // —— Add Component popup ——————————————————————
-        if (ImGui::Button("Add Component…"))
-            ImGui::OpenPopup("AddComponentPopup");
-
+        // —— “Add Component…” popup ——————————————————————
+        if (ImGui::Button("Add Component…")) ImGui::OpenPopup("AddComponentPopup");
         if (ImGui::BeginPopup("AddComponentPopup")) {
             for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
                 if (ImGui::MenuItem(typeName.c_str())) {
@@ -412,26 +419,9 @@ namespace UIHelpers {
             ImGui::EndPopup();
         }
 
-        ImGui::Separator();
-
-        // —— Drag-drop to add scripts / prefabs ——————————————————
-        ImGui::Text("Drag asset here to add:");
-        if (ImGui::BeginDragDropTarget()) {
-            if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
-                int idx = *(int*)pl->Data;
-                const Asset& a = AssetManager::GetAssets()[idx];
-                if (a.type == AssetType::Script) {
-                    selected->AddComponent<ScriptComponent>(a.path);
-                }
-                else if (a.type == AssetType::Prefab) {
-                    selected->AddChild(PrefabSystem::Instantiate(a.path));
-                }
-            }
-            ImGui::EndDragDropTarget();
-        }
-
         ImGui::End();
     }
+
     
     void UIHelpers::DrawProjectWindow() {
         ImGui::Begin("Project");

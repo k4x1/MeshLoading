@@ -16,7 +16,7 @@ void Rigidbody::Start() {
         owner->transform.rotation.w
     );
     reactphysics3d::Transform xform(rpPos, rpRot);
-    body = PhysicsEngine::Instance().GetWorld()->createRigidBody(xform);
+    body =  Physics::PhysicsEngine::Instance().GetWorld()->createRigidBody(xform);
     body->enableGravity(useGravity);
     if (isKinematic)
         body->setType(BodyType::KINEMATIC);

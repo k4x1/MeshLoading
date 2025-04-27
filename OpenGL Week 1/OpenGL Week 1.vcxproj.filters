@@ -123,9 +123,6 @@
     <ClCompile Include="ComponentRegistry.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptComponent.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="Dependencies\IMGUIZO\GraphEditor.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
@@ -141,7 +138,19 @@
     <ClCompile Include="Dependencies\IMGUIZO\ImSequencer.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InspectorSlotRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rigidbody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -361,9 +370,6 @@
     <ClInclude Include="ComponentRegistry.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptComponent.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="Dependencies\IMGUIZO\GraphEditor.h">
       <Filter>ImGui</Filter>
     </ClInclude>
@@ -382,7 +388,19 @@
     <ClInclude Include="Dependencies\IMGUIZO\ImZoomSlider.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InspectorSlotRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rigidbody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

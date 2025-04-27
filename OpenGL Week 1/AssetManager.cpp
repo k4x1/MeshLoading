@@ -7,7 +7,6 @@ void AssetManager::LoadAssets(const std::string& rootDir) {
     assets.clear();
     try {
         for (auto const& entry : fs::recursive_directory_iterator(rootDir)) {
-            // use the free function is_regular_file()
             if (!fs::is_regular_file(entry.path()))
                 continue;
 
@@ -17,7 +16,7 @@ void AssetManager::LoadAssets(const std::string& rootDir) {
                 type = AssetType::Texture;
             else if (ext == ".obj" || ext == ".fbx" || ext == ".gltf")
                 type = AssetType::Model;
-            else if (ext == ".lua" || ext == ".cs" || ext == ".js")
+            else if (ext == ".h" || ext == ".cpp")
                 type = AssetType::Script;
             else if (ext == ".prefab" || ext == ".json")
                 type = AssetType::Prefab;

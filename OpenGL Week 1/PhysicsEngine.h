@@ -1,21 +1,39 @@
-#pragma once
+﻿#pragma once
 #include <reactphysics3d/reactphysics3d.h>
+#include <vector>
+#include <glm/glm.hpp>
 
-class PhysicsEngine {
-public:
-    static PhysicsEngine& Instance();
-    reactphysics3d::PhysicsCommon& GetCommon();
-    reactphysics3d::PhysicsWorld* GetWorld();
+class reactphysics3d::PhysicsWorld;
+class GameObject;
+namespace Physics {
 
-    void Update(float dt);
+    struct RaycastHit {
+        GameObject* object = nullptr;
+        glm::vec3   point;
+        glm::vec3   normal;
+        float       distance = 0.0f;
+    };
+    class PhysicsEngine {
+    public:
+        static PhysicsEngine& Instance();
+        reactphysics3d::PhysicsCommon& GetCommon();
+        reactphysics3d::PhysicsWorld* GetWorld();
 
+        void Update(float dt);
 
-private:
-    PhysicsEngine();
-    ~PhysicsEngine();
-    PhysicsEngine(const PhysicsEngine&) = delete;
-    void operator=(const PhysicsEngine&) = delete;
+        bool Raycast(
+            const glm::vec3& origin,
+            const glm::vec3& direction,
+            RaycastHit& outHit,
+            float            maxDistance = 1000.0f);
 
-    reactphysics3d::PhysicsCommon    m_common;
-    reactphysics3d::PhysicsWorld* m_world = nullptr;
-};
+    private:
+        PhysicsEngine();
+        ~PhysicsEngine();
+        PhysicsEngine(const PhysicsEngine&) = delete;
+        void operator=(const PhysicsEngine&) = delete;
+
+        reactphysics3d::PhysicsCommon    m_common;
+        reactphysics3d::PhysicsWorld* m_world = nullptr;
+    };
+}
