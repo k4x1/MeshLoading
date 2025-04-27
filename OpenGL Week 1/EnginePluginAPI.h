@@ -1,17 +1,7 @@
 #pragma once
 
-
-struct EngineAPI {
-	void (*RegisterComponent)(const char* name, CreateFunc, SerializeFunc);
-};
-
-extern "C" {
-	__declspec(dllexport)
-		void GamePlugin_Initialize(EngineAPI* engine);
-
-	__declspec(dllexport)
-		void GamePlugin_Update(float deltaTime);
-
-	__declspec(dllexport)
-		void GamePlugin_Shutdown();
-}
+#ifdef ENGINE_EXPORTS
+#define ENGINE_API __declspec(dllexport)
+#else
+#define ENGINE_API __declspec(dllimport)
+#endif 

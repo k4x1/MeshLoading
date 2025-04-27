@@ -10,7 +10,6 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/quaternion.hpp>
 #include <gtx/quaternion.hpp>
-#include "Utils.h"
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 

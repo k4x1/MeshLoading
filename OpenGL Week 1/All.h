@@ -1,18 +1,14 @@
-#pragma once
-#include <glew.h>
-#include <glfw3.h>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-#include <iostream>
-#include "ShaderLoader.h"
-#include "Camera.h"
-#include "Texture.h"
-#include "InputManager.h"
-#include "Light.h"
-#include <string> 
-#include "Skybox.h"
-#include "GameObject.h"
-#include "MeshRenderer.h"
-#include "Debug.h"	
-#include "Component.h"
+#pragma once 
+#include "BoxCollider.h"
+#include "Debug.h"
+#include "FrameBuffer.h"
+#include "GeometryBuffer.h"
+#include 
+#include
+#include
+#include
+#include
+#include
+#include
+#include
+ 
