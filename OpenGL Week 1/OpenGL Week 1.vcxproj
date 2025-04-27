@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ENGINE_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -126,6 +126,9 @@
       <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
 xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
 
+
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameEditor\"
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -137,7 +140,7 @@ xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ENGINE_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -151,6 +154,9 @@ xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
       <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
 xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
 
+
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameEditor\"
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

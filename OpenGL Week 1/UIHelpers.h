@@ -1,35 +1,45 @@
 ﻿#pragma once
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include "FrameBuffer.h"
 #include "Scene.h"
 #include "GameObject.h"
 #include "ImGuizmo.h"
 
 
-enum class GizmoMode { Translate, Rotate, Scale };
+enum class ENGINE_API GizmoMode { Translate, Rotate, Scale };
 static GizmoMode currentGizmoMode = GizmoMode::Translate;
-enum class EditorState { Play, Pause, Stop };
+enum class ENGINE_API EditorState { Play, Pause, Stop };
 
-namespace UIHelpers {
-    void InitializeUI();
-    void ShowDockSpace();
+class ENGINE_API UIHelpers {
+public:
+    static void Init(GLFWwindow*& window, const char* glsl_version = "#version 130");
+    static void NewFrame();
+    static void Render();
+    static void Shutdown();
+    static ImGuiContext* GetImGuiContext();
+    static void SetImGuiContext(ImGuiContext* context);
 
-    void DrawSceneViewWindow(FrameBuffer* editorFB,
+    static void InitializeUI();
+    static void ShowDockSpace();
+
+    static void DrawSceneViewWindow(FrameBuffer* editorFB,
         GameObject* editorCamera,
         Scene* scene,
         GameObject* selected,
         float deltaTime);
 
-    void DrawGameViewWindow(FrameBuffer* gameFB,
+    static void DrawGameViewWindow(FrameBuffer* gameFB,
         GameObject* gameCam,
         Scene* scene,
         EditorState& state,
         float deltaTime);
-    void DrawInspectorWindow(GameObject*& selected);
-    void DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObject* editorCamera);
-    void DrawProjectWindow();
-    void DrawDebugWindow(bool* p_open = nullptr);
-    void ShowGameObjectNode(GameObject* obj, GameObject*& selected, Scene* scene);
-    extern bool g_SceneViewHovered;
-    extern bool g_GameViewHovered;
-}
+    static void DrawInspectorWindow(GameObject*& selected);
+    static void DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObject* editorCamera);
+    static void DrawProjectWindow();
+    static void DrawDebugWindow(bool* p_open = nullptr);
+    static void ShowGameObjectNode(GameObject* obj, GameObject*& selected, Scene* scene);
+    static bool g_SceneViewHovered;
+    static bool g_GameViewHovered;
+};

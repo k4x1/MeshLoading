@@ -1,5 +1,4 @@
 #include "InputManager.h"
-GLFWwindow* InputManager::m_window = nullptr;
 
 // Define the singleton instance via a static local variable in Instance()
 InputManager& InputManager::Instance() {

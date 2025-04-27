@@ -26,18 +26,20 @@ int main() {
     if (glewInit() != GLEW_OK) return -1;
     glEnable(GL_MULTISAMPLE);
 
-    InputManager::SetCallbacks(Window);
+    InputManager::Instance().SetCallbacks(Window);
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // — ImGui init —
+   // UIHelpers::Init(Window, "#version 460");
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(Window, true);
-    ImGui_ImplOpenGL3_Init("#version 460");
 
+    ImGui_ImplGlfw_InitForOpenGL(Window, /*install_callbacks=*/ true);
+    ImGui_ImplOpenGL3_Init("#version 460");
+    UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
     UIHelpers::InitializeUI();
 
     // — Build our edit scene once (Editor never runs Start/Update on it) —
@@ -95,10 +97,8 @@ int main() {
             runtimeScene.reset();
         }
 
-        // — ImGui frame —
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        UIHelpers::NewFrame();
+        UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
         UIHelpers::ShowDockSpace();
 
         UIHelpers::DrawSceneViewWindow(
@@ -124,17 +124,14 @@ int main() {
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        UIHelpers::Render();
         glfwSwapBuffers(Window);
     }
 
     delete editorFrameBuffer;
     delete gameFrameBuffer;
     delete editorCamera;
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    UIHelpers::Shutdown();
     glfwTerminate();
     return 0;
 }

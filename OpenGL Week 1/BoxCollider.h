@@ -12,7 +12,6 @@ public:
     glm::vec3 halfExtents{ 1,1,1 };
     reactphysics3d::BoxShape* shape = nullptr;
 
-    void Start() override;
     void Update(float dt) override;
     void Render(class Camera* cam) override;
     void OnInspectorGUI() override;

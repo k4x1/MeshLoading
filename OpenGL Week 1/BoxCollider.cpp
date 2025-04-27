@@ -4,9 +4,6 @@
 #include <imgui.h>
 #include "Rigidbody.h"
 
-void BoxCollider::Start() {
-
-}
 void BoxCollider::Update(float dt)
 {
     if (!m_attached) {

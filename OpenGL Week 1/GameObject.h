@@ -13,9 +13,11 @@
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 #include "Component.h"
+#include "EnginePluginAPI.h"
+
 class Camera;
 
-struct Transform {
+struct ENGINE_API Transform {
     glm::vec3 position{ 0.0f };
     glm::quat rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
     glm::vec3 scale{ 1.0f };
@@ -39,14 +41,19 @@ struct Transform {
 nlohmann::json TransformToJson(const Transform& t);
 void TransformFromJson(const nlohmann::json& j, Transform& t);
 
-class GameObject : public IInspectable {
+class ENGINE_API GameObject : public IInspectable {
 public:
     std::string name;
     Transform transform;
     GameObject* parent = nullptr;
     std::vector<GameObject*> children;
     std::vector<std::unique_ptr<Component>> components;
+    GameObject(const GameObject&) = delete;
+    GameObject& operator=(const GameObject&) = delete;
 
+    // you can still allow moves if you like
+    GameObject(GameObject&&) = default;
+    GameObject& operator=(GameObject&&) = default;
     GameObject(const std::string& name = "GameObject");
     virtual ~GameObject();
 

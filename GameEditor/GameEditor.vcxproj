@@ -18,22 +18,56 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImCurveEdit.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGuizmo.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGuizmo.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImSequencer.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h" />
+    <ClInclude Include="..\Dependencies\IMGUIZO\ImZoomSlider.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imconfig.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{27EBB473-056B-4DCA-A42A-1A5437AE7FE7}</ProjectGuid>
-    <RootNamespace>GameComponents</RootNamespace>
+    <ProjectGuid>{BFC66C9C-076E-4ADB-80FC-0C48AF97A180}</ProjectGuid>
+    <RootNamespace>OpenGLWeek1</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GameEditor</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,26 +105,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(SolutionDir)\OpenGL Week 1\;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <OutDir>$(ProjectDir)</OutDir>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/OpenGL Week 1;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(SolutionDir)\OpenGL Week 1\;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/OpenGL Week 1;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -99,37 +131,34 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ENGINE_EXPORTS;IMGUI_IMPL_OPENGL_LOADER_GLAD;IMGUI_IMPL_GLFW</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
-      <OptimizeReferences>false</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;OpenGLassignment1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -137,54 +166,23 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ENGINE_EXPORTS;IMGUI_IMPL_OPENGL_LOADER_GLAD;IMGUI_IMPL_GLFW</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>false</OptimizeReferences>
+      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;OpenGLassignment1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Dependencies\IMGUIZMO\GraphEditor.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUIZMO\ImCurveEdit.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGradient.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUIZMO\ImGuizmo.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
-    <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
-    <ClCompile Include="source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Dependencies\IMGUIZMO\GraphEditor.h" />
-    <ClInclude Include="..\Dependencies\IMGUIZMO\ImCurveEdit.h" />
-    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGradient.h" />
-    <ClInclude Include="..\Dependencies\IMGUIZMO\ImGuizmo.h" />
-    <ClInclude Include="..\Dependencies\IMGUIZMO\ImSequencer.h" />
-    <ClInclude Include="..\Dependencies\IMGUIZMO\ImZoomSlider.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imconfig.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imgui.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imgui_internal.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
-    <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

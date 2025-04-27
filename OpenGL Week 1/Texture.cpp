@@ -6,9 +6,7 @@
 #include <glew.h>
 #include <iostream>
 
-Texture::Texture()
-    : m_textureID(0)
-{}
+
 
 Texture::~Texture() {
     glDeleteTextures(1, &m_textureID);

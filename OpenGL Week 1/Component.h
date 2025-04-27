@@ -8,6 +8,7 @@ class GameObject;
 class ENGINE_API Component : public IInspectable {
 public:
     GameObject* owner = nullptr;
+    Component() = default;
 
     virtual void Start() {}
     virtual void Update(float dt) {}

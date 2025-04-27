@@ -2,7 +2,8 @@
 #include "IInspectable.h"
 #include <gtc/type_ptr.hpp>
 #include "ComponentFactory.h"
-#include "Rigidbody.h"  
+#include "Rigidbody.h" 
+#include "Camera.h"
 nlohmann::json TransformToJson(const Transform& t)
 {
     return nlohmann::json{
@@ -69,26 +70,19 @@ void GameObject::OnInspectorGUI() {
         ImGui::DragFloat3("Scale", glm::value_ptr(transform.scale), 0.1f);
     }
 
-    // Display components' inspector UIs
     for (auto& comp : components) {
         if (ImGui::CollapsingHeader(typeid(*comp).name())) {
             comp->OnInspectorGUI();
         }
     }
-
-    // Add component button and popup:
     if (ImGui::Button("Add Component"))
         ImGui::OpenPopup("AddComponentPopup");
     if (ImGui::BeginPopup("AddComponentPopup")) {
-        // iterate the factory registry
         for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
             if (ImGui::MenuItem(typeName.c_str())) {
-                // create with empty JSON + this as owner
                 Component* newComp =
                     ComponentFactory::Instance().Create(typeName, {}, this);
                 if (newComp) {
-                    // we already set owner inside Create or in your macro,
-                    // but to be safe:
                     newComp->owner = this;
                     components.emplace_back(newComp);
                 }
@@ -124,7 +118,6 @@ nlohmann::json SerializeGameObject(GameObject* obj) {
     j["name"] = obj->name;
     j["transform"] = TransformToJson(obj->transform);
 
-    // 1) Components
     j["components"] = nlohmann::json::array();
     for (auto& compPtr : obj->components) {
         Component* comp = compPtr.get();
@@ -134,7 +127,6 @@ nlohmann::json SerializeGameObject(GameObject* obj) {
         }
     }
 
-    // 2) Children
     j["children"] = nlohmann::json::array();
     for (GameObject* child : obj->children) {
         j["children"].push_back(SerializeGameObject(child));
@@ -146,11 +138,9 @@ GameObject* DeserializeGameObject(const nlohmann::json& j)
 {
     GameObject* obj = new GameObject(j.value("name", "Unnamed"));
 
-    // --- transform (you already had this) ---
     if (j.contains("transform"))
         TransformFromJson(j["transform"], obj->transform);
 
-    // --- components  ← ADD THIS ENTIRE BLOCK ---
     if (j.contains("components") && j["components"].is_array())
     {
         for (auto& compJson : j["components"])
@@ -162,12 +152,9 @@ GameObject* DeserializeGameObject(const nlohmann::json& j)
                 std::cerr << "[Deserialize] Unknown component type: "
                     << type << "\n";
             }
-            // owner->AddComponentPointer(...) is called
-            // inside your REGISTER_SERIALIZABLE_COMPONENT magic
         }
     }
 
-    // --- children (you already had this) ---
     if (j.contains("children"))
         for (auto& childJson : j["children"])
             obj->AddChild(DeserializeGameObject(childJson));

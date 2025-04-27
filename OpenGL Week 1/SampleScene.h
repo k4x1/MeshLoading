@@ -14,6 +14,7 @@
 
 class ENGINE_API SampleScene : public Scene {
 public:
+    SampleScene() = default;
     void InitialSetup(GLFWwindow* _window, bool autoLoad = true) override;
     void Start() override;
     void Update(float dts) override;

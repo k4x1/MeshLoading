@@ -1,0 +1,124 @@
+{
+    "gameObjects": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                }
+            ],
+            "name": "Sphere",
+            "transform": {
+                "position": [
+                    0.0,
+                    10.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets/Models/Cube.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": true,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": false
+                }
+            ],
+            "name": "Cube",
+            "transform": {
+                "position": [
+                    0.0,
+                    -13.5,
+                    0.0
+                ],
+                "rotation": [
+                    0.9999143481254578,
+                    0.0,
+                    -0.013089596293866634,
+                    0.0
+                ],
+                "scale": [
+                    10.0,
+                    1.0,
+                    10.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "FOV": 90.0,
+                    "height": 800.0,
+                    "type": "Camera",
+                    "width": 800.0
+                }
+            ],
+            "name": "CameraObject",
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}

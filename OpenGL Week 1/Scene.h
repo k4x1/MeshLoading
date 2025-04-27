@@ -21,8 +21,10 @@
 
 class ENGINE_API Scene {
 public:
-    GLFWwindow* Window;
-    Camera* camera;
+
+    Scene() = default;
+    GLFWwindow* Window = nullptr;
+    Camera* camera = nullptr;
     std::vector<GameObject*> gameObjects;
     FrameBuffer* gameFrameBuffer = nullptr;
 
