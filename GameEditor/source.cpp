@@ -30,16 +30,8 @@ int main() {
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // — ImGui init —
-   // UIHelpers::Init(Window, "#version 460");
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplGlfw_InitForOpenGL(Window, /*install_callbacks=*/ true);
-    ImGui_ImplOpenGL3_Init("#version 460");
-    UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
+ 
+    UIHelpers::Init(Window, "#version 460");
     UIHelpers::InitializeUI();
 
     // — Build our edit scene once (Editor never runs Start/Update on it) —
@@ -98,7 +90,7 @@ int main() {
         }
 
         UIHelpers::NewFrame();
-        UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
+  //      UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
         UIHelpers::ShowDockSpace();
 
         UIHelpers::DrawSceneViewWindow(

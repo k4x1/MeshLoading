@@ -11,23 +11,27 @@
 #include "InspectorSlotRegistry.h"
 #include "ComponentFactory.h"
 #include "Debug.h"
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
 
+static bool s_ImGuiGlfwInited = false;
 
-static bool s_glfw_inited = false;
-void UIHelpers::Init(GLFWwindow*& window, const char* glsl_version) {
-
+void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
+{
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, /*install_callbacks=*/ !s_glfw_inited);
-    s_glfw_inited = true;
+    ImGui_ImplGlfw_InitForOpenGL(window, /*install_callbacks=*/ s_ImGuiGlfwInited);
+    s_ImGuiGlfwInited = true;
     ImGui_ImplOpenGL3_Init(glsl_version);
-
 }
 
 void UIHelpers::NewFrame() {
@@ -46,15 +50,15 @@ void UIHelpers::Shutdown() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui::DestroyContext();
 }
-ImGuiContext* UIHelpers::GetImGuiContext()
-{
-    return ImGui::GetCurrentContext();
-}
-void UIHelpers::SetImGuiContext(ImGuiContext* context)
-{
-    ImGui::SetCurrentContext(context);
-    ImGuizmo::SetImGuiContext(context);
-}
+//ImGuiContext* UIHelpers::GetImGuiContext()
+//{
+//    return ImGui::GetCurrentContext();
+//}
+//void UIHelpers::SetImGuiContext(ImGuiContext* context)
+//{
+//    ImGui::SetCurrentContext(context);
+//    ImGuizmo::SetImGuiContext(context);
+//}
 void UIHelpers::InitializeUI() {
     std::cout << "[UIHelpers] Scanning Assets folder..." << std::endl;
     AssetManager::LoadAssets("Assets");

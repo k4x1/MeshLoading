@@ -1,7 +1,5 @@
 ﻿#pragma once
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 #include "FrameBuffer.h"
 #include "Scene.h"
 #include "GameObject.h"
@@ -14,12 +12,12 @@ enum class ENGINE_API EditorState { Play, Pause, Stop };
 
 class ENGINE_API UIHelpers {
 public:
-    static void Init(GLFWwindow*& window, const char* glsl_version = "#version 130");
+    static void Init(GLFWwindow* window, const char* glsl_version = "#version 460");
     static void NewFrame();
     static void Render();
     static void Shutdown();
-    static ImGuiContext* GetImGuiContext();
-    static void SetImGuiContext(ImGuiContext* context);
+    //static ImGuiContext* GetImGuiContext();
+    //static void SetImGuiContext(ImGuiContext* context);
 
     static void InitializeUI();
     static void ShowDockSpace();

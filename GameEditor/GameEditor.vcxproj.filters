@@ -92,5 +92,6 @@
     <ClCompile Include="..\Dependencies\IMGUIZMO\ImSequencer.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="source.cpp" />
   </ItemGroup>
 </Project>
