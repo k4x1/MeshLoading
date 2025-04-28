@@ -51,7 +51,6 @@ public:
     GameObject(const GameObject&) = delete;
     GameObject& operator=(const GameObject&) = delete;
 
-    // you can still allow moves if you like
     GameObject(GameObject&&) = default;
     GameObject& operator=(GameObject&&) = default;
     GameObject(const std::string& name = "GameObject");
@@ -62,7 +61,6 @@ public:
 
     glm::mat4 GetWorldMatrix() const;
 
-    // Declaration only – definition moved to GameObject.cpp
     virtual void OnInspectorGUI() override;
 
     template<typename T, typename... Args>
@@ -85,7 +83,6 @@ public:
         return nullptr;
     }
 
-   // template<typename T>
     void RemoveComponent(Component* comp) {
         components.erase(
             std::remove_if(components.begin(), components.end(),

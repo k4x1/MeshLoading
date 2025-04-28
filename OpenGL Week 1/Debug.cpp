@@ -63,7 +63,6 @@ void Debug::DrawWireBox(const glm::mat4& M,
     const glm::vec3& h,
     Camera* cam)
 {
-    // compute corners
     glm::vec3 corners[8] = {
       {-h.x,-h.y,-h.z},{ h.x,-h.y,-h.z},
       { h.x, h.y,-h.z},{-h.x, h.y,-h.z},
@@ -73,7 +72,6 @@ void Debug::DrawWireBox(const glm::mat4& M,
     glm::vec4 world[8];
     for (int i = 0; i < 8; i++) world[i] = M * glm::vec4(corners[i], 1.0f);
 
-    // set up matrices
     glm::mat4 V = cam->GetViewMatrix();
     glm::mat4 P = cam->GetProjectionMatrix();
 
@@ -87,7 +85,6 @@ void Debug::DrawWireBox(const glm::mat4& M,
         glVertex3fv(glm::value_ptr(glm::vec3(world[a])));
         glVertex3fv(glm::value_ptr(glm::vec3(world[b])));
         };
-    // edges
     L(0, 1); L(1, 2); L(2, 3); L(3, 0);
     L(4, 5); L(5, 6); L(6, 7); L(7, 4);
     for (int i = 0; i < 4; i++) L(i, i + 4);

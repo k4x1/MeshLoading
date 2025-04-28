@@ -16,7 +16,6 @@ void FrameBuffer::Initialize()
     glGenFramebuffers(1, &m_FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
-    // Create a color attachment texture
     glGenTextures(1, &m_TextureID);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -24,7 +23,6 @@ void FrameBuffer::Initialize()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0);
 
-    // Create a renderbuffer object for depth and stencil attachment
     glGenRenderbuffers(1, &m_RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);

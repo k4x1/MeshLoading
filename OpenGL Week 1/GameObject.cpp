@@ -30,7 +30,6 @@ void TransformFromJson(const nlohmann::json& j, Transform& t)
     t.scale = glm::vec3(scale[0].get<float>(), scale[1].get<float>(), scale[2].get<float>());
 }
 
-// --- GameObject implementation ---
 
 GameObject::GameObject(const std::string& name)
     : name(name)

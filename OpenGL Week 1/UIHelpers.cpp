@@ -1,4 +1,7 @@
 ﻿#include "UIHelpers.h"
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>  
 #include <imgui.h>
 #include <ImGuizmo.h>
 #include <iostream>
@@ -11,11 +14,12 @@
 #include "InspectorSlotRegistry.h"
 #include "ComponentFactory.h"
 #include "Debug.h"
+#include <imgui.h>
+#include <ImGuizmo.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
-
 
 void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
 {
@@ -25,12 +29,16 @@ void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    
     ImGui::StyleColorsDark();
 
-    
-}
+#ifdef _WIN32
+    HWND hwnd = glfwGetWin32Window(window);
+    IM_ASSERT(hwnd && "glfwGetWin32Window failed; did you include <GLFW/glfw3.h> before <glfw3native.h>?");
+#endif
 
+    ImGui_ImplGlfw_InitForOpenGL(window, /*install_callbacks=*/ true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+}
 void UIHelpers::NewFrame() {
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();

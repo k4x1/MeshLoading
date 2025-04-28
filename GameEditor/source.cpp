@@ -1,6 +1,5 @@
 ﻿#include "All.h"
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include "EnginePluginAPI.h" 
 
 constexpr float FIXED_DT = 1.0f / 60.0f;
 
@@ -14,15 +13,12 @@ GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
 
 int main() {
-    // — GLFW / OpenGL init —
-    if (!glfwInit()) return -1;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    if (!Engine::InitGLFW())
+        return -1;
+    Engine::SetGLFWWindowHints(4, 6, 4);
+    GLFWwindow* Window = Engine::CreateGLFWWindow(800, 800, "Editor");
+    Engine::MakeContextCurrent(Window);
 
-    Window = glfwCreateWindow(800, 800, "Editor", nullptr, nullptr);
-    glfwMakeContextCurrent(Window);
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) return -1;
     glEnable(GL_MULTISAMPLE);
@@ -30,35 +26,27 @@ int main() {
     InputManager::Instance().SetCallbacks(Window);
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-    // — ImGui init —
  
     UIHelpers::Init(Window, "#version 460");
-    ImGui_ImplGlfw_InitForOpenGL(Window, /*install_callbacks=*/ true);
-    ImGui_ImplOpenGL3_Init("#version 460");
     UIHelpers::InitializeUI();
 
-    // — Build our edit scene once (Editor never runs Start/Update on it) —
     editScene = std::make_unique<SampleScene>();
     editScene->InitialSetup(Window, true);
 
-    // — Editor camera for gizmos/hierarchy —
     editorCamera = new GameObject("EditorCamera");
     editorCamera->transform.position = glm::vec3(0, 500, 0);
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
 
-    // — Framebuffers —
     editorFrameBuffer = new FrameBuffer(800, 800); editorFrameBuffer->Initialize();
     gameFrameBuffer = new FrameBuffer(800, 800); gameFrameBuffer->Initialize();
 
-    // — State & timing —
     EditorState state = EditorState::Stop;
     double      lastTime = glfwGetTime();
     float       accumulator = 0.0f;
 
     while (!glfwWindowShouldClose(Window)) {
-        // — Poll & timing —
-        glfwPollEvents();
+        Engine::PollEvents();
         InputManager::Instance().Update();
         double now = glfwGetTime();
         float  frameDt = float(now - lastTime);
@@ -74,14 +62,11 @@ int main() {
 
         if (state == EditorState::Play) {
             if (!runtimeScene) {
-                // snapshot edit→TempScene
                 editScene->SaveToFile("TempScene.json");
 
-                // build **runtime** without auto-load of the persistent file
                 runtimeScene = std::make_unique<SampleScene>();
-                runtimeScene->InitialSetup(Window, /*autoLoad=*/false);
+                runtimeScene->InitialSetup(Window, false);
 
-                // now bring in the TempScene and run Start()
                 runtimeScene->LoadFromFile("Assets/TempScene.json");
                 runtimeScene->Start();
             }
@@ -120,13 +105,13 @@ int main() {
         UIHelpers::DrawDebugWindow(nullptr);
 
         UIHelpers::Render();
-        glfwSwapBuffers(Window);
+        Engine::SwapBuffers(Window);
     }
 
     delete editorFrameBuffer;
     delete gameFrameBuffer;
     delete editorCamera;
     UIHelpers::Shutdown();
-    glfwTerminate();
+    Engine::TerminateGLFW();
     return 0;
 }

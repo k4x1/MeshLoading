@@ -178,6 +178,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClCompile Include="CameraMovement.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="EnginePluginAPI.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeometryBuffer.cpp" />
     <ClCompile Include="InspectorSlotRegistry.cpp" />
