@@ -34,7 +34,6 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
         }
     }
 
-    // 3) Fallback: create a default camera if none found
     if (!camera->owner) {
         GameObject* camGO = new GameObject("CameraObject");
         camGO->AddComponent<Camera>();
@@ -42,10 +41,8 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
         camera->owner = camGO;
     }
 
-    // 4) Initialize camera’s projection parameters
     camera->InitCamera(800, 800);
 
-    // — load shaders/textures/skybox —
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
@@ -67,15 +64,12 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
     };
     skybox = new Skybox("Resources/Models/cube.obj", faces);
 
-    // frame-buffer for post-processing pass
     gameFrameBuffer = new FrameBuffer(800, 800);
     gameFrameBuffer->Initialize();
 
-    // Setup helpers
     SetupLights();
     SetupQuad();
 
-    // Finally fire any Start() logic
     Start();
 }
 
@@ -95,7 +89,6 @@ void SampleScene::Update(float dt)
     for (auto* obj : gameObjects)
         obj->Update(deltaTime);
 
-    // Toggle post-process effect
     static bool tabPressed = false;
     if (glfwGetKey(Window, GLFW_KEY_TAB) == GLFW_PRESS && !tabPressed) {
         tabPressed = true;
@@ -108,11 +101,9 @@ void SampleScene::Update(float dt)
 }
 void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 {
-    // 1) Shadow pass
     RenderShadowMap(m_ShadowMap1, dirLight1);
     RenderShadowMap(m_ShadowMap2, dirLight2);
 
-    // 2) Main scene into FBO
     currentBuffer->Bind();
     glViewport(0, 0, 800, 800);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,26 +111,20 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     Camera* cam = _camera ? _camera : camera;
     cam->Matrix(0.01f, 1000.0f, Program_Texture, "VPMatrix");
 
-    // 2a) Skybox
     skybox->Render(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
-    // 2b) Lit textured pass
     glUseProgram(Program_Texture);
 
-    // Ambient
     glUniform1f(glGetUniformLocation(Program_Texture, "AmbientStrength"), 1.0f);
     glUniform3f(glGetUniformLocation(Program_Texture, "AmbientColor"), 1.0f, 1.0f, 1.0f);
 
-    // Camera position
     glm::vec3 camPos = camera->owner->transform.position;
     glUniform3fv(glGetUniformLocation(Program_Texture, "CameraPos"), 1, glm::value_ptr(camPos));
 
-    // Directional light
     glUniform3fv(glGetUniformLocation(Program_Texture, "DirLight.direction"), 1, glm::value_ptr(dirLight1.direction));
     glUniform3fv(glGetUniformLocation(Program_Texture, "DirLight.color"), 1, glm::value_ptr(dirLight1.color));
     glUniform1f(glGetUniformLocation(Program_Texture, "DirLight.specularStrength"), dirLight1.specularStrength);
 
-    // Spotlight
     glUniform3fv(glGetUniformLocation(Program_Texture, "SptLight.position"), 1, glm::value_ptr(spotLight.position));
     glUniform3fv(glGetUniformLocation(Program_Texture, "SptLight.direction"), 1, glm::value_ptr(spotLight.direction));
     glUniform3fv(glGetUniformLocation(Program_Texture, "SptLight.color"), 1, glm::value_ptr(spotLight.color));
@@ -150,19 +135,16 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     glUniform1f(glGetUniformLocation(Program_Texture, "SptLight.innerCutoff"), spotLight.innerCutoff);
     glUniform1f(glGetUniformLocation(Program_Texture, "SptLight.outerCutoff"), spotLight.outerCutoff);
 
-    // Bind reflection cubemap to unit 5
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 5);
 
-    // Draw every GameObject (MeshRenderer will bind its Texture0)
     for (auto* obj : gameObjects)
         obj->Render(cam);
 
     glUseProgram(0);
     currentBuffer->Unbind();
 
-    // 3) Post‑processing
     glViewport(0, 0, 800, 800);
     glUseProgram(postProcessingShader);
     glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
@@ -220,7 +202,6 @@ void SampleScene::RenderShadowMap(ShadowMap* shadowMap, const DirectionalLight& 
 {
     shadowMap->Bind();
     glClear(GL_DEPTH_BUFFER_BIT);
-    // Update light-space matrix & draw scene depth using mainModel only or entire scene as needed
     shadowMap->Unbind();
 }
 

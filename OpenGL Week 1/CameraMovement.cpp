@@ -32,25 +32,19 @@ void CameraMovement::Start() {
 void CameraMovement::Update(float dt) {
     GLFWwindow* window = InputManager::Instance().GetWindow();
 
-    // read raw button state every frame
     bool rightDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 
-    // —— begin capture if freshly pressed *and* mouse is over a view window
     if (!capturingMouse && rightDown &&
         (UIHelpers::g_SceneViewHovered || UIHelpers::g_GameViewHovered))
     {
         capturingMouse = true;
-        // lock and hide cursor
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        // seed the lastX/Y so we don't get a giant jump
         lastX = static_cast<float>(InputManager::Instance().GetMouseX());
         lastY = static_cast<float>(InputManager::Instance().GetMouseY());
     }
 
-    // —— if we’re capturing, handle movement and release
     if (capturingMouse) {
         if (rightDown) {
-            // still holding: do your existing mouse‐look
             double currX = InputManager::Instance().GetMouseX();
             double currY = InputManager::Instance().GetMouseY();
 
@@ -69,7 +63,6 @@ void CameraMovement::Update(float dt) {
                 glm::angleAxis(glm::radians(-pitch), glm::vec3(1, 0, 0));
         }
         else {
-            // just released: stop capturing
             capturingMouse = false;
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }

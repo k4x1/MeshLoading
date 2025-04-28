@@ -67,11 +67,12 @@ nlohmann::json Scene::ToJson() const {
 }
 
 void Scene::FromJson(const nlohmann::json& j) {
-    // clear existing
-    for (auto* go : gameObjects) delete go;
-    gameObjects.clear();
+    for (auto* go : gameObjects)
+    {
+        delete go;
+        gameObjects.clear();
+    }
 
-    // rebuild
     for (auto& objJ : j["gameObjects"])
         gameObjects.push_back(DeserializeGameObject(objJ));
 }

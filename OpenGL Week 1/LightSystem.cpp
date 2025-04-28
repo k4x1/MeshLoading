@@ -25,11 +25,9 @@
 //{
 //    glUseProgram(program);
 //
-//    // --- Camera position ---
 //    if (GLint loc = glGetUniformLocation(program, "CameraPos"); loc >= 0)
 //        glUniform3fv(loc, 1, glm::value_ptr(camPos));
 //
-//    // --- Directional Light (just the first one) ---
 //    if (!L.dirs.empty()) {
 //        auto* D = L.dirs.front();
 //        if (GLint loc = glGetUniformLocation(program, "DirLight.direction"); loc >= 0)
@@ -40,7 +38,6 @@
 //            glUniform1f(loc, D->specularStrength);
 //    }
 //
-//    // --- Point Lights ---
 //    GLuint count = (GLuint)L.points.size();
 //    if (GLint loc = glGetUniformLocation(program, "PointLightCount"); loc >= 0)
 //        glUniform1ui(loc, count);
@@ -66,7 +63,6 @@
 //        set1("attenuationExponent", P->attenuationExponent);
 //    }
 //
-//    // --- Spot Light (just the first one) ---
 //    if (!L.spots.empty()) {
 //        auto* S = L.spots.front();
 //        const std::string p = "SptLight.";

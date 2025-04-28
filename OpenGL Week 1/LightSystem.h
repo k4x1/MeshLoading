@@ -17,10 +17,8 @@
 //
 //class ENGINE_API LightSystem {
 //public:
-//    // Scan the scene once per frame
 //    static GatheredLights Collect(Scene* scene);
 //
-//    // Call right after glUseProgram(shader) but before you draw
 //    static void  UploadToShader(GLuint program,
 //        const GatheredLights& L,
 //        const glm::vec3& cameraPos);

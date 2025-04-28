@@ -37,20 +37,18 @@ public:
         Reload();
     }
 
-    // public so factory/inspector can touch them:
     std::string modelFilePath;
     std::string textureFilePath;
     std::string vertShaderPath;
     std::string fragShaderPath;
     Texture texture;
-    void Reload();  // rebuilds mesh/texture/shader
+    void Reload();  
 
 private:
     std::unique_ptr<MeshModel> mesh;
     GLuint shaderProgram = 0;
     GLuint textureID = 0;
 
-    // timestamps for change‑detection
     fs::file_time_type _modelTime;
     fs::file_time_type _texTime;
     fs::file_time_type _vertTime;

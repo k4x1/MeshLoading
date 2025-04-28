@@ -16,7 +16,6 @@ public:
     void Render(class Camera* cam) override;
     void OnInspectorGUI() override;
 
-    // ISerializableComponent
     nlohmann::json Serialize() const override {
         return {
             {"halfExtents", {halfExtents.x, halfExtents.y, halfExtents.z}}
@@ -28,5 +27,4 @@ public:
     }
 };
 
-// register with the same macro
 REGISTER_SERIALIZABLE_COMPONENT(BoxCollider);

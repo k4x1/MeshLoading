@@ -1,5 +1,6 @@
 ﻿#include "All.h"
-
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 constexpr float FIXED_DT = 1.0f / 60.0f;
 
@@ -32,6 +33,8 @@ int main() {
     // — ImGui init —
  
     UIHelpers::Init(Window, "#version 460");
+    ImGui_ImplGlfw_InitForOpenGL(Window, /*install_callbacks=*/ true);
+    ImGui_ImplOpenGL3_Init("#version 460");
     UIHelpers::InitializeUI();
 
     // — Build our edit scene once (Editor never runs Start/Update on it) —

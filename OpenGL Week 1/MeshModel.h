@@ -67,10 +67,10 @@ public:
     glm::mat4 CalculateModelMatrix();
     GLuint GetVAO() const { return VAO; }
 
-    /// How many vertices to draw
+    // How many vertices to draw
     GLsizei GetDrawCount() const { return m_drawCount; }
 
-    /// GL primitive type (e.g. GL_TRIANGLES)
+    // GL primitive type (e.g. GL_TRIANGLES)
     GLenum GetDrawType() const { return m_drawType; }
 
     glm::mat4 m_modelMatrix;

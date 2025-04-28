@@ -9,7 +9,6 @@ void BoxCollider::Update(float dt)
     if (!m_attached) {
         auto* rb = owner->GetComponent<Rigidbody>();
         if (rb && rb->body) {
-            // now safe to create the shape and attach
             auto& common = Physics::PhysicsEngine::Instance().GetCommon();
             shape = common.createBoxShape(
                 reactphysics3d::Vector3{ halfExtents.x, halfExtents.y, halfExtents.z });

@@ -31,7 +31,6 @@ void Rigidbody::Update(float dt) {
     auto& rpPos = rp3dTransform.getPosition();
     auto& rpOri = rp3dTransform.getOrientation();
 
-    // copy back into your scene graph
     owner->transform.position = glm::vec3(rpPos.x, rpPos.y, rpPos.z);
     owner->transform.rotation = glm::quat(rpOri.w, rpOri.x, rpOri.y, rpOri.z);
 }

@@ -13,7 +13,6 @@
 
 namespace fs = std::filesystem;
 
-//— public API —//
 
 MeshRenderer::MeshRenderer(const glm::vec3& pos,
     const glm::vec3& rot,
@@ -80,25 +79,21 @@ void MeshRenderer::Render(Camera* cam) {
 
     glUseProgram(shaderProgram);
 
-    // --- VP upload (unchanged) ---
     if (GLint loc = glGetUniformLocation(shaderProgram, "VPMatrix"); loc >= 0) {
         glm::mat4 VP = cam->GetProjectionMatrix() * cam->GetViewMatrix();
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(VP));
     }
 
-    // --- Model upload from the GameObject’s transform ---
     if (GLint loc = glGetUniformLocation(shaderProgram, "ModelMat"); loc >= 0) {
         glm::mat4 model = owner->GetWorldMatrix();
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(model));
     }
 
-    // --- Texture bind/uniform (unchanged) ---
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     if (GLint loc = glGetUniformLocation(shaderProgram, "Texture0"); loc >= 0)
         glUniform1i(loc, 0);
 
-    // --- Draw ---
     glBindVertexArray(mesh->GetVAO());
     glDrawArrays(mesh->GetDrawType(), 0, mesh->GetDrawCount());
     glBindVertexArray(0);

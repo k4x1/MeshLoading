@@ -18,7 +18,6 @@ public:
     void Render(class Camera*) override {}
     void OnInspectorGUI() override;
 
-    // ISerializableComponent
     nlohmann::json Serialize() const override {
         return {
             {"mass",        mass},
@@ -33,5 +32,4 @@ public:
     }
 };
 
-// this macro will generate the ComponentFactory registration
 REGISTER_SERIALIZABLE_COMPONENT(Rigidbody);

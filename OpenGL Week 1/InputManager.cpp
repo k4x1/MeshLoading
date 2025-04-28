@@ -1,22 +1,18 @@
 #include "InputManager.h"
 
-// Define the singleton instance via a static local variable in Instance()
 InputManager& InputManager::Instance() {
     static InputManager instance;
     return instance;
 }
 
 InputManager::InputManager() {
-    // Initialize default values
     mouseX = 0.0;
     mouseY = 0.0;
     scrollOffset = 0.0;
 }
 
 void InputManager::Update() {
-    // Copy current key states into previous key states for transition detection.
     previousKeyStates = currentKeyStates;
-    // Reset scroll offset after processing.
     scrollOffset = 0.0;
 }
 
@@ -69,10 +65,8 @@ void InputManager::SetCallbacks(GLFWwindow* window) {
     glfwSetScrollCallback(window, ScrollCallback);
 }
 
-// Static callback implementations:
 
 void InputManager::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    // Here you may check for ImGui capture if needed.
     if (action == GLFW_PRESS) {
         Instance().currentKeyStates[key] = true;
     }

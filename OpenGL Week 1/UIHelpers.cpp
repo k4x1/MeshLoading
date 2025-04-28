@@ -16,7 +16,6 @@
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
 
-static bool s_ImGuiGlfwInited = false;
 
 void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
 {
@@ -29,9 +28,7 @@ void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
     
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, /*install_callbacks=*/ s_ImGuiGlfwInited);
-    s_ImGuiGlfwInited = true;
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    
 }
 
 void UIHelpers::NewFrame() {
@@ -91,21 +88,17 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     GameObject* selected,
     float       deltaTime)
 {
-    // 1) update & render your editor camera into the FBO
     editorCamera->Update(deltaTime);
     editorFB->Bind();
     scene->Render(editorFB, editorCamera->GetComponent<Camera>());
     editorFB->Unbind();
 
-    // 2) ImGui window
     ImGui::Begin("Scene View");
     g_SceneViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
-    // 2a) draw the texture
     ImVec2 sz{ (float)editorFB->GetWidth(), (float)editorFB->GetHeight() };
     ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
 
-    // 2b) gizmo setup
     ImVec2 img_min = ImGui::GetItemRectMin();
     ImVec2 img_max = ImGui::GetItemRectMax();
     ImVec2 img_sz{ img_max.x - img_min.x, img_max.y - img_min.y };
@@ -119,13 +112,12 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     Camera* cam = editorCamera->GetComponent<Camera>();
     glm::mat4 view = cam->GetViewMatrix();
     glm::mat4 proj = cam->GetProjectionMatrix();
-    proj[1][1] *= -1.0f;   // flip Y for ImGuizmo
+    proj[1][1] *= -1.0f; 
 
     if (selected) {
         ImGuizmo::OPERATION op = ImGuizmo::TRANSLATE;
         glm::mat4 model = selected->GetWorldMatrix();
 
-        // confine draw to the scene-view rectangle
         ImGui::PushClipRect(img_min, img_max, true);
         bool wasDepth = glIsEnabled(GL_DEPTH_TEST);
         if (wasDepth) glDisable(GL_DEPTH_TEST);
@@ -151,7 +143,6 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
         }
     }
 
-    // 3) drag-and-drop prefabs into scene
     if (ImGui::BeginDragDropTarget()) {
         if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
             int idx = *(int*)pl->Data;
@@ -173,13 +164,11 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
     EditorState& state,
     float       deltaTime)
 {
-    // 1) advance the in-game camera and render the shared scene
     gameCamera->Update(deltaTime);
     gameFB->Bind();
     scene->Render(gameFB, gameCamera->GetComponent<Camera>());
     gameFB->Unbind();
 
-    // 2) UI
     ImGui::Begin("Game View");
     g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
@@ -206,31 +195,24 @@ void UIHelpers::ShowGameObjectNode(GameObject* obj, GameObject*& sel, Scene* sce
     if (obj == sel)
         flags |= ImGuiTreeNodeFlags_Selected;
 
-    // The visible label is just obj->name
     bool open = ImGui::TreeNodeEx(obj->name.c_str(), flags);
 
-    // single‐click selects
     if (ImGui::IsItemClicked())
         sel = obj;
 
-    // right‐click context menu → Delete
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::MenuItem("Delete")) {
-            // if it was selected, clear selection
             if (sel == obj) sel = nullptr;
             // remove & delete from scene
             scene->RemoveGameObject(obj);
             ImGui::EndPopup();
             if (open) ImGui::TreePop();
             ImGui::PopID();
-            return; // don’t draw children of something we just deleted
+            return; 
         }
         ImGui::EndPopup();
     }
 
-    // double‐click to frame camera, drag/drop for reparenting or prefab as before…
-    // (your existing code for ImGui::IsMouseDoubleClicked,
-    //  BeginDragDropSource, BeginDragDropTarget, etc.)
 
     if (open) {
         for (auto* child : obj->children)
@@ -264,7 +246,6 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
         ImGui::EndPopup();
     }
 
-    // blank‑space drop target for root‑level prefab instantiation
     if (ImGui::BeginDragDropTarget()) {
         if (auto pl = ImGui::AcceptDragDropPayload("ASSET_PAYLOAD")) {
             int idx = *(int*)pl->Data;
@@ -277,7 +258,6 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
         ImGui::EndDragDropTarget();
     }
 
-    // recursive node‑drawer captures scene & selected by reference
     std::function<void(GameObject*)> drawNode = [&](GameObject* obj) {
         ImGui::PushID(obj);
         ImGuiTreeNodeFlags flags = obj->children.empty()
@@ -287,11 +267,9 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
 
         bool open = ImGui::TreeNodeEx(obj->name.c_str(), flags);
 
-        // single‐click to select
         if (ImGui::IsItemClicked())
             selected = obj;
 
-        // double‐click to frame camera
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
             glm::vec3 target = obj->transform.position;
             float dist = 10.0f;
@@ -312,14 +290,12 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
             }
             ImGui::EndPopup();
         }
-        // drag source for reparenting
         if (ImGui::BeginDragDropSource()) {
             ImGui::SetDragDropPayload("DND_GAMEOBJECT", &obj, sizeof(obj));
             ImGui::Text("Dragging %s", obj->name.c_str());
             ImGui::EndDragDropSource();
         }
 
-        // drag target: reparent or prefab‑under‑node
         if (ImGui::BeginDragDropTarget()) {
             if (auto pl = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT")) {
                 GameObject* dropped = *(GameObject**)pl->Data;
@@ -350,7 +326,6 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
         ImGui::PopID();
         };
 
-    // draw all root objects
     for (auto* obj : scene->gameObjects)
         if (!obj->parent)
             drawNode(obj);
@@ -386,7 +361,6 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
         ImGui::End();
         return;
     }
-    // —— Rename field ——————————————————————————————
     char buf[128];
     strncpy_s(buf, selected->name.c_str(), sizeof(buf));
     buf[sizeof(buf) - 1] = '\0';
@@ -397,7 +371,6 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
     ImGui::Text("Name");
     ImGui::Separator();
 
-    // —— Transform ——————————————————————————————
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::DragFloat3("Position", glm::value_ptr(selected->transform.position), 0.1f);
         glm::vec3 euler = glm::degrees(glm::eulerAngles(selected->transform.rotation));
@@ -408,13 +381,11 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
     }
     ImGui::Separator();
 
-    // —— Components + asset‐slots + right‐click to remove —————————————————
     for (int i = 0; i < (int)selected->components.size(); ++i) {
         Component* comp = selected->components[i].get();
         ImGui::PushID(comp);
         bool open = ImGui::CollapsingHeader(typeid(*comp).name(), ImGuiTreeNodeFlags_DefaultOpen);
 
-        // Right‐click to remove
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::MenuItem("Remove Component")) {
                 selected->RemoveComponent(comp);
@@ -426,7 +397,6 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
         }
 
         if (open) {
-            // any registered asset‐slots (e.g. for textures, models…)
             for (auto& slot : InspectorSlotRegistry::GetSlotsFor(comp)) {
                 ImGui::Text("%s", slot.label.c_str());
                 ImGui::SameLine();
@@ -445,14 +415,12 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
                 ImGui::PopID();
             }
             ImGui::Separator();
-            // component’s own fields
             comp->OnInspectorGUI();
             ImGui::Separator();
         }
         ImGui::PopID();
     }
 
-    // —— “Add Component…” popup ——————————————————————
     if (ImGui::Button("Add Component…")) ImGui::OpenPopup("AddComponentPopup");
     if (ImGui::BeginPopup("AddComponentPopup")) {
         for (auto& [typeName, entry] : ComponentFactory::Instance().GetRegistry()) {
@@ -471,7 +439,6 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
 void UIHelpers::DrawProjectWindow() {
     ImGui::Begin("Project");
 
-    // —— New Folder button + modal —————————————
     if (ImGui::Button("New Folder")) {
         ImGui::OpenPopup("Create New Folder");
     }
@@ -519,7 +486,6 @@ void UIHelpers::DrawProjectWindow() {
 
     ImGui::Separator();
 
-    // —— Recursive folder+file tree ——————————————
     std::function<void(const fs::path&)> drawFolder =
         [&](const fs::path& dir)
         {
@@ -531,7 +497,6 @@ void UIHelpers::DrawProjectWindow() {
                     ImGui::PushID(entry.path().string().c_str());
                     bool open = ImGui::TreeNodeEx(name.c_str(), flags, "%s/", name.c_str());
 
-                    // context menu on folder
                     if (ImGui::BeginPopupContextItem()) {
                         if (ImGui::MenuItem("Rename Folder")) {
                             // TODO: implement rename-folder logic
@@ -554,11 +519,9 @@ void UIHelpers::DrawProjectWindow() {
                     ImGui::PopID();
                 }
                 else {
-                    // it's a file
                     ImGui::PushID(entry.path().string().c_str());
                     ImGui::Selectable(name.c_str(), false);
 
-                    // drag-source for asset
                     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                         const auto& assets = AssetManager::GetAssets();
                         for (int i = 0; i < (int)assets.size(); ++i) {
@@ -571,7 +534,6 @@ void UIHelpers::DrawProjectWindow() {
                         ImGui::EndDragDropSource();
                     }
 
-                    // context menu on file
                     if (ImGui::BeginPopupContextItem()) {
                         if (ImGui::MenuItem("Rename File")) {
                             // TODO: implement rename-file logic
@@ -592,7 +554,6 @@ void UIHelpers::DrawProjectWindow() {
             }
         };
 
-    // draw starting at the root Assets folder:
     drawFolder("Assets");
 
     ImGui::End();
