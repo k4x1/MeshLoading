@@ -12,6 +12,10 @@ InputManager::InputManager() {
 }
 
 void InputManager::Update() {
+
+    previousMouseX = mouseX;
+    previousMouseY = mouseY;
+
     previousKeyStates = currentKeyStates;
     scrollOffset = 0.0;
 
@@ -87,8 +91,6 @@ void InputManager::KeyCallback(GLFWwindow* window, int key, int scancode, int ac
 }
 
 void InputManager::MouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    Instance().previousMouseX = Instance().mouseX;
-    Instance().previousMouseY = Instance().mouseY;
     Instance().mouseX = xpos;
     Instance().mouseY = ypos;
 }

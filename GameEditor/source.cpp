@@ -52,8 +52,8 @@ int main() {
     float       accumulator = 0.0f;
 
     while (!glfwWindowShouldClose(Window)) {
-        Engine::PollEvents();
         InputManager::Instance().Update();
+        Engine::PollEvents();
         double now = Engine::GetTime();
         float  frameDt = float(now - lastTime);
         lastTime = now;

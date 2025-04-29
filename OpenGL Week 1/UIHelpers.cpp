@@ -23,7 +23,8 @@
 #include <gtc/type_ptr.hpp>
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
-
+AspectRatio UIHelpers::g_SceneAspect = AspectRatio::R16_9;
+AspectRatio UIHelpers::g_GameAspect = AspectRatio::R16_9;
 void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
 {
     IMGUI_CHECKVERSION();
@@ -92,6 +93,14 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     float       deltaTime)
 {
     ImGui::Begin("Scene View");
+    {
+        static const char* names[] = { "Free","16:9","4:3","1:1" };
+        int idx = (int)g_SceneAspect;
+        if (ImGui::Combo("Aspect", &idx, names, IM_ARRAYSIZE(names))) {
+            g_SceneAspect = (AspectRatio)idx;
+        }
+    }
+
     g_SceneViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
     editorCamera->Update(deltaTime);
@@ -99,23 +108,39 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     Camera* cam = editorCamera->GetComponent<Camera>();
 
     ImVec2 avail = ImGui::GetContentRegionAvail();
-    int    w = (int)avail.x;
-    int    h = (int)avail.y;
+    ImVec2 target = avail;
+    if (g_SceneAspect != AspectRatio::Free) {
+        float ar = 1.0f;
+        switch (g_SceneAspect) {
+        case AspectRatio::R16_9: ar = 16.0f / 9.0f; break;
+        case AspectRatio::R4_3:  ar = 4.0f / 3.0f;  break;
+        case AspectRatio::R1_1:  ar = 1.0f;         break;
+        default: break;
+        }
+        if (avail.x / avail.y > ar) {
+            target.x = avail.y * ar;
+        }
+        else {
+            target.y = avail.x / ar;
+        }
+    }
 
-    if (w > 0 && h > 0 &&
-        (w != editorFB->GetWidth() || h != editorFB->GetHeight()))
+    if ((int)target.x != editorFB->GetWidth() ||
+        (int)target.y != editorFB->GetHeight())
     {
-        editorFB->Resize(w, h);
-        cam->InitCamera(w, h);
+        editorFB->Resize((int)target.x, (int)target.y);
+        Camera* cam = editorCamera->GetComponent<Camera>();
+        cam->InitCamera(target.x, target.y);
     }
 
     editorFB->Bind();
-    glViewport(0, 0, w, h);
+    glViewport(0, 0, (int)target.x, (int)target.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene->Render(editorFB, cam);
     editorFB->Unbind();
-
-    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), avail);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (avail.x - target.x) * 0.5f);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (avail.y - target.y) * 0.5f);
+    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), target);
 
     ImVec2 img_min = ImGui::GetItemRectMin();
     ImVec2 img_max = ImGui::GetItemRectMax();
@@ -181,6 +206,7 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
 {
 
     ImGui::Begin("Game View");
+
     g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
     if (ImGui::Button("Stop"))  state = EditorState::Stop;
@@ -188,29 +214,44 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
     if (ImGui::Button("Play"))  state = EditorState::Play;
     ImGui::SameLine();
     if (ImGui::Button("Pause")) state = EditorState::Pause;
-
+    ImGui::SameLine();
+    {
+        static const char* names[] = { "Free","16:9","4:3","1:1" };
+        int idx = (int)g_GameAspect;
+        if (ImGui::Combo("Aspect", &idx, names, IM_ARRAYSIZE(names))) {
+            g_GameAspect = (AspectRatio)idx;
+        }
+    }
     if (state == EditorState::Play)
         ImGui::TextColored({ 0,1,0,1 }, "PLAY MODE");
 
     ImVec2 avail = ImGui::GetContentRegionAvail();
-    int    w = (int)avail.x;
-    int    h = (int)avail.y;
+    ImVec2 target = avail;
+    if (g_GameAspect != AspectRatio::Free) {
+        float ar = (g_GameAspect == AspectRatio::R16_9 ? 16.f / 9.f :
+            g_GameAspect == AspectRatio::R4_3 ? 4.f / 3.f : 1.f);
+        if (avail.x / avail.y > ar) target.x = avail.y * ar;
+        else                      target.y = avail.x / ar;
+    }
 
-    if (w > 0 && h > 0 &&
-        (w != gameFB->GetWidth() || h != gameFB->GetHeight()))
+    if ((int)target.x != gameFB->GetWidth() ||
+        (int)target.y != gameFB->GetHeight())
     {
-        gameFB->Resize(w, h);
+        gameFB->Resize((int)target.x, (int)target.y);
         if (auto cam = scene->camera)
-            cam->InitCamera(w, h);
+            cam->InitCamera(target.x, target.y);
     }
 
     gameFB->Bind();
-    glViewport(0, 0, w, h);
+    glViewport(0, 0, (int)target.x, (int)target.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene->Render(gameFB, nullptr);
     gameFB->Unbind();
 
-    ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), avail);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (avail.x - target.x) * 0.5f);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (avail.y - target.y) * 0.5f);
+    ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), target);
+
     ImGui::End();
 }
 

@@ -137,7 +137,9 @@ void Scene::LoadFromFile(const std::string& filePath) {
 
 Scene::~Scene() {
     for (GameObject* obj : gameObjects) {
-        delete obj;
+        if (obj && obj->parent == nullptr) {
+            delete obj;
+        }
     }
     gameObjects.clear();
 }

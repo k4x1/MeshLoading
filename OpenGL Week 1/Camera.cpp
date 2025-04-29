@@ -1,4 +1,4 @@
-#include "Camera.h"
+﻿#include "Camera.h"
 #include "ComponentFactory.h"
 
 
@@ -11,11 +11,14 @@ void Camera::InitCamera(float width, float height) {
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-    auto& T = owner->transform;
-    glm::vec3 pos = T.position;
-    glm::vec3 fwd = T.GetForward();
-    glm::vec3 up = T.GetUp();
-    m_view = glm::lookAt(pos, pos + fwd, -up);
+    glm::mat4 world = owner->GetWorldMatrix();
+
+    glm::vec3 pos = glm::vec3(world[3]);
+
+    glm::vec3 forward = glm::normalize(glm::vec3(world * glm::vec4(0, 0, -1, 0)));
+    glm::vec3 up = glm::normalize(glm::vec3(world * glm::vec4(0, 1, 0, 0)));
+
+    m_view = glm::lookAt(pos, pos + forward, -up);
     return m_view;
 }
 

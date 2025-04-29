@@ -8,7 +8,7 @@ using namespace Physics;PhysicsEngine& PhysicsEngine::Instance() {
 
 PhysicsEngine::PhysicsEngine() {
     m_world = m_common.createPhysicsWorld();
-    m_world->setGravity(reactphysics3d::Vector3(0, -0.09f, 0));
+    m_world->setGravity(reactphysics3d::Vector3(0, -0.981f, 0));
 }
 
 PhysicsEngine::~PhysicsEngine() {

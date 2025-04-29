@@ -12,6 +12,12 @@
                 },
                 {
                     "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": true
@@ -28,9 +34,9 @@
             "name": "Sphere",
             "transform": {
                 "position": [
-                    0.0,
-                    10.0,
-                    0.0
+                    4.932482719421387,
+                    -2.4543442726135254,
+                    0.4600657522678375
                 ],
                 "rotation": [
                     1.0,
@@ -65,6 +71,12 @@
                 },
                 {
                     "isKinematic": true,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": false
@@ -97,9 +109,9 @@
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 1026.0,
+                            "height": 475.0,
                             "type": "Camera",
-                            "width": 2052.0
+                            "width": 276.0
                         }
                     ],
                     "name": "CameraObject",
@@ -125,13 +137,6 @@
             ],
             "components": [
                 {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
-                    "modelFilePath": "Assets\\Models\\sphere.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
-                },
-                {
                     "halfExtents": [
                         1.0,
                         1.0,
@@ -141,11 +146,19 @@
                 },
                 {
                     "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": true,
+                    "lockRotY": true,
+                    "lockRotZ": true,
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": true
                 },
                 {
+                    "groundCheckDistance": 1.100000023841858,
+                    "jumpForce": 5.0,
                     "mouseSensitivity": 0.10000000149011612,
                     "moveSpeed": 5.0,
                     "type": "PlayerController"
@@ -154,20 +167,20 @@
             "name": "Player",
             "transform": {
                 "position": [
-                    4.900123596191406,
-                    -9.31471061706543,
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "rotation": [
                     1.0,
                     0.0,
-                    0.0,
-                    0.0
+                    -0.0,
+                    -3.789968339162897e-09
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    1.0000028610229492,
+                    1.0000008344650269,
+                    1.0000011920928955
                 ]
             }
         }

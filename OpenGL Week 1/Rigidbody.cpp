@@ -31,8 +31,13 @@ void Rigidbody::Update(float dt) {
     auto& rpPos = rp3dTransform.getPosition();
     auto& rpOri = rp3dTransform.getOrientation();
 
-    owner->transform.position = glm::vec3(rpPos.x, rpPos.y, rpPos.z);
-    owner->transform.rotation = glm::quat(rpOri.w, rpOri.x, rpOri.y, rpOri.z);
+    glm::vec3 newPos(rpPos.x, rpPos.y, rpPos.z);
+    glm::quat newRot(rpOri.w, rpOri.x, rpOri.y, rpOri.z);
+
+    glm::vec3 oldPos = owner->transform.position;
+    owner->transform.position.x = lockPosX ? oldPos.x : newPos.x;
+    owner->transform.position.y = lockPosY ? oldPos.y : newPos.y;
+    owner->transform.position.z = lockPosZ ? oldPos.z : newPos.z;
 }
 void Rigidbody::SetLinearVelocity(const glm::vec3& velocity) const
 {
@@ -43,5 +48,15 @@ void Rigidbody::OnInspectorGUI() {
     ImGui::Checkbox("Kinematic", &isKinematic);
     ImGui::Checkbox("Use Gravity", &useGravity);
     if (body) body->enableGravity(useGravity);
+    ImGui::Separator();
+    ImGui::Text("Lock Transform:");
+    ImGui::Indent();
+    ImGui::Checkbox("Position X", &lockPosX);
+    ImGui::Checkbox("Position Y", &lockPosY);
+    ImGui::Checkbox("Position Z", &lockPosZ);
+    ImGui::Checkbox("Rotation X", &lockRotX);
+    ImGui::Checkbox("Rotation Y", &lockRotY);
+    ImGui::Checkbox("Rotation Z", &lockRotZ);
+    ImGui::Unindent();
 }
 

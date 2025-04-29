@@ -9,6 +9,8 @@ class PlayerController : public ISerializableComponent {
 public:
     float moveSpeed = 5.0f;
     float mouseSensitivity = 0.1f;
+    float jumpForce = 5.0f;    
+    float groundCheckDistance = 1.1f;
 
     float yaw = 0.0f;
     float pitch = 0.0f;
@@ -23,13 +25,17 @@ public:
     void OnInspectorGUI() override;
     nlohmann::json Serialize() const override {
         return {
-            {"moveSpeed",        moveSpeed},
-            {"mouseSensitivity", mouseSensitivity}
+            {"moveSpeed",           moveSpeed},
+            {"mouseSensitivity",    mouseSensitivity},
+            {"jumpForce",           jumpForce},
+            {"groundCheckDistance", groundCheckDistance}
         };
     }
     void Deserialize(const nlohmann::json& j) override {
-        moveSpeed = j.value("moveSpeed", moveSpeed);
-        mouseSensitivity = j.value("mouseSensitivity", mouseSensitivity);
+        moveSpeed =           j.value("moveSpeed", moveSpeed);
+        mouseSensitivity =    j.value("mouseSensitivity", mouseSensitivity);
+        jumpForce =           j.value("jumpForce", jumpForce);
+        groundCheckDistance = j.value("groundCheckDistance", groundCheckDistance);
     }
 };
 
