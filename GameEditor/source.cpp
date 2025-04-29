@@ -14,11 +14,7 @@ GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
 bool played = false;
 int main() {
-    PluginLoader componentLoader("GameComponents.dll");
-  
-    if (!componentLoader.Load()) {
-        return -1;
-    }
+   
     if (!Engine::InitGLFW())
         return -1;
     Engine::SetGLFWWindowHints(4, 6, 4);
@@ -28,12 +24,16 @@ int main() {
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) return -1;
     glEnable(GL_MULTISAMPLE);
-
+   
     InputManager::Instance().SetCallbacks(Window);
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    
 
- 
     UIHelpers::Init(Window, "#version 460");
+    PluginLoader componentLoader("GameComponents.dll");
+    if (!componentLoader.Load()) {
+        return -1;
+    }
     UIHelpers::InitializeUI();
 
     editScene = std::make_unique<SampleScene>();

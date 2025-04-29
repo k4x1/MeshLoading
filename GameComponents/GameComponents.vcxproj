@@ -166,18 +166,27 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\IMGUI\imconfig.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="PlayerController.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="PlayerController.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

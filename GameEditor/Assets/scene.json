@@ -68,11 +68,6 @@
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": false
-                },
-                {
-                    "mouseSensitivity": 0.10000000149011612,
-                    "moveSpeed": 5.0,
-                    "type": "PlayerController"
                 }
             ],
             "name": "Cube",
@@ -100,9 +95,9 @@
             "components": [
                 {
                     "FOV": 90.0,
-                    "height": 800.0,
+                    "height": 1066.0,
                     "type": "Camera",
-                    "width": 800.0
+                    "width": 2034.0
                 }
             ],
             "name": "CameraObject",

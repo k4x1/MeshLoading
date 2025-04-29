@@ -38,7 +38,8 @@ GameObject::GameObject(const std::string& name)
 
 GameObject::~GameObject() {
     for (GameObject* child : children) {
-        delete child;
+        if (child != nullptr)
+            delete child;
     }
 }
 

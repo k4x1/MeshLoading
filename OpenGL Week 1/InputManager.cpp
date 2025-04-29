@@ -1,5 +1,5 @@
 #include "InputManager.h"
-
+#include "Debug.h"
 InputManager& InputManager::Instance() {
     static InputManager instance;
     return instance;
@@ -14,8 +14,7 @@ InputManager::InputManager() {
 void InputManager::Update() {
     previousKeyStates = currentKeyStates;
     scrollOffset = 0.0;
-    previousMouseX = mouseX;
-    previousMouseY = mouseY;
+
 }
 
 bool InputManager::GetKey(int key) const {
@@ -58,10 +57,12 @@ void InputManager::GetMousePosition(double& x, double& y) const {
 
 glm::vec2 InputManager::GetMouseDelta() const
 {
-    return glm::vec2(
+    glm::vec2 delta(
         static_cast<float>(mouseX - previousMouseX),
         static_cast<float>(mouseY - previousMouseY)
     );
+    Debug::Log(mouseX - previousMouseX);
+    return delta;
 }
 
 
@@ -87,6 +88,8 @@ void InputManager::KeyCallback(GLFWwindow* window, int key, int scancode, int ac
 }
 
 void InputManager::MouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    Instance().previousMouseX = Instance().mouseX;
+    Instance().previousMouseY = Instance().mouseY;
     Instance().mouseX = xpos;
     Instance().mouseY = ypos;
 }

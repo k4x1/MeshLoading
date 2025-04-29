@@ -7,7 +7,6 @@
 
 void Scene::InitialSetup(GLFWwindow* _window, bool autoLoad) {
     Window = _window;
-    camera= new Camera();
 }
 
 void Scene::Start()

@@ -29,19 +29,18 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
 
     for (auto* go : gameObjects) {
         if (go->GetComponent<Camera>()) {
-            camera->owner = go;
             camera = go->GetComponent<Camera>();
             break;
         }
+        for (auto& child : go->children)
+        {
+            if (child->GetComponent<Camera>()) {
+                camera = go->GetComponent<Camera>();
+                break;
+            }
+        }
     }
-
-    if (!camera->owner) {
-        GameObject* camGO = new GameObject("CameraObject");
-        camGO->AddComponent<Camera>();
-        AddGameObject(camGO);
-        camera->owner = camGO;
-    }
-
+    
     camera->InitCamera(800, 800);
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");

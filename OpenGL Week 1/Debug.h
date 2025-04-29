@@ -4,8 +4,10 @@
 #include <exception>
 #include <vector>
 #include <mutex>
-#include <glm.hpp>      
+#include <glm.hpp> 
+#include <sstream>
 #include "EnginePluginAPI.h"
+
 class Camera;                  
 
 enum class ENGINE_API DebugLevel { Info, Warning, Error, Exception, Assertion };

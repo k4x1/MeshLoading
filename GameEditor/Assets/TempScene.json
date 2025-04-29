@@ -68,11 +68,6 @@
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": false
-                },
-                {
-                    "mouseSensitivity": 0.10000000149011612,
-                    "moveSpeed": 5.0,
-                    "type": "PlayerController"
                 }
             ],
             "name": "Cube",
@@ -100,16 +95,16 @@
             "components": [
                 {
                     "FOV": 90.0,
-                    "height": 954.0,
+                    "height": 475.0,
                     "type": "Camera",
-                    "width": 1009.0
+                    "width": 558.0
                 }
             ],
             "name": "CameraObject",
             "transform": {
                 "position": [
                     0.0,
-                    2.200000047683716,
+                    0.0,
                     0.0
                 ],
                 "rotation": [
@@ -132,16 +127,16 @@
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 954.0,
+                            "height": 475.0,
                             "type": "Camera",
-                            "width": 1009.0
+                            "width": 558.0
                         }
                     ],
                     "name": "CameraObject",
                     "transform": {
                         "position": [
                             0.0,
-                            2.200000047683716,
+                            0.0,
                             0.0
                         ],
                         "rotation": [
@@ -178,7 +173,7 @@
                     "isKinematic": false,
                     "mass": 1.0,
                     "type": "Rigidbody",
-                    "useGravity": false
+                    "useGravity": true
                 },
                 {
                     "mouseSensitivity": 0.10000000149011612,
@@ -189,20 +184,20 @@
             "name": "Player",
             "transform": {
                 "position": [
-                    -3.743347644805908,
-                    -1.1496148109436035,
+                    4.900123596191406,
+                    -9.31471061706543,
                     0.0
                 ],
                 "rotation": [
-                    0.7372775077819824,
+                    1.0,
                     0.0,
-                    -0.6755900382995605,
+                    0.0,
                     0.0
                 ],
                 "scale": [
-                    0.9999998211860657,
                     1.0,
-                    0.9999998211860657
+                    1.0,
+                    1.0
                 ]
             }
         }

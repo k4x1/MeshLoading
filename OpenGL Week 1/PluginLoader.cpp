@@ -15,6 +15,14 @@ bool PluginLoader::Load()
         Debug::LogError("Failed to load [" + _dllPath + "] Error " + std::to_string(err));
         return false;
     }
+    using SetCtxFn = void(*)(ImGuiContext*);
+    auto fn = (SetCtxFn)::GetProcAddress(_hModule, "SetImGuiContext");
+    if (fn) {
+        fn(ImGui::GetCurrentContext());
+    }
+    else {
+        Debug::LogError("Plugin missing SetImGuiContext export");
+    }
     return true;
 }
 
