@@ -49,3 +49,18 @@ void FrameBuffer::BindTexture(GLenum TextureUnit)
     glActiveTexture(TextureUnit);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
 }
+void FrameBuffer::Resize(int newW, int newH)
+{
+    if (newW == m_Width && newH == m_Height) return;
+    m_Width = newW;
+    m_Height = newH;
+
+    glBindTexture(GL_TEXTURE_2D, m_TextureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}

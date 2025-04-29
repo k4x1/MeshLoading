@@ -18,6 +18,9 @@
 #include <ImGuizmo.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <type_traits>
+#include <glm.hpp>
+#include <gtc/type_ptr.hpp>
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
 
@@ -33,7 +36,7 @@ void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
 
 #ifdef _WIN32
     HWND hwnd = glfwGetWin32Window(window);
-    IM_ASSERT(hwnd && "glfwGetWin32Window failed; did you include <GLFW/glfw3.h> before <glfw3native.h>?");
+    IM_ASSERT(hwnd && "glfwGetWin32Window failed");
 #endif
 
     ImGui_ImplGlfw_InitForOpenGL(window, /*install_callbacks=*/ true);
@@ -55,15 +58,7 @@ void UIHelpers::Shutdown() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui::DestroyContext();
 }
-//ImGuiContext* UIHelpers::GetImGuiContext()
-//{
-//    return ImGui::GetCurrentContext();
-//}
-//void UIHelpers::SetImGuiContext(ImGuiContext* context)
-//{
-//    ImGui::SetCurrentContext(context);
-//    ImGuizmo::SetImGuiContext(context);
-//}
+
 void UIHelpers::InitializeUI() {
     std::cout << "[UIHelpers] Scanning Assets folder..." << std::endl;
     AssetManager::LoadAssets("Assets");
@@ -96,16 +91,31 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     GameObject* selected,
     float       deltaTime)
 {
-    editorCamera->Update(deltaTime);
-    editorFB->Bind();
-    scene->Render(editorFB, editorCamera->GetComponent<Camera>());
-    editorFB->Unbind();
-
     ImGui::Begin("Scene View");
     g_SceneViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
-    ImVec2 sz{ (float)editorFB->GetWidth(), (float)editorFB->GetHeight() };
-    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), sz);
+    editorCamera->Update(deltaTime);
+
+    Camera* cam = editorCamera->GetComponent<Camera>();
+
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    int    w = (int)avail.x;
+    int    h = (int)avail.y;
+
+    if (w > 0 && h > 0 &&
+        (w != editorFB->GetWidth() || h != editorFB->GetHeight()))
+    {
+        editorFB->Resize(w, h);
+        cam->InitCamera(w, h);
+    }
+
+    editorFB->Bind();
+    glViewport(0, 0, w, h);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    scene->Render(editorFB, cam);
+    editorFB->Unbind();
+
+    ImGui::Image((ImTextureID)(intptr_t)editorFB->GetTextureID(), avail);
 
     ImVec2 img_min = ImGui::GetItemRectMin();
     ImVec2 img_max = ImGui::GetItemRectMax();
@@ -117,7 +127,6 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetRect(img_min.x, img_min.y, img_sz.x, img_sz.y);
 
-    Camera* cam = editorCamera->GetComponent<Camera>();
     glm::mat4 view = cam->GetViewMatrix();
     glm::mat4 proj = cam->GetProjectionMatrix();
     proj[1][1] *= -1.0f; 
@@ -171,10 +180,6 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
     EditorState& state)
 {
 
-    gameFB->Bind();
-    scene->Render(gameFB, nullptr);
-    gameFB->Unbind();
-
     ImGui::Begin("Game View");
     g_GameViewHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
@@ -187,8 +192,25 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
     if (state == EditorState::Play)
         ImGui::TextColored({ 0,1,0,1 }, "PLAY MODE");
 
-    ImVec2 sz{ (float)gameFB->GetWidth(), (float)gameFB->GetHeight() };
-    ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), sz);
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    int    w = (int)avail.x;
+    int    h = (int)avail.y;
+
+    if (w > 0 && h > 0 &&
+        (w != gameFB->GetWidth() || h != gameFB->GetHeight()))
+    {
+        gameFB->Resize(w, h);
+        if (auto cam = scene->camera)
+            cam->InitCamera(w, h);
+    }
+
+    gameFB->Bind();
+    glViewport(0, 0, w, h);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    scene->Render(gameFB, nullptr);
+    gameFB->Unbind();
+
+    ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), avail);
     ImGui::End();
 }
 
@@ -289,7 +311,7 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
                 if (selected == obj) selected = nullptr;
                 scene->RemoveGameObject(obj);
                 ImGui::EndPopup();
-                if (open)        
+                if (open)
                     ImGui::TreePop();
                 ImGui::PopID();
                 return;
@@ -332,9 +354,27 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
         ImGui::PopID();
         };
 
-    for (auto* obj : scene->gameObjects)
-        if (!obj->parent)
+    for (auto* obj : scene->gameObjects) {
+        if (!obj->parent) {
             drawNode(obj);
+        }
+    }
+
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    ImGui::InvisibleButton("##hierarchy_space", avail);
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (auto pl = ImGui::AcceptDragDropPayload("DND_GAMEOBJECT"))
+        {
+            GameObject* dropped = *(GameObject**)pl->Data;
+            if (dropped->parent)
+            {
+                dropped->parent->RemoveChild(dropped);
+                selected = dropped;
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 
     ImGui::End();
 }
@@ -421,6 +461,7 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
                 ImGui::PopID();
             }
             ImGui::Separator();
+
             comp->OnInspectorGUI();
             ImGui::Separator();
         }
@@ -598,4 +639,3 @@ void UIHelpers::DrawDebugWindow(bool* p_open) {
     ImGui::EndChild();
     ImGui::End();
 }
-

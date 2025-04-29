@@ -10,16 +10,17 @@ public:
     float moveSpeed = 5.0f;
     float mouseSensitivity = 0.1f;
 
-    float       pitch = 0.0f;
+    float yaw = 0.0f;
+    float pitch = 0.0f;
+
     Rigidbody*  rb = nullptr;
-    GameObject* cameraGO = nullptr;
 
     PlayerController() = default;
     ~PlayerController() override = default;
 
     void Start() override;
     void Update(float dt) override;
-    
+    void OnInspectorGUI() override;
     nlohmann::json Serialize() const override {
         return {
             {"moveSpeed",        moveSpeed},

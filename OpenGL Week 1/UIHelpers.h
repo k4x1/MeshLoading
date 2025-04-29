@@ -16,9 +16,7 @@ public:
     static void NewFrame();
     static void Render();
     static void Shutdown();
-    //static ImGuiContext* GetImGuiContext();
-    //static void SetImGuiContext(ImGuiContext* context);
-
+  
     static void InitializeUI();
     static void ShowDockSpace();
 

@@ -43,8 +43,6 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
     }
 
     camera->InitCamera(800, 800);
-    Debug::Log(camera);
-    Debug::Log(camera->owner->name);
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
@@ -107,7 +105,9 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     RenderShadowMap(m_ShadowMap2, dirLight2);
 
     currentBuffer->Bind();
-    glViewport(0, 0, 800, 800);
+    int w = currentBuffer->GetWidth();
+    int h = currentBuffer->GetHeight();
+    glViewport(0, 0, w, h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Camera* cam = _camera ? _camera : camera;

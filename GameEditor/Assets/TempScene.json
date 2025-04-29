@@ -100,16 +100,16 @@
             "components": [
                 {
                     "FOV": 90.0,
-                    "height": 800.0,
+                    "height": 954.0,
                     "type": "Camera",
-                    "width": 800.0
+                    "width": 1009.0
                 }
             ],
             "name": "CameraObject",
             "transform": {
                 "position": [
                     0.0,
-                    0.0,
+                    2.200000047683716,
                     0.0
                 ],
                 "rotation": [
@@ -122,6 +122,87 @@
                     1.0,
                     1.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "FOV": 90.0,
+                            "height": 954.0,
+                            "type": "Camera",
+                            "width": 1009.0
+                        }
+                    ],
+                    "name": "CameraObject",
+                    "transform": {
+                        "position": [
+                            0.0,
+                            2.200000047683716,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    }
+                }
+            ],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": false
+                },
+                {
+                    "mouseSensitivity": 0.10000000149011612,
+                    "moveSpeed": 5.0,
+                    "type": "PlayerController"
+                }
+            ],
+            "name": "Player",
+            "transform": {
+                "position": [
+                    -3.743347644805908,
+                    -1.1496148109436035,
+                    0.0
+                ],
+                "rotation": [
+                    0.7372775077819824,
+                    0.0,
+                    -0.6755900382995605,
+                    0.0
+                ],
+                "scale": [
+                    0.9999998211860657,
+                    1.0,
+                    0.9999998211860657
                 ]
             }
         }

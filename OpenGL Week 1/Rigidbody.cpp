@@ -34,6 +34,10 @@ void Rigidbody::Update(float dt) {
     owner->transform.position = glm::vec3(rpPos.x, rpPos.y, rpPos.z);
     owner->transform.rotation = glm::quat(rpOri.w, rpOri.x, rpOri.y, rpOri.z);
 }
+void Rigidbody::SetLinearVelocity(const glm::vec3& velocity) const
+{
+    body->setLinearVelocity(reactphysics3d::Vector3(velocity.x,velocity.y,velocity.z));
+}
 void Rigidbody::OnInspectorGUI() {
     ImGui::DragFloat("Mass", &mass, 0.1f);
     ImGui::Checkbox("Kinematic", &isKinematic);
@@ -41,7 +45,3 @@ void Rigidbody::OnInspectorGUI() {
     if (body) body->enableGravity(useGravity);
 }
 
-void Rigidbody::SetLinearVelocity(const glm::vec3& velocity) const
-{
-    body->setLinearVelocity(reactphysics3d::Vector3(velocity.x,velocity.y,velocity.z));
-}

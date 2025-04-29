@@ -12,7 +12,7 @@ FrameBuffer* editorFrameBuffer = nullptr;
 FrameBuffer* gameFrameBuffer = nullptr;
 GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
-
+bool played = false;
 int main() {
     PluginLoader componentLoader("GameComponents.dll");
   
@@ -65,6 +65,7 @@ int main() {
             }
         }
         if (state == EditorState::Play) {
+            played = true;
             if (!runtimeScene) {
                 editScene->SaveToFile("TempScene.json");
 
@@ -77,27 +78,31 @@ int main() {
             runtimeScene->FixedUpdate(FIXED_DT);
             runtimeScene->Update(frameDt);
         }
-        else {
+        else if(played){
+            selectedGameObject = nullptr;   
             runtimeScene.reset();
+            played = false;
         }
 
         UIHelpers::NewFrame();
         UIHelpers::ShowDockSpace();
-
+        Scene* activeScene = (state == EditorState::Play && runtimeScene)
+            ? runtimeScene.get()
+            : editScene.get();
         UIHelpers::DrawSceneViewWindow(
             editorFrameBuffer,
             editorCamera,
-            editScene.get(),
+            activeScene,
             selectedGameObject,
             frameDt);
 
         UIHelpers::DrawGameViewWindow(
             gameFrameBuffer, 
-            (state == EditorState::Play ? runtimeScene.get() : editScene.get()),
+            activeScene,
             state);
 
         UIHelpers::DrawInspectorWindow(selectedGameObject);
-        UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject, editorCamera);
+        UIHelpers::DrawHierarchyWindow(activeScene, selectedGameObject, editorCamera);
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
 
