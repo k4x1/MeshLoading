@@ -91,45 +91,15 @@
             }
         },
         {
-            "children": [],
-            "components": [
-                {
-                    "FOV": 90.0,
-                    "height": 475.0,
-                    "type": "Camera",
-                    "width": 558.0
-                }
-            ],
-            "name": "CameraObject",
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
             "children": [
                 {
                     "children": [],
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 475.0,
+                            "height": 1026.0,
                             "type": "Camera",
-                            "width": 558.0
+                            "width": 2052.0
                         }
                     ],
                     "name": "CameraObject",

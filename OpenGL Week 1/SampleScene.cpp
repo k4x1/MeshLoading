@@ -32,13 +32,6 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
             camera = go->GetComponent<Camera>();
             break;
         }
-        for (auto& child : go->children)
-        {
-            if (child->GetComponent<Camera>()) {
-                camera = go->GetComponent<Camera>();
-                break;
-            }
-        }
     }
     
     camera->InitCamera(800, 800);

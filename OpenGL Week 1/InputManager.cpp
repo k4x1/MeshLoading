@@ -61,7 +61,6 @@ glm::vec2 InputManager::GetMouseDelta() const
         static_cast<float>(mouseX - previousMouseX),
         static_cast<float>(mouseY - previousMouseY)
     );
-    Debug::Log(mouseX - previousMouseX);
     return delta;
 }
 

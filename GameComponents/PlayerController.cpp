@@ -50,15 +50,10 @@ void PlayerController::Update(float dt) {
             * moveSpeed;
 
         rb->SetLinearVelocity(worldVel);
-        Debug::Log(
-            std::string("Set velocity: ") +
-            std::to_string(worldVel.x) + ", " +
-            std::to_string(worldVel.y) + ", " +
-            std::to_string(worldVel.z));
+        
     }
     else {
         rb->SetLinearVelocity(glm::vec3(0.0f));
-        Debug::Log("No movement keys, velocity zeroed.");
     }
 }
 

@@ -91,7 +91,9 @@ void Scene::SaveToFile(const std::string& fileName) {
     nlohmann::json j;
     j["gameObjects"] = nlohmann::json::array();
     for (GameObject* obj : gameObjects) {
-        j["gameObjects"].push_back(SerializeGameObject(obj));
+        if (obj->parent == nullptr) {
+            j["gameObjects"].push_back(SerializeGameObject(obj));
+        }
     }
 
     std::ofstream outFile(outPath);
@@ -113,15 +115,21 @@ void Scene::LoadFromFile(const std::string& filePath) {
     inFile >> j;
     inFile.close();
 
- 
-    for (GameObject* obj : gameObjects) {
-        delete obj;
-    }
+    for (auto* obj : gameObjects) delete obj;
     gameObjects.clear();
+
     if (j.contains("gameObjects")) {
         for (auto& objJson : j["gameObjects"]) {
-            GameObject* obj = DeserializeGameObject(objJson);
-            gameObjects.push_back(obj);
+            GameObject* root = DeserializeGameObject(objJson);
+            gameObjects.push_back(root);
+
+            std::function<void(GameObject*)> addDescendants = [&](GameObject* parent) {
+                for (GameObject* child : parent->children) {
+                    gameObjects.push_back(child);
+                    addDescendants(child);
+                }
+                };
+            addDescendants(root);
         }
     }
     std::cout << "Loaded file from: " << filePath << std::endl;
