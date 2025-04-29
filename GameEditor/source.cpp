@@ -42,27 +42,25 @@ int main() {
     gameFrameBuffer = new FrameBuffer(800, 800); gameFrameBuffer->Initialize();
 
     EditorState state = EditorState::Stop;
-    double      lastTime = glfwGetTime();
+    double      lastTime = Engine::GetTime();
     float       accumulator = 0.0f;
 
     while (!glfwWindowShouldClose(Window)) {
         Engine::PollEvents();
         InputManager::Instance().Update();
-        double now = glfwGetTime();
+        double now = Engine::GetTime();
         float  frameDt = float(now - lastTime);
         lastTime = now;
         accumulator += frameDt;
-
         if (state == EditorState::Play && runtimeScene) {
             while (accumulator >= FIXED_DT) {
                 runtimeScene->FixedUpdate(FIXED_DT);
                 accumulator -= FIXED_DT;
             }
         }
-
         if (state == EditorState::Play) {
             if (!runtimeScene) {
-                editScene->SaveToFile("TempScene.json");
+                editScene->SaveToFile("Assets/TempScene.json");
 
                 runtimeScene = std::make_unique<SampleScene>();
                 runtimeScene->InitialSetup(Window, false);
@@ -78,7 +76,6 @@ int main() {
         }
 
         UIHelpers::NewFrame();
-  //      UIHelpers::SetImGuiContext(ImGui::GetCurrentContext());
         UIHelpers::ShowDockSpace();
 
         UIHelpers::DrawSceneViewWindow(
@@ -87,6 +84,7 @@ int main() {
             editScene.get(),
             selectedGameObject,
             frameDt);
+
 
         GameObject* gameCamGO = (state == EditorState::Play && runtimeScene)
             ? runtimeScene->camera->owner

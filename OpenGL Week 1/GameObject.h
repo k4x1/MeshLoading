@@ -14,7 +14,7 @@
 #include <nlohmann/json.hpp>
 #include "Component.h"
 #include "EnginePluginAPI.h"
-
+#include "Debug.h"
 class Camera;
 
 struct ENGINE_API Transform {

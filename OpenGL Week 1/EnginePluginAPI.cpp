@@ -22,9 +22,19 @@ namespace Engine {
     void MakeContextCurrent(GLFWwindow* window) {
         ::glfwMakeContextCurrent(window);
     }
-    void PollEvents() { ::glfwPollEvents(); }
-    void SwapBuffers(GLFWwindow* w) { ::glfwSwapBuffers(w); }
+    void PollEvents() {
+        ::glfwPollEvents();
+    }
+
+    void SwapBuffers(GLFWwindow* w) { 
+        ::glfwSwapBuffers(w); 
+    }
+
     bool WindowShouldClose(GLFWwindow* w) {
         return ::glfwWindowShouldClose(w) == GLFW_TRUE;
+    }
+
+    double GetTime() {
+        return ::glfwGetTime();
     }
 }

@@ -187,7 +187,7 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
     if (ImGui::Button("Pause")) state = EditorState::Pause;
 
     if (state == EditorState::Play)
-        ImGui::TextColored({ 0,1,0,1 }, "● PLAY MODE");
+        ImGui::TextColored({ 0,1,0,1 }, "PLAY MODE");
 
     ImVec2 sz{ (float)gameFB->GetWidth(), (float)gameFB->GetHeight() };
     ImGui::Image((ImTextureID)(intptr_t)gameFB->GetTextureID(), sz);

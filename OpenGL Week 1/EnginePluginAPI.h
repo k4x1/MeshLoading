@@ -15,4 +15,5 @@ namespace Engine {
 	ENGINE_API void   PollEvents();
 	ENGINE_API void   SwapBuffers(GLFWwindow* window);
 	ENGINE_API bool   WindowShouldClose(GLFWwindow* window);
+	ENGINE_API double GetTime();
 }
