@@ -3,6 +3,7 @@
 
 #include <glew.h>     
 #include <unordered_map>
+#include <glm.hpp>
 #include <glfw3.h>
 #include "EnginePluginAPI.h"
 
@@ -21,6 +22,7 @@ public:
     double GetMouseX() const;
     double GetMouseY() const;
     void GetMousePosition(double& x, double& y) const;
+    glm::vec2 GetMouseDelta() const;
 
     double GetScrollOffset() const;
 
@@ -38,6 +40,7 @@ private:
     std::unordered_map<int, bool> previousKeyStates;
     GLFWwindow* m_window = nullptr;
     double mouseX = 0.0, mouseY = 0.0;
+    double previousMouseX = 0.0, previousMouseY = 0.0;
     double scrollOffset = 0.0;
 
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

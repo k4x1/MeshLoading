@@ -9,9 +9,17 @@ class ENGINE_API Component : public IInspectable {
 public:
     GameObject* owner = nullptr;
     Component() = default;
+    virtual std::string GetName() const {
+        std::string n = typeid(*this).name();
+        constexpr char prefix[] = "class ";
+        if (n.rfind(prefix, 0) == 0)
+            n.erase(0, sizeof(prefix) - 1);
+        return n;
+    }
 
     virtual void Start() {}
     virtual void Update(float dt) {}
+    virtual void FixedUpdate(float fixedDt) {}
     virtual void Render(class Camera* cam) {}
     virtual void OnInspectorGUI() {}  
     virtual ~Component() {}

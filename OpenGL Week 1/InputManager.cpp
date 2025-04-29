@@ -14,6 +14,8 @@ InputManager::InputManager() {
 void InputManager::Update() {
     previousKeyStates = currentKeyStates;
     scrollOffset = 0.0;
+    previousMouseX = mouseX;
+    previousMouseY = mouseY;
 }
 
 bool InputManager::GetKey(int key) const {
@@ -53,6 +55,15 @@ void InputManager::GetMousePosition(double& x, double& y) const {
     x = mouseX;
     y = mouseY;
 }
+
+glm::vec2 InputManager::GetMouseDelta() const
+{
+    return glm::vec2(
+        static_cast<float>(mouseX - previousMouseX),
+        static_cast<float>(mouseY - previousMouseY)
+    );
+}
+
 
 double InputManager::GetScrollOffset() const {
     return scrollOffset;

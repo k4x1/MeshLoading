@@ -1,5 +1,6 @@
 ﻿#include "All.h"
 #include "EnginePluginAPI.h" 
+#include "PluginLoader.h"
 
 constexpr float FIXED_DT = 1.0f / 60.0f;
 
@@ -13,6 +14,11 @@ GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
 
 int main() {
+    PluginLoader componentLoader("GameComponents.dll");
+  
+    if (!componentLoader.Load()) {
+        return -1;
+    }
     if (!Engine::InitGLFW())
         return -1;
     Engine::SetGLFWWindowHints(4, 6, 4);

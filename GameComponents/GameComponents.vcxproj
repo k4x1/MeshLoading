@@ -71,12 +71,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/OpenGL Week 1;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)GameEditor</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLM;$(SolutionDir)/Dependencies/GLEW;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/TOL;$(SolutionDir)/Dependencies/JSON;$(SolutionDir)/Dependencies/IMGUIZMO;$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/IMGUI;$(SolutionDir)/OpenGL Week 1;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)/Dependencies/PHYSICS;$(SolutionDir)/Dependencies/STB;$(SolutionDir)/Dependencies/GLFW;$(SolutionDir)/Dependencies/GLEW;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)GameEditor</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,9 +120,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\OpenGL Week 1\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -129,7 +131,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OptimizeReferences>false</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;OpenGLassignment1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,9 +146,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;GAMECOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\OpenGL Week 1\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -151,26 +158,20 @@
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;reactphysics3d.lib;OpenGLassignment1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="PlayerController.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\OpenGL Week 1\BoxCollider.cpp" />
-    <ClCompile Include="..\OpenGL Week 1\Camera.cpp" />
-    <ClCompile Include="..\OpenGL Week 1\CameraMovement.cpp" />
-    <ClCompile Include="..\OpenGL Week 1\MeshRenderer.cpp" />
-    <ClCompile Include="..\OpenGL Week 1\Rigidbody.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="PlugEntry.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

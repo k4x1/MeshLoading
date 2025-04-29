@@ -17,6 +17,7 @@ public:
     void Update(float) override;
     void Render(class Camera*) override {}
     void OnInspectorGUI() override;
+    void SetLinearVelocity(const glm::vec3& velocity) const;
 
     nlohmann::json Serialize() const override {
         return {

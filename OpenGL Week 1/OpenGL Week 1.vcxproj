@@ -187,6 +187,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="PluginLoader.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="SampleScene.cpp" />
@@ -259,6 +260,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="PluginLoader.h" />
     <ClInclude Include="PrefabSystem.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="SampleScene.h" />

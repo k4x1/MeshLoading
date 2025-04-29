@@ -91,21 +91,49 @@ void GameObject::OnInspectorGUI() {
     }
 }
 
+void GameObject::Start() {
+    for (auto& comp : components) {
+        if (!comp)
+        {
+            Debug::Log("null component");
+            continue;
+        }
+        comp->Start();
+
+   /*     std::string msg("Component type: ");
+        msg += comp->GetName();
+        Debug::Log(msg);*/
+    }
+}
 void GameObject::Update(float dt) {
     for (auto& comp : components) {
+        if (!comp)
+        {
+            Debug::Log("null component");
+            continue;
+        }
+
         comp->Update(dt);
+        /*std::string msg("Component type: ");
+        msg += comp->GetName();
+        Debug::Log(msg);*/
     }
 }
 
 void GameObject::FixedUpdate(float fixedDt)
 {
-}
-
-void GameObject::Start() {
     for (auto& comp : components) {
-        comp->Start();
+        if (!comp)
+        {
+            Debug::Log("null component");
+            continue;
+        }
+
+        comp->FixedUpdate(fixedDt);
+
     }
 }
+
 
 void GameObject::Render(Camera* cam) {
     for (auto& comp : components) {

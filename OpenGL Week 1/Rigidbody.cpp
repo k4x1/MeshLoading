@@ -40,3 +40,8 @@ void Rigidbody::OnInspectorGUI() {
     ImGui::Checkbox("Use Gravity", &useGravity);
     if (body) body->enableGravity(useGravity);
 }
+
+void Rigidbody::SetLinearVelocity(const glm::vec3& velocity) const
+{
+    body->setLinearVelocity(reactphysics3d::Vector3(velocity.x,velocity.y,velocity.z));
+}
