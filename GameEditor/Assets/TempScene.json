@@ -68,6 +68,11 @@
                     "mass": 1.0,
                     "type": "Rigidbody",
                     "useGravity": false
+                },
+                {
+                    "mouseSensitivity": 0.10000000149011612,
+                    "moveSpeed": 5.0,
+                    "type": "PlayerController"
                 }
             ],
             "name": "Cube",

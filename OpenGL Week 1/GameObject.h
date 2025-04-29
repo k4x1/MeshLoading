@@ -80,6 +80,7 @@ public:
             if (T* t = dynamic_cast<T*>(comp.get()))
                 return t;
         }
+        Debug::LogError("Failed to get component");
         return nullptr;
     }
 

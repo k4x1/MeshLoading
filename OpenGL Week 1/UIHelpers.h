@@ -29,10 +29,8 @@ public:
         float deltaTime);
 
     static void DrawGameViewWindow(FrameBuffer* gameFB,
-        GameObject* gameCam,
         Scene* scene,
-        EditorState& state,
-        float deltaTime);
+        EditorState& state);
     static void DrawInspectorWindow(GameObject*& selected);
     static void DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObject* editorCamera);
     static void DrawProjectWindow();

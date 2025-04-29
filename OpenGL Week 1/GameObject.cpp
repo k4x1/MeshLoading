@@ -100,9 +100,9 @@ void GameObject::Start() {
         }
         comp->Start();
 
-   /*     std::string msg("Component type: ");
+        std::string msg("Component type: ");
         msg += comp->GetName();
-        Debug::Log(msg);*/
+        Debug::Log(msg);
     }
 }
 void GameObject::Update(float dt) {

@@ -16,7 +16,6 @@
     }
 
     void PlayerController::Update(float dt) {
-        Debug::Log("AMONGUIS");
         glm::vec2 md = InputManager::Instance().GetMouseDelta();
         float yaw = md.x * mouseSensitivity;
         glm::quat qy = glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0));

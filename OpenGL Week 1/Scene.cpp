@@ -29,10 +29,11 @@ void Scene::FixedUpdate(float fixedDt) {
     for (auto* go : gameObjects)
         go->FixedUpdate(fixedDt);
 }
+
 void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     Camera* renderCamera = (_camera != nullptr) ? _camera : camera;
     for (GameObject* obj : gameObjects) {
-        obj->Render(camera);
+        obj->Render(renderCamera);
     }
 }
 

@@ -66,12 +66,12 @@ int main() {
         }
         if (state == EditorState::Play) {
             if (!runtimeScene) {
-                editScene->SaveToFile("Assets/TempScene.json");
+                editScene->SaveToFile("TempScene.json");
 
                 runtimeScene = std::make_unique<SampleScene>();
+                runtimeScene->LoadFromFile("Assets/TempScene.json");
                 runtimeScene->InitialSetup(Window, false);
 
-                runtimeScene->LoadFromFile("Assets/TempScene.json");
                 runtimeScene->Start();
             }
             runtimeScene->FixedUpdate(FIXED_DT);
@@ -91,17 +91,10 @@ int main() {
             selectedGameObject,
             frameDt);
 
-
-        GameObject* gameCamGO = (state == EditorState::Play && runtimeScene)
-            ? runtimeScene->camera->owner
-            : editScene->camera->owner;
-
         UIHelpers::DrawGameViewWindow(
-            gameFrameBuffer,
-            gameCamGO,
+            gameFrameBuffer, 
             (state == EditorState::Play ? runtimeScene.get() : editScene.get()),
-            state,
-            frameDt);
+            state);
 
         UIHelpers::DrawInspectorWindow(selectedGameObject);
         UIHelpers::DrawHierarchyWindow(editScene.get(), selectedGameObject, editorCamera);

@@ -167,14 +167,12 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
 }
 
 void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
-    GameObject* gameCamera,
     Scene* scene,
-    EditorState& state,
-    float       deltaTime)
+    EditorState& state)
 {
-    gameCamera->Update(deltaTime);
+
     gameFB->Bind();
-    scene->Render(gameFB, gameCamera->GetComponent<Camera>());
+    scene->Render(gameFB, nullptr);
     gameFB->Unbind();
 
     ImGui::Begin("Game View");

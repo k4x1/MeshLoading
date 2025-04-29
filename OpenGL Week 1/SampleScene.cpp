@@ -30,6 +30,7 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
     for (auto* go : gameObjects) {
         if (go->GetComponent<Camera>()) {
             camera->owner = go;
+            camera = go->GetComponent<Camera>();
             break;
         }
     }
@@ -42,7 +43,8 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
     }
 
     camera->InitCamera(800, 800);
-
+    Debug::Log(camera);
+    Debug::Log(camera->owner->name);
     Program_Texture = ShaderLoader::CreateProgram("Resources/Shaders/Texture.vert", "Resources/Shaders/Texture.frag");
     postProcessingShader = ShaderLoader::CreateProgram("Resources/Shaders/Quad.vert", "Resources/Shaders/PostProcessing.frag");
     Program_skybox = ShaderLoader::CreateProgram("Resources/Shaders/Skybox.vert", "Resources/Shaders/Skybox.frag");
@@ -70,7 +72,7 @@ void SampleScene::InitialSetup(GLFWwindow* window, bool autoLoad) {
     SetupLights();
     SetupQuad();
 
-    Start();
+    
 }
 
 
@@ -117,7 +119,6 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 
     glUniform1f(glGetUniformLocation(Program_Texture, "AmbientStrength"), 1.0f);
     glUniform3f(glGetUniformLocation(Program_Texture, "AmbientColor"), 1.0f, 1.0f, 1.0f);
-
     glm::vec3 camPos = camera->owner->transform.position;
     glUniform3fv(glGetUniformLocation(Program_Texture, "CameraPos"), 1, glm::value_ptr(camPos));
 
@@ -139,8 +140,7 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->GetCubemapTexture());
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 5);
 
-    for (auto* obj : gameObjects)
-        obj->Render(cam);
+    Scene::Render(currentBuffer, cam);
 
     glUseProgram(0);
     currentBuffer->Unbind();
