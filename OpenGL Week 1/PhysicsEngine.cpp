@@ -1,14 +1,27 @@
 ﻿#include "PhysicsEngine.h"
 #include "GameObject.h"
-using namespace Physics;PhysicsEngine& PhysicsEngine::Instance() {
+#include <reactphysics3d/collision/CollisionCallback.h>
+#include <reactphysics3d/collision/OverlapCallback.h>
+using namespace Physics;
+
+
+
+PhysicsEngine& PhysicsEngine::Instance() {
     static PhysicsEngine inst;
     return inst;
 }
 
 
 PhysicsEngine::PhysicsEngine() {
-    m_world = m_common.createPhysicsWorld();
+    reactphysics3d::PhysicsWorld::WorldSettings ws;
+    ws.persistentContactDistanceThreshold = 0.001f;
+    m_world = m_common.createPhysicsWorld(ws);
+    m_world->setEventListener(&m_collisionListener);
+    m_world->setNbIterationsPositionSolver(30);
+    m_world->setNbIterationsVelocitySolver(15);
     m_world->setGravity(reactphysics3d::Vector3(0, -0.981f, 0));
+
+
 }
 
 PhysicsEngine::~PhysicsEngine() {
@@ -22,10 +35,12 @@ reactphysics3d::PhysicsCommon& PhysicsEngine::GetCommon() {
 reactphysics3d::PhysicsWorld* PhysicsEngine::GetWorld() {
     return m_world;
 }
-void PhysicsEngine::Update(float dt) {
-    m_world->update(dt);
-}
 
+void PhysicsEngine::FixedUpdate(float fixedDt){
+
+    m_world->update(fixedDt);
+
+}
 
 bool PhysicsEngine::Raycast(
     const glm::vec3& origin,

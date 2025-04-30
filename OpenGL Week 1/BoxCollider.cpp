@@ -1,4 +1,4 @@
-#include "BoxCollider.h"
+﻿#include "BoxCollider.h"
 #include "PhysicsEngine.h"
 #include "Debug.h"
 #include <imgui.h>
@@ -23,6 +23,6 @@ void BoxCollider::OnInspectorGUI() {
     ImGui::DragFloat3("Half Extents", &halfExtents.x, 0.1f);
 }
 
-void BoxCollider::Render(Camera* cam) {
+void BoxCollider::OnDrawGizmos(Camera* cam) {
     Debug::DrawWireBox(owner->GetWorldMatrix(), halfExtents, cam);
 }

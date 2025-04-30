@@ -137,6 +137,7 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     glViewport(0, 0, (int)target.x, (int)target.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene->Render(editorFB, cam);
+  //  scene->DrawGizmos(cam);
     editorFB->Unbind();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (avail.x - target.x) * 0.5f);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (avail.y - target.y) * 0.5f);

@@ -22,6 +22,7 @@ public:
     virtual void FixedUpdate(float fixedDt) {}
     virtual void Render(class Camera* cam) {}
     virtual void OnInspectorGUI() {}  
+    virtual void OnDrawGizmos(class Camera* cam) {}
     virtual ~Component() {}
 };
 

@@ -35,7 +35,7 @@ public:
     virtual void Update(float dt);
     virtual void FixedUpdate(float fixedDt);
     virtual void Render(FrameBuffer* currentBuffer, Camera* _camera = nullptr);
-
+    virtual void DrawGizmos(Camera* cam);
 
     FrameBuffer* GetFrameBuffer();
 

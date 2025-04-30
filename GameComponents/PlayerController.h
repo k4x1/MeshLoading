@@ -5,7 +5,7 @@
 class Rigidbody;
 class Camera;
 
-class PlayerController : public ISerializableComponent {
+class PlayerController : public ISerializableComponent, public ICollisionCallbacks {
 public:
     float moveSpeed = 5.0f;
     float mouseSensitivity = 0.1f;
@@ -21,8 +21,13 @@ public:
     ~PlayerController() override = default;
 
     void Start() override;
-    void Update(float dt) override;
+    void FixedUpdate(float fixedDt) override;
     void OnInspectorGUI() override;
+
+    void OnCollisionEnter(const std::vector<CollisionInfo>& contacts) override;
+    void OnCollisionStay(const std::vector<CollisionInfo>& contacts) override;
+    void OnCollisionExit(const std::vector<CollisionInfo>& contacts) override;
+
     nlohmann::json Serialize() const override {
         return {
             {"moveSpeed",           moveSpeed},

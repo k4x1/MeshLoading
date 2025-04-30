@@ -75,7 +75,6 @@ int main() {
 
                 runtimeScene->Start();
             }
-            runtimeScene->FixedUpdate(FIXED_DT);
             runtimeScene->Update(frameDt);
         }
         else if(played){

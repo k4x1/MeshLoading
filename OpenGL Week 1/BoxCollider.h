@@ -13,9 +13,8 @@ public:
     reactphysics3d::BoxShape* shape = nullptr;
 
     void Update(float dt) override;
-    void Render(class Camera* cam) override;
     void OnInspectorGUI() override;
-
+    virtual void OnDrawGizmos(Camera* cam) override;
     nlohmann::json Serialize() const override {
         return {
             {"halfExtents", {halfExtents.x, halfExtents.y, halfExtents.z}}

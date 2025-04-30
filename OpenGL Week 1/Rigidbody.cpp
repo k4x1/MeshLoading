@@ -1,7 +1,6 @@
 ﻿#include "Rigidbody.h"
 #include "PhysicsEngine.h"
 #include <imgui.h>
-
 void Rigidbody::Start() {
     using namespace reactphysics3d;
     Vector3 rpPos(
@@ -17,11 +16,16 @@ void Rigidbody::Start() {
     );
     reactphysics3d::Transform xform(rpPos, rpRot);
     body =  Physics::PhysicsEngine::Instance().GetWorld()->createRigidBody(xform);
+    body->setUserData(owner);
     body->enableGravity(useGravity);
-    if (isKinematic)
+    if (isKinematic) {
         body->setType(BodyType::KINEMATIC);
+    }
     else
+    {
         body->setMass(mass);
+    }
+
 }
 
 void Rigidbody::Update(float dt) {

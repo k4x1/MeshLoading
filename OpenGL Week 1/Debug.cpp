@@ -21,35 +21,34 @@ std::string Debug::GetTimestamp() {
 void Debug::AddEntry(DebugLevel lvl, const std::string& msg) {
     std::lock_guard<std::mutex> lock(s_mutex);
     s_entries.push_back({ GetTimestamp(), lvl, msg });
-    // keep last 1000 entries
     if (s_entries.size() > 1000) s_entries.erase(s_entries.begin());
 }
 
-void Debug::Log(const std::string& message) {
+
+void Debug::LogImpl(const std::string& message) {
     AddEntry(DebugLevel::Info, message);
     std::cout << GetTimestamp() << " [LOG] " << message << "\n";
 }
 
-void Debug::LogWarning(const std::string& message) {
+void Debug::LogWarningImpl(const std::string& message) {
     AddEntry(DebugLevel::Warning, message);
     std::cout << GetTimestamp() << " [WARNING] " << message << "\n";
 }
 
-void Debug::LogError(const std::string& message) {
+void Debug::LogErrorImpl(const std::string& message) {
     AddEntry(DebugLevel::Error, message);
     std::cerr << GetTimestamp() << " [ERROR] " << message << "\n";
 }
 
-void Debug::LogException(const std::exception& ex) {
-    AddEntry(DebugLevel::Exception, ex.what());
-    std::cerr << GetTimestamp() << " [EXCEPTION] " << ex.what() << "\n";
+void Debug::LogExceptionImpl(const std::string& message) {
+    AddEntry(DebugLevel::Exception, message);
+    std::cerr << GetTimestamp() << " [EXCEPTION] " << message << "\n";
 }
 
-void Debug::LogAssertion(const std::string& message) {
+void Debug::LogAssertionImpl(const std::string& message) {
     AddEntry(DebugLevel::Assertion, message);
     std::cerr << GetTimestamp() << " [ASSERTION FAILED] " << message << "\n";
 }
-
 const std::vector<DebugEntry>& Debug::GetEntries() {
     return s_entries;
 }

@@ -20,38 +20,43 @@ struct ENGINE_API DebugEntry {
 
 class ENGINE_API Debug {
 public:
-    static void Log(const std::string& message);
-    static void LogWarning(const std::string& message);
-    static void LogError(const std::string& message);
-    static void LogException(const std::exception& ex);
-    static void LogAssertion(const std::string& message);
-
-    template<typename T>
-    static void Log(const T& value) {
+    static void LogImpl(const std::string& message);
+    static void LogWarningImpl(const std::string& message);
+    static void LogErrorImpl(const std::string& message);
+    static void LogExceptionImpl(const std::string& message);
+    static void LogAssertionImpl(const std::string& message);
+      
+    static void Log(const std::string& message) { LogImpl(message); }
+    static void LogWarning(const std::string& message) { LogWarningImpl(message); }
+    static void LogError(const std::string& message) { LogErrorImpl(message); }
+    static void LogException(const std::exception& ex) { LogExceptionImpl(ex.what()); }
+    static void LogAssertion(const std::string& message) { LogAssertionImpl(message); }
+    template<typename... Args>
+    static void Log(Args&&... args) {
         std::ostringstream oss;
-        oss << value;
-        Log(oss.str());
+        (oss << ... << std::forward<Args>(args));
+        LogImpl(oss.str());
     }
 
-    template<typename T>
-    static void LogWarning(const T& value) {
+    template<typename... Args>
+    static void LogWarning(Args&&... args) {
         std::ostringstream oss;
-        oss << value;
-        LogWarning(oss.str());
+        (oss << ... << std::forward<Args>(args));
+        LogWarningImpl(oss.str());
     }
 
-    template<typename T>
-    static void LogError(const T& value) {
+    template<typename... Args>
+    static void LogError(Args&&... args) {
         std::ostringstream oss;
-        oss << value;
-        LogError(oss.str());
+        (oss << ... << std::forward<Args>(args));
+        LogErrorImpl(oss.str());
     }
 
-    template<typename T>
-    static void LogAssertion(const T& value) {
+    template<typename... Args>
+    static void LogAssertion(Args&&... args) {
         std::ostringstream oss;
-        oss << value;
-        LogAssertion(oss.str());
+        (oss << ... << std::forward<Args>(args));
+        LogAssertionImpl(oss.str());
     }
 
     static void DrawWireBox(

@@ -133,7 +133,7 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 5);
 
     Scene::Render(currentBuffer, cam);
-
+    Scene::DrawGizmos(cam);
     glUseProgram(0);
     currentBuffer->Unbind();
 

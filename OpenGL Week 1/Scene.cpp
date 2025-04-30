@@ -23,7 +23,7 @@ void Scene::Update(float dt) {
     }
 }
 void Scene::FixedUpdate(float fixedDt) {
-    Physics::PhysicsEngine::Instance().Update(fixedDt);
+    Physics::PhysicsEngine::Instance().FixedUpdate(fixedDt);
 
     for (auto* go : gameObjects)
         go->FixedUpdate(fixedDt);
@@ -33,6 +33,15 @@ void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
     Camera* renderCamera = (_camera != nullptr) ? _camera : camera;
     for (GameObject* obj : gameObjects) {
         obj->Render(renderCamera);
+    }
+}
+
+void Scene::DrawGizmos(Camera* cam)
+{
+    for (auto* go : gameObjects) {
+        for (auto& comp : go->components) {
+            comp->OnDrawGizmos(cam);
+        }
     }
 }
 
@@ -102,7 +111,6 @@ void Scene::SaveToFile(const std::string& fileName) {
         return;
     }
     outFile << j.dump(4);
-    std::cout << "Saved scene to: " << outPath << std::endl;
 }
 
 void Scene::LoadFromFile(const std::string& filePath) {
