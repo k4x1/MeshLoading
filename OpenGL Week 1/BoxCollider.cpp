@@ -6,6 +6,15 @@
 
 void BoxCollider::Update(float dt)
 {
+  
+}
+
+
+void BoxCollider::OnInspectorGUI() {
+    ImGui::DragFloat3("Half Extents", &halfExtents.x, 0.1f);
+}
+
+void BoxCollider::OnDrawGizmos(Camera* cam) {
     if (!m_attached) {
         auto* rb = owner->GetComponent<Rigidbody>();
         if (rb && rb->body) {
@@ -16,13 +25,5 @@ void BoxCollider::Update(float dt)
             m_attached = true;
         }
     }
-}
-
-
-void BoxCollider::OnInspectorGUI() {
-    ImGui::DragFloat3("Half Extents", &halfExtents.x, 0.1f);
-}
-
-void BoxCollider::OnDrawGizmos(Camera* cam) {
     Debug::DrawWireBox(owner->GetWorldMatrix(), halfExtents, cam);
 }

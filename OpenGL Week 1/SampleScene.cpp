@@ -93,10 +93,12 @@ void SampleScene::Update(float dt)
 }
 void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 {
-    RenderShadowMap(m_ShadowMap1, dirLight1);
-    RenderShadowMap(m_ShadowMap2, dirLight2);
+    /*RenderShadowMap(m_ShadowMap1, dirLight1);
+    RenderShadowMap(m_ShadowMap2, dirLight2);*/
 
-    currentBuffer->Bind();
+
+    // this stuff needs to be like thouroughly cleaned
+
     int w = currentBuffer->GetWidth();
     int h = currentBuffer->GetHeight();
     glViewport(0, 0, w, h);
@@ -133,24 +135,9 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
     glUniform1i(glGetUniformLocation(Program_Texture, "skybox"), 5);
 
     Scene::Render(currentBuffer, cam);
-    Scene::DrawGizmos(cam);
     glUseProgram(0);
-    currentBuffer->Unbind();
 
-    glViewport(0, 0, 800, 800);
-    glUseProgram(postProcessingShader);
-    glUniform1i(glGetUniformLocation(postProcessingShader, "screenTexture"), 0);
-    glUniform1i(glGetUniformLocation(postProcessingShader, "effect"), int(currentEffect));
-
-    glBindVertexArray(quadVAO);
-    glDisable(GL_DEPTH_TEST);
-
-    gameFrameBuffer->BindTexture(GL_TEXTURE0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glEnable(GL_DEPTH_TEST);
-    glBindVertexArray(0);
-    glUseProgram(0);
+ 
 }
 
 

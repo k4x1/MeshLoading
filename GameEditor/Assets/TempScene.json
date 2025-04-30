@@ -109,9 +109,9 @@
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 220.5,
+                            "height": 611.4375,
                             "type": "Camera",
-                            "width": 392.0
+                            "width": 1087.0
                         }
                     ],
                     "name": "CameraObject",

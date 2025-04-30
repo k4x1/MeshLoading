@@ -11,6 +11,7 @@ public:
     bool   m_attached = false;
     glm::vec3 halfExtents{ 1,1,1 };
     reactphysics3d::BoxShape* shape = nullptr;
+    reactphysics3d::Collider* m_collider = nullptr;
 
     void Update(float dt) override;
     void OnInspectorGUI() override;

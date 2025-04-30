@@ -137,7 +137,7 @@ void UIHelpers::DrawSceneViewWindow(FrameBuffer* editorFB,
     glViewport(0, 0, (int)target.x, (int)target.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene->Render(editorFB, cam);
-  //  scene->DrawGizmos(cam);
+    scene->DrawGizmos(cam);
     editorFB->Unbind();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (avail.x - target.x) * 0.5f);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (avail.y - target.y) * 0.5f);
@@ -523,8 +523,7 @@ void UIHelpers::DrawInspectorWindow(GameObject*& selected) {
 
     ImGui::End();
 }
-
-    
+ 
 void UIHelpers::DrawProjectWindow() {
     ImGui::Begin("Project");
 
@@ -647,6 +646,7 @@ void UIHelpers::DrawProjectWindow() {
 
     ImGui::End();
 }
+
 void UIHelpers::DrawDebugWindow(bool* p_open) {
     ImGui::Begin("Console", p_open, ImGuiWindowFlags_HorizontalScrollbar);
 
