@@ -30,6 +30,8 @@ void BoxCollider::Update(float dt) {
         if (auto* rb = owner->GetComponent<Rigidbody>()) {
             collider = rb->body->addCollider(
                 shape, reactphysics3d::Transform::identity());
+            int numCols = rb->body->getNbColliders();
+
         }
     }
 }

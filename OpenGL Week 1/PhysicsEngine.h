@@ -21,12 +21,13 @@ namespace Physics {
         reactphysics3d::PhysicsWorld* GetWorld();
 
         void FixedUpdate(float fixedDt);
-
+        void initializeWorld();
         bool Raycast(
             const glm::vec3& origin,
             const glm::vec3& direction,
             RaycastHit& outHit,
             float            maxDistance = 1000.0f);
+        void Reset();
 
     private:
         PhysicsEngine();

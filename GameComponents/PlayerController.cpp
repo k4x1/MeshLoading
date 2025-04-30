@@ -7,6 +7,15 @@ void PlayerController::Start() {
     if (!rb) {
         DEBUG_ERR("No rb in " << owner->name);
     }
+    Physics::RaycastHit dummy;
+    bool ok = Physics::PhysicsEngine::Instance().Raycast(
+        owner->transform.position + glm::vec3(0, 5, 0),
+        glm::vec3(0, 1, 0),
+        dummy,
+        10.0f
+    );
+    DEBUG_LOG("Initial test raycast returned " << ok);
+
 }
 
 void PlayerController::FixedUpdate(float fixedDt) {
@@ -40,12 +49,13 @@ void PlayerController::FixedUpdate(float fixedDt) {
     vel.y = static_cast<float>(rpVel.y);
 
     Physics::RaycastHit hit;
-  /*  bool grounded = Physics::PhysicsEngine::Instance().Raycast(
+    bool grounded = Physics::PhysicsEngine::Instance().Raycast(
         owner->transform.position,
         glm::vec3(0, -1, 0),
         hit,
         groundCheckDistance
-    );*/
+    );
+    DEBUG_LOG(grounded);
     if (grounded && inp.GetKeyDown(GLFW_KEY_SPACE)) {
         vel.y = jumpForce;
     }
@@ -53,16 +63,29 @@ void PlayerController::FixedUpdate(float fixedDt) {
     rb->SetLinearVelocity(vel);
 }
 
+void PlayerController::OnDrawGizmos(Camera* cam)
+{   
+
+    Debug::DrawRay(
+        owner->transform.position,
+        glm::vec3(0, -groundCheckDistance, 0),
+        groundCheckDistance,
+        cam,
+        grounded
+        ? glm::vec4(1, 0, 0, 1)   
+        : glm::vec4(0, 1, 0, 1)    
+    );
+}
 void PlayerController::OnCollisionEnter(const std::vector<CollisionInfo>& contacts) {
   
 }
 
 void PlayerController::OnCollisionStay(const std::vector<CollisionInfo>& contacts) {
-    grounded = true;
+  //  grounded = true;
 }
 
 void PlayerController::OnCollisionExit(const std::vector<CollisionInfo>& contacts) {
-    grounded = false;
+    //grounded = false;
 }
 void PlayerController::OnInspectorGUI() {
     ImGui::DragFloat("Move Speed", &moveSpeed, 1.0f, 0.0f, 100.0f);
@@ -70,3 +93,4 @@ void PlayerController::OnInspectorGUI() {
     ImGui::DragFloat("Jump Force", &jumpForce, 0.5f, 0.0f, 50.0f);
     ImGui::DragFloat("Ground Check Dist", &groundCheckDistance, 0.1f, 0.1f, 5.0f);
 }
+

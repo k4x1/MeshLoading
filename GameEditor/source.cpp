@@ -18,7 +18,7 @@ int main() {
     if (!Engine::InitGLFW())
         return -1;
     Engine::SetGLFWWindowHints(4, 6, 4);
-    GLFWwindow* Window = Engine::CreateGLFWWindow(800, 800, "Editor");
+    GLFWwindow* Window = Engine::CreateGLFWWindow(1920, 1080, "Editor");
     Engine::MakeContextCurrent(Window);
 
     glewExperimental = GL_TRUE;
@@ -44,8 +44,8 @@ int main() {
     editorCamera->AddComponent<Camera>();
     editorCamera->AddComponent<CameraMovement>();
 
-    editorFrameBuffer = new FrameBuffer(800, 800); editorFrameBuffer->Initialize();
-    gameFrameBuffer = new FrameBuffer(800, 800); gameFrameBuffer->Initialize();
+    editorFrameBuffer = new FrameBuffer(1920, 1080); editorFrameBuffer->Initialize();
+    gameFrameBuffer = new FrameBuffer(1920, 1080); gameFrameBuffer->Initialize();
 
     EditorState state = EditorState::Stop;
     double      lastTime = Engine::GetTime();
@@ -81,6 +81,7 @@ int main() {
         else if(played){
             selectedGameObject = nullptr;   
             runtimeScene.reset();
+            Physics::PhysicsEngine::Instance().Reset();
             played = false;
         }
 
@@ -105,7 +106,6 @@ int main() {
         UIHelpers::DrawHierarchyWindow(activeScene, selectedGameObject, editorCamera);
         UIHelpers::DrawProjectWindow();
         UIHelpers::DrawDebugWindow(nullptr);
-
         UIHelpers::Render();
         Engine::SwapBuffers(Window);
     }

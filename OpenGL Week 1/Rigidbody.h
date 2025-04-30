@@ -18,7 +18,7 @@ public:
     reactphysics3d::RigidBody* body = nullptr;
 
     void Start() override;
-    void Update(float) override;
+    void FixedUpdate(float fixedDt) override;
     void Render(class Camera*) override {}
     void OnInspectorGUI() override;
     void SetLinearVelocity(const glm::vec3& velocity) const;

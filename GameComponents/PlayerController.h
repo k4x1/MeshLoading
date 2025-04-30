@@ -10,8 +10,8 @@ public:
     float moveSpeed = 5.0f;
     float mouseSensitivity = 0.1f;
     float jumpForce = 5.0f;    
-    float groundCheckDistance = 1.1f;
-    bool grounded;
+    float groundCheckDistance = 1.2f;
+    bool grounded = false;
     float yaw = 0.0f;
     float pitch = 0.0f;
 
@@ -23,6 +23,7 @@ public:
     void Start() override;
     void FixedUpdate(float fixedDt) override;
     void OnInspectorGUI() override;
+    void OnDrawGizmos(Camera* cam) override;
 
     void OnCollisionEnter(const std::vector<CollisionInfo>& contacts) override;
     void OnCollisionStay(const std::vector<CollisionInfo>& contacts) override;

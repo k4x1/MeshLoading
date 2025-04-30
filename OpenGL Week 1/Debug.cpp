@@ -73,11 +73,14 @@ void Debug::LogExceptionImpl(const std::string& msg,
         << GetTimestamp()
         << " [EXCEPTION] (" << loc.file_name() << ":" << loc.line() << ") "
         << msg << "\n";
-}
-
-void Debug::DrawRay(const glm::vec3& origin, const glm::vec3& dir, float length, Camera* cam, const glm::vec4& color)
+}void Debug::DrawRay(
+    const glm::vec3& origin,
+    const glm::vec3& direction,
+    float length,
+    Camera* cam,
+    const glm::vec4& color)
 {
-    glm::vec3 end = origin + glm::normalize(dir) * length;
+    glm::vec3 end = origin + glm::normalize(direction) * length;
 
     glm::mat4 V = cam->GetViewMatrix();
     glm::mat4 P = cam->GetProjectionMatrix();
@@ -85,19 +88,20 @@ void Debug::DrawRay(const glm::vec3& origin, const glm::vec3& dir, float length,
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadMatrixf(glm::value_ptr(P));
+
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadMatrixf(glm::value_ptr(V));
 
-    glDisable(GL_DEPTH_TEST);
-    glColor4fv(glm::value_ptr(color));
+    glDisable(GL_DEPTH_TEST);            
+    glColor4fv(glm::value_ptr(color)); 
     glBegin(GL_LINES);
     glVertex3fv(glm::value_ptr(origin));
     glVertex3fv(glm::value_ptr(end));
     glEnd();
     glEnable(GL_DEPTH_TEST);
 
-    glPopMatrix();
+    glPopMatrix();                   
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);

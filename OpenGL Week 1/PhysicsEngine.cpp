@@ -12,7 +12,12 @@ PhysicsEngine& PhysicsEngine::Instance() {
 }
 
 
-PhysicsEngine::PhysicsEngine() {
+
+void Physics::PhysicsEngine::initializeWorld()
+{
+    if (m_world) {
+        m_common.destroyPhysicsWorld(m_world);
+    }
     reactphysics3d::PhysicsWorld::WorldSettings ws;
     ws.persistentContactDistanceThreshold = 0.001f;
     m_world = m_common.createPhysicsWorld(ws);
@@ -21,9 +26,12 @@ PhysicsEngine::PhysicsEngine() {
     m_world->setNbIterationsVelocitySolver(15);
     m_world->setGravity(reactphysics3d::Vector3(0, -0.981f, 0));
 
+}
+PhysicsEngine::PhysicsEngine() {
+    initializeWorld();
+
 
 }
-
 PhysicsEngine::~PhysicsEngine() {
     if (m_world) m_common.destroyPhysicsWorld(m_world);
 }
@@ -39,7 +47,11 @@ reactphysics3d::PhysicsWorld* PhysicsEngine::GetWorld() {
 void PhysicsEngine::FixedUpdate(float fixedDt){
 
     m_world->update(fixedDt);
+}
 
+void PhysicsEngine::Reset() {
+    m_world->setEventListener(nullptr);
+    initializeWorld();
 }
 
 bool PhysicsEngine::Raycast(

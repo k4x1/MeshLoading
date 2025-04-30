@@ -273,7 +273,6 @@ void UIHelpers::ShowGameObjectNode(GameObject* obj, GameObject*& sel, Scene* sce
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::MenuItem("Delete")) {
             if (sel == obj) sel = nullptr;
-            // remove & delete from scene
             scene->RemoveGameObject(obj);
             ImGui::EndPopup();
             if (open) ImGui::TreePop();
@@ -650,54 +649,49 @@ void UIHelpers::DrawProjectWindow() {
 void UIHelpers::DrawDebugWindow(bool* p_open) {
     ImGui::Begin("Console", p_open, ImGuiWindowFlags_HorizontalScrollbar);
 
-    if (ImGui::Button("Clear")) {
-        Debug::ClearEntries();
-    }
+    if (ImGui::Button("Clear")) Debug::ClearEntries();
     ImGui::SameLine();
     static bool autoScroll = true;
     ImGui::Checkbox("Auto-scroll", &autoScroll);
     ImGui::Separator();
-    ImGui::BeginChild("##DebugScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-    static std::string buffer;
-    buffer.clear();
-    const auto& entries = Debug::GetEntries();
-    for (const auto& e : entries) {
-        // [timestamp] [LEVEL] file:line @func()  message\n
-        buffer += "[";
-        buffer += e.timestamp;
-        buffer += "] [";
+
+    static std::string strbuf;
+    strbuf.clear();
+    for (auto& e : Debug::GetEntries()) {
+        strbuf += "[" + e.timestamp + "] [";
         switch (e.level) {
-        case DebugLevel::Log:       buffer += "LOG";  break;
-        case DebugLevel::Warning:   buffer += "WARN"; break;
-        case DebugLevel::Error:     buffer += "ERR";  break;
-        case DebugLevel::Exception: buffer += "EXPT"; break;
+        case DebugLevel::Log:       strbuf += "LOG";  break;
+        case DebugLevel::Warning:   strbuf += "WARN"; break;
+        case DebugLevel::Error:     strbuf += "ERR";  break;
+        case DebugLevel::Exception: strbuf += "EXPT"; break;
         }
-        buffer += "] ";
-        buffer += e.file;
-        buffer += ":";
-        buffer += std::to_string(e.line);
-        buffer += " [ ";
-        buffer += e.message;
-        buffer += " ] ";
-        buffer += "\n";
+        strbuf += "] " + e.file + ":" + std::to_string(e.line)
+            + "  " + e.message + "\n";
     }
-
     static std::vector<char> tmp;
-    tmp.assign(buffer.begin(), buffer.end());
-    tmp.push_back('\0'); 
+    tmp.assign(strbuf.begin(), strbuf.end());
+    tmp.push_back('\0');
 
-    ImVec2 avail = ImGui::GetContentRegionAvail();
+    static bool scrollToBottom = false;
+
+    if (autoScroll)
+        scrollToBottom = true;
+
+    ImGuiInputTextFlags flags = ImGuiInputTextFlags_ReadOnly
+        | ImGuiInputTextFlags_CallbackAlways;
     ImGui::InputTextMultiline(
         "##DebugConsole",
-        tmp.data(),
-        tmp.size(),
-        avail,
-        ImGuiInputTextFlags_ReadOnly
+        tmp.data(), tmp.size(),
+        ImGui::GetContentRegionAvail(),
+        flags,
+        [](ImGuiInputTextCallbackData* d) {
+            if (scrollToBottom) {
+                d->CursorPos = d->BufTextLen;
+                scrollToBottom = false;
+            }
+            return 0;
+        }
     );
 
-    if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-        ImGui::SetScrollHereY(1.0f);
-
-    ImGui::EndChild();
     ImGui::End();
 }
