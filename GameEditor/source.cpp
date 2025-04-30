@@ -52,6 +52,7 @@ int main() {
     float       accumulator = 0.0f;
 
     while (!glfwWindowShouldClose(Window)) {
+
         InputManager::Instance().Update();
         Engine::PollEvents();
         double now = Engine::GetTime();

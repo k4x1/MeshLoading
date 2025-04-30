@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iomanip>
 #include "Camera.h"
+#include <filesystem>  
+
 std::vector<DebugEntry> Debug::s_entries;
 std::mutex              Debug::s_mutex;
 
@@ -18,37 +20,89 @@ std::string Debug::GetTimestamp() {
     return oss.str();
 }
 
-void Debug::AddEntry(DebugLevel lvl, const std::string& msg) {
-    std::lock_guard<std::mutex> lock(s_mutex);
-    s_entries.push_back({ GetTimestamp(), lvl, msg });
+void Debug::AddEntry(DebugLevel lvl,
+    const std::string& msg,
+    const std::source_location& loc)
+{
+    // pull just the filename
+    std::filesystem::path p(loc.file_name());
+    std::string filename = p.filename().string();
+
+    std::lock_guard lock(s_mutex);
+    s_entries.push_back({
+      GetTimestamp(),
+      lvl,
+      msg,
+      filename,                         
+      static_cast<int>(loc.line()),
+      loc.function_name()
+        });
     if (s_entries.size() > 1000) s_entries.erase(s_entries.begin());
 }
-
-
-void Debug::LogImpl(const std::string& message) {
-    AddEntry(DebugLevel::Info, message);
-    std::cout << GetTimestamp() << " [LOG] " << message << "\n";
+void Debug::LogImpl(const std::string& msg,
+    const std::source_location& loc) {
+    AddEntry(DebugLevel::Log, msg, loc);
+    std::cout
+        << s_entries.back().timestamp
+        << " [LOG] (" << loc.file_name() << ":" << loc.line() << ") "
+        << msg << "\n";
 }
 
-void Debug::LogWarningImpl(const std::string& message) {
-    AddEntry(DebugLevel::Warning, message);
-    std::cout << GetTimestamp() << " [WARNING] " << message << "\n";
+void Debug::LogWarningImpl(const std::string& msg,
+    const std::source_location& loc) {
+    AddEntry(DebugLevel::Warning, msg, loc);
+    std::cout
+        << GetTimestamp()
+        << " [WARNING] (" << loc.file_name() << ":" << loc.line() << ") "
+        << msg << "\n";
 }
 
-void Debug::LogErrorImpl(const std::string& message) {
-    AddEntry(DebugLevel::Error, message);
-    std::cerr << GetTimestamp() << " [ERROR] " << message << "\n";
+void Debug::LogErrorImpl(const std::string& msg,
+    const std::source_location& loc) {
+    AddEntry(DebugLevel::Error, msg, loc);
+    std::cerr
+        << GetTimestamp()
+        << " [ERROR] (" << loc.file_name() << ":" << loc.line() << ") "
+        << msg << "\n";
 }
 
-void Debug::LogExceptionImpl(const std::string& message) {
-    AddEntry(DebugLevel::Exception, message);
-    std::cerr << GetTimestamp() << " [EXCEPTION] " << message << "\n";
+void Debug::LogExceptionImpl(const std::string& msg,
+    const std::source_location& loc) {
+    AddEntry(DebugLevel::Exception, msg, loc);
+    std::cerr
+        << GetTimestamp()
+        << " [EXCEPTION] (" << loc.file_name() << ":" << loc.line() << ") "
+        << msg << "\n";
 }
 
-void Debug::LogAssertionImpl(const std::string& message) {
-    AddEntry(DebugLevel::Assertion, message);
-    std::cerr << GetTimestamp() << " [ASSERTION FAILED] " << message << "\n";
+void Debug::DrawRay(const glm::vec3& origin, const glm::vec3& dir, float length, Camera* cam, const glm::vec4& color)
+{
+    glm::vec3 end = origin + glm::normalize(dir) * length;
+
+    glm::mat4 V = cam->GetViewMatrix();
+    glm::mat4 P = cam->GetProjectionMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadMatrixf(glm::value_ptr(P));
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixf(glm::value_ptr(V));
+
+    glDisable(GL_DEPTH_TEST);
+    glColor4fv(glm::value_ptr(color));
+    glBegin(GL_LINES);
+    glVertex3fv(glm::value_ptr(origin));
+    glVertex3fv(glm::value_ptr(end));
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
+
 const std::vector<DebugEntry>& Debug::GetEntries() {
     return s_entries;
 }

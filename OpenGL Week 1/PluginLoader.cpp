@@ -12,7 +12,9 @@ bool PluginLoader::Load()
     _hModule = ::LoadLibraryA(_dllPath.c_str());
     if (!_hModule) {
         auto err = GetLastError();
-        Debug::LogError("Failed to load [" + _dllPath + "] Error " + std::to_string(err));
+        
+      
+        DEBUG_ERR("Failed to load [" << _dllPath << "] Error " << std::to_string(err));
         return false;
     }
     using SetCtxFn = void(*)(ImGuiContext*);
@@ -21,7 +23,7 @@ bool PluginLoader::Load()
         fn(ImGui::GetCurrentContext());
     }
     else {
-        Debug::LogError("Plugin missing SetImGuiContext export");
+        DEBUG_ERR("Plugin missing SetImGuiContext export");
     }
     return true;
 }

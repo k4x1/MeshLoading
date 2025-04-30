@@ -68,6 +68,7 @@ public:
         T* comp = new T(std::forward<Args>(args)...);
         comp->owner = this;
         components.emplace_back(comp);
+        comp->OnAttach();
         return comp;
     }
     void AddComponentPointer(Component* c) {
@@ -80,7 +81,6 @@ public:
             if (T* t = dynamic_cast<T*>(comp.get()))
                 return t;
         }
-        Debug::LogError("Failed to get component");
         return nullptr;
     }
 

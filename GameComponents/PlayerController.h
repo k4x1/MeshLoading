@@ -11,7 +11,7 @@ public:
     float mouseSensitivity = 0.1f;
     float jumpForce = 5.0f;    
     float groundCheckDistance = 1.1f;
-
+    bool grounded;
     float yaw = 0.0f;
     float pitch = 0.0f;
 

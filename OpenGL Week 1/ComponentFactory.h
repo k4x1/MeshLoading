@@ -34,8 +34,6 @@ public:
         const nlohmann::json& params,
         GameObject* owner) const
     {
-        std::cout << "[ComponentFactory] Create() entry for type=\""
-            << typeName << "\" owner=" << owner << std::endl;
 
         auto it = registry_.find(typeName);
         if (it == registry_.end()) {
@@ -81,6 +79,7 @@ namespace {                                                                     
       [](const nlohmann::json& j, GameObject* owner)->Component* {                  \
         TYPE* c = owner->AddComponent<TYPE>();                                      \
         c->Deserialize(j);                                                          \
+        c->OnAttach();                                                              \
         return c;                                                                   \
       },                                                                            \
       [](Component* base)->nlohmann::json {                                         \

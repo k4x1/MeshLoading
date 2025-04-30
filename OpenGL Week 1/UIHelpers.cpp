@@ -655,25 +655,45 @@ void UIHelpers::DrawDebugWindow(bool* p_open) {
     }
     ImGui::SameLine();
     static bool autoScroll = true;
-    ImGui::Checkbox("Auto‑scroll", &autoScroll);
+    ImGui::Checkbox("Auto-scroll", &autoScroll);
     ImGui::Separator();
-
     ImGui::BeginChild("##DebugScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
+    static std::string buffer;
+    buffer.clear();
     const auto& entries = Debug::GetEntries();
     for (const auto& e : entries) {
-        ImVec4 col;
+        // [timestamp] [LEVEL] file:line @func()  message\n
+        buffer += "[";
+        buffer += e.timestamp;
+        buffer += "] [";
         switch (e.level) {
-        case DebugLevel::Info:      col = ImVec4(1, 1, 1, 1);     break;
-        case DebugLevel::Warning:   col = ImVec4(1, 1, 0, 1);     break;
-        case DebugLevel::Error:     col = ImVec4(1, 0, 0, 1);     break;
-        case DebugLevel::Exception: col = ImVec4(1, 0.5f, 0, 1);  break;
-        case DebugLevel::Assertion: col = ImVec4(1, 0, 0.5f, 1);  break;
+        case DebugLevel::Log:       buffer += "LOG";  break;
+        case DebugLevel::Warning:   buffer += "WARN"; break;
+        case DebugLevel::Error:     buffer += "ERR";  break;
+        case DebugLevel::Exception: buffer += "EXPT"; break;
         }
-        ImGui::PushStyleColor(ImGuiCol_Text, col);
-        ImGui::Text("[%s] %s", e.timestamp.c_str(), e.message.c_str());
-        ImGui::PopStyleColor();
+        buffer += "] ";
+        buffer += e.file;
+        buffer += ":";
+        buffer += std::to_string(e.line);
+        buffer += " [ ";
+        buffer += e.message;
+        buffer += " ] ";
+        buffer += "\n";
     }
+
+    static std::vector<char> tmp;
+    tmp.assign(buffer.begin(), buffer.end());
+    tmp.push_back('\0'); 
+
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    ImGui::InputTextMultiline(
+        "##DebugConsole",
+        tmp.data(),
+        tmp.size(),
+        avail,
+        ImGuiInputTextFlags_ReadOnly
+    );
 
     if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
         ImGui::SetScrollHereY(1.0f);

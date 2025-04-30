@@ -7,12 +7,17 @@
 #include "ComponentFactory.h"
 #include "EnginePluginAPI.h"
 class ENGINE_API BoxCollider : public ISerializableComponent {
-public:
-    bool   m_attached = false;
-    glm::vec3 halfExtents{ 1,1,1 };
-    reactphysics3d::BoxShape* shape = nullptr;
-    reactphysics3d::Collider* m_collider = nullptr;
 
+private:
+
+    reactphysics3d::BoxShape* shape = nullptr;
+    reactphysics3d::Collider* collider = nullptr;
+    glm::vec3 lastScale{ 0,0,0 };
+
+public:
+    glm::vec3 halfExtents{ 1,1,1 };
+
+    void OnAttach() override;
     void Update(float dt) override;
     void OnInspectorGUI() override;
     virtual void OnDrawGizmos(Camera* cam) override;
@@ -24,7 +29,9 @@ public:
     void Deserialize(const nlohmann::json& j) override {
         auto arr = j.value("halfExtents", std::vector<float>{1, 1, 1});
         halfExtents = { arr[0], arr[1], arr[2] };
+
     }
+
 };
 
 REGISTER_SERIALIZABLE_COMPONENT(BoxCollider);

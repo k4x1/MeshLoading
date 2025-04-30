@@ -96,28 +96,22 @@ void GameObject::Start() {
     for (auto& comp : components) {
         if (!comp)
         {
-            Debug::Log("null component");
+            DEBUG_LOG("null component");
             continue;
         }
         comp->Start();
-
-        std::string msg("Component type: ");
-        msg += comp->GetName();
-        Debug::Log(msg);
     }
 }
 void GameObject::Update(float dt) {
     for (auto& comp : components) {
         if (!comp)
         {
-            Debug::Log("null component");
+            DEBUG_LOG("null component");
             continue;
         }
 
         comp->Update(dt);
-        /*std::string msg("Component type: ");
-        msg += comp->GetName();
-        Debug::Log(msg);*/
+      
     }
 }
 
@@ -126,7 +120,7 @@ void GameObject::FixedUpdate(float fixedDt)
     for (auto& comp : components) {
         if (!comp)
         {
-            Debug::Log("null component");
+            DEBUG_LOG("null component");
             continue;
         }
 
