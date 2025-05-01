@@ -47,28 +47,28 @@ void PlayerController::FixedUpdate(float fixedDt) {
     }
     reactphysics3d::Vector3 rpVel = rb->body->getLinearVelocity();
     vel.y = static_cast<float>(rpVel.y);
-
+    origin = glm::vec3(owner->transform.position.x, owner->transform.position.y-(owner->transform.scale.y/2)-0.1f, owner->transform.position.z);
     Physics::RaycastHit hit;
-    bool grounded = Physics::PhysicsEngine::Instance().Raycast(
-        owner->transform.position,
+    grounded = Physics::PhysicsEngine::Instance().Raycast(
+        origin,
         glm::vec3(0, -1, 0),
         hit,
         groundCheckDistance
     );
-    DEBUG_LOG(grounded);
+  //  DEBUG_LOG(grounded);
     if (grounded && inp.GetKeyDown(GLFW_KEY_SPACE)) {
         vel.y = jumpForce;
     }
 
     rb->SetLinearVelocity(vel);
-}
+}   
 
 void PlayerController::OnDrawGizmos(Camera* cam)
 {   
 
     Debug::DrawRay(
-        owner->transform.position,
-        glm::vec3(0, -groundCheckDistance, 0),
+        origin,
+        glm::vec3(0, -1, 0),
         groundCheckDistance,
         cam,
         grounded

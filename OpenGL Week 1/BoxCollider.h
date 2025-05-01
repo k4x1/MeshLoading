@@ -20,7 +20,6 @@ public:
     void OnAttach() override;
     void Update(float dt) override;
     void OnInspectorGUI() override;
-    virtual void OnDrawGizmos(Camera* cam) override;
     nlohmann::json Serialize() const override {
         return {
             {"halfExtents", {halfExtents.x, halfExtents.y, halfExtents.z}}

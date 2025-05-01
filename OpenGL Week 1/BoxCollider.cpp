@@ -40,29 +40,3 @@ void BoxCollider::OnInspectorGUI() {
         lastScale = glm::vec3(0.0f);
     }
 }
-
-void BoxCollider::OnDrawGizmos(Camera* cam) {
-    if (!cam || !collider) return;
-
-    auto* rb = owner->GetComponent<Rigidbody>();
-    auto  bodyXf = rb->body->getTransform();
-    auto  localXf = collider->getLocalToBodyTransform();
-
-    auto toMat4 = [](auto& t) {
-        glm::quat q{ t.getOrientation().w,
-                    t.getOrientation().x,
-                    t.getOrientation().y,
-                    t.getOrientation().z };
-        glm::vec3 p{ t.getPosition().x,
-                    t.getPosition().y,
-                    t.getPosition().z };
-        return glm::translate(glm::mat4(1), p) * glm::mat4_cast(q);
-        };
-    glm::mat4 worldM = toMat4(bodyXf) * toMat4(localXf);
-
-    Debug::DrawWireBox(worldM,
-        { halfExtents.x * lastScale.x,
-          halfExtents.y * lastScale.y,
-          halfExtents.z * lastScale.z },
-        cam);
-}

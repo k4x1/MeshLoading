@@ -16,7 +16,7 @@ public:
     float pitch = 0.0f;
 
     Rigidbody*  rb = nullptr;
-
+    glm::vec3 origin = glm::vec3(0); 
     PlayerController() = default;
     ~PlayerController() override = default;
 

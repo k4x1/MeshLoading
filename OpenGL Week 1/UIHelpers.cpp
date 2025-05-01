@@ -21,6 +21,7 @@
 #include <type_traits>
 #include <glm.hpp>
 #include <gtc/type_ptr.hpp>
+#include "CameraMovement.h"
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
 AspectRatio UIHelpers::g_SceneAspect = AspectRatio::R16_9;
@@ -341,10 +342,24 @@ void UIHelpers::DrawHierarchyWindow(Scene* scene, GameObject*& selected, GameObj
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
             glm::vec3 target = obj->transform.position;
-            float dist = 10.0f;
+            float     dist = 10.0f;
+
             editorCamera->transform.position = target + glm::vec3(0, 0, dist);
+
             glm::vec3 forward = glm::normalize(target - editorCamera->transform.position);
-            editorCamera->transform.rotation = glm::quatLookAt(forward, -glm::vec3(0, 1, 0));
+            editorCamera->transform.rotation =
+                glm::quatLookAt(forward, glm::vec3(0, 1, 0));
+
+            if (auto* camMove = editorCamera->GetComponent<CameraMovement>()) {
+                glm::vec3 euler = glm::degrees(glm::eulerAngles(editorCamera->transform.rotation));
+                camMove->yaw = euler.y;
+                camMove->pitch = euler.x;
+
+                double mx = InputManager::Instance().GetMouseX();
+                double my = InputManager::Instance().GetMouseY();
+                camMove->lastX = float(mx);
+                camMove->lastY = float(my);
+            }
         }
 
         if (ImGui::BeginPopupContextItem()) {
@@ -649,49 +664,50 @@ void UIHelpers::DrawProjectWindow() {
 void UIHelpers::DrawDebugWindow(bool* p_open) {
     ImGui::Begin("Console", p_open, ImGuiWindowFlags_HorizontalScrollbar);
 
-    if (ImGui::Button("Clear")) Debug::ClearEntries();
+    if (ImGui::Button("Clear")) {
+        Debug::ClearEntries();
+    }
     ImGui::SameLine();
     static bool autoScroll = true;
     ImGui::Checkbox("Auto-scroll", &autoScroll);
+
     ImGui::Separator();
+    ImGui::BeginChild("##DebugScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-    static std::string strbuf;
-    strbuf.clear();
-    for (auto& e : Debug::GetEntries()) {
-        strbuf += "[" + e.timestamp + "] [";
+    const auto& entries = Debug::GetEntries();
+    for (const auto& e : entries) {
+        ImVec4 col;
         switch (e.level) {
-        case DebugLevel::Log:       strbuf += "LOG";  break;
-        case DebugLevel::Warning:   strbuf += "WARN"; break;
-        case DebugLevel::Error:     strbuf += "ERR";  break;
-        case DebugLevel::Exception: strbuf += "EXPT"; break;
+        case DebugLevel::Log:       col = ImVec4(1, 1, 1, 1);    break; // white
+        case DebugLevel::Warning:   col = ImVec4(1, 1, 0, 1);    break; // yellow
+        case DebugLevel::Error:     col = ImVec4(1, 0, 0, 1);    break; // red
+        case DebugLevel::Exception: col = ImVec4(1, 0.5f, 0, 1); break; // orange
         }
-        strbuf += "] " + e.file + ":" + std::to_string(e.line)
-            + "  " + e.message + "\n";
+        ImGui::PushStyleColor(ImGuiCol_Text, col);
+
+        const char* lvlName = "UNK";
+        switch (e.level) {
+        case DebugLevel::Log:       lvlName = "LOG";  break;
+        case DebugLevel::Warning:   lvlName = "WARN"; break;
+        case DebugLevel::Error:     lvlName = "ERR";  break;
+        case DebugLevel::Exception: lvlName = "EXPT"; break;
+        }
+
+        ImGui::Text("[%s] [%s] %s:%d  %s",
+            e.timestamp.c_str(),
+            lvlName,
+            e.file.c_str(),
+            e.line,
+            e.message.c_str()
+        );
+
+        ImGui::PopStyleColor();
     }
-    static std::vector<char> tmp;
-    tmp.assign(strbuf.begin(), strbuf.end());
-    tmp.push_back('\0');
 
-    static bool scrollToBottom = false;
+    if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+        ImGui::SetScrollHereY(1.0f);
+    }
 
-    if (autoScroll)
-        scrollToBottom = true;
-
-    ImGuiInputTextFlags flags = ImGuiInputTextFlags_ReadOnly
-        | ImGuiInputTextFlags_CallbackAlways;
-    ImGui::InputTextMultiline(
-        "##DebugConsole",
-        tmp.data(), tmp.size(),
-        ImGui::GetContentRegionAvail(),
-        flags,
-        [](ImGuiInputTextCallbackData* d) {
-            if (scrollToBottom) {
-                d->CursorPos = d->BufTextLen;
-                scrollToBottom = false;
-            }
-            return 0;
-        }
-    );
-
+    ImGui::EndChild();
     ImGui::End();
 }

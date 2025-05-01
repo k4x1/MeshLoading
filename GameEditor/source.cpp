@@ -69,7 +69,7 @@ int main() {
             played = true;
             if (!runtimeScene) {
                 editScene->SaveToFile("TempScene.json");
-
+                Physics::PhysicsEngine::Instance().Reset();
                 runtimeScene = std::make_unique<SampleScene>();
                 runtimeScene->LoadFromFile("Assets/TempScene.json");
                 runtimeScene->InitialSetup(Window, false);

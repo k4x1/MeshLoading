@@ -1,6 +1,14 @@
 {
     "children": [],
-    "components": [],
+    "components": [
+        {
+            "fragShaderPath": "Resources/Shaders/Texture.frag",
+            "modelFilePath": "Assets\\Models\\capsule.obj",
+            "textureFilePath": "Resources/Textures/blankTex.png",
+            "type": "MeshRenderer",
+            "vertShaderPath": "Resources/Shaders/Texture.vert"
+        }
+    ],
     "name": "Capsule",
     "transform": {
         "position": [

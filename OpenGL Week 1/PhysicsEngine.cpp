@@ -24,8 +24,14 @@ void Physics::PhysicsEngine::initializeWorld()
     m_world->setEventListener(&m_collisionListener);
     m_world->setNbIterationsPositionSolver(30);
     m_world->setNbIterationsVelocitySolver(15);
-    m_world->setGravity(reactphysics3d::Vector3(0, -0.981f, 0));
-
+    m_world->setGravity(reactphysics3d::Vector3(0, -9.81f, 0));
+    auto& debugRef = m_world->getDebugRenderer();
+    using DR = reactphysics3d::DebugRenderer;
+    debugRef.setIsDebugItemDisplayed(DR::DebugItem::COLLISION_SHAPE, true);
+    debugRef.setIsDebugItemDisplayed(DR::DebugItem::COLLIDER_AABB, true);
+    debugRef.setIsDebugItemDisplayed(DR::DebugItem::COLLISION_SHAPE_NORMAL, false);
+    debugRef.setIsDebugItemDisplayed(DR::DebugItem::CONTACT_POINT, false);
+    debugRef.setIsDebugItemDisplayed(DR::DebugItem::CONTACT_NORMAL, false);
 }
 PhysicsEngine::PhysicsEngine() {
     initializeWorld();
@@ -53,50 +59,51 @@ void PhysicsEngine::Reset() {
     m_world->setEventListener(nullptr);
     initializeWorld();
 }
-
 bool PhysicsEngine::Raycast(
     const glm::vec3& origin,
     const glm::vec3& direction,
     RaycastHit& outHit,
     float            maxDistance)
 {
+    glm::vec3 dirN = glm::normalize(direction);
+
+    glm::vec3 worldEnd = origin + dirN * maxDistance;
+    reactphysics3d::Vector3 rpOrigin(origin.x, origin.y, origin.z);
+    reactphysics3d::Vector3 rpEnd(worldEnd.x, worldEnd.y, worldEnd.z);
+
+    reactphysics3d::Ray rpRay(rpOrigin, rpEnd);
+
     class RaycastCallbackRp : public reactphysics3d::RaycastCallback {
     public:
-        RaycastCallbackRp(float maxDist) : m_maxDistance(maxDist) {}
-
+        RaycastCallbackRp() = default;
         virtual reactphysics3d::decimal notifyRaycastHit(
             const reactphysics3d::RaycastInfo& info) override
         {
+            if (info.hitFraction <= 1e-4f) {
+                return -1.0f;  
+            }
             m_hasHit = true;
             m_hit.point = { info.worldPoint.x,
-                               info.worldPoint.y,
-                               info.worldPoint.z };
+                            info.worldPoint.y,
+                            info.worldPoint.z };
             m_hit.normal = { info.worldNormal.x,
-                               info.worldNormal.y,
-                               info.worldNormal.z };
-            m_hit.distance = static_cast<float>(info.hitFraction) * m_maxDistance;
+                             info.worldNormal.y,
+                             info.worldNormal.z };
             void* ud = info.body->getUserData();
             m_hit.object = ud ? static_cast<GameObject*>(ud) : nullptr;
 
-            return info.hitFraction;
+            return info.hitFraction;  
         }
-
         RaycastHit    m_hit;
         bool          m_hasHit = false;
-    private:
-        float         m_maxDistance;
     };
 
-    glm::vec3 dirN = glm::normalize(direction);
+    RaycastCallbackRp callback;
 
-    reactphysics3d::Vector3 rpOrigin(origin.x, origin.y, origin.z);
-    reactphysics3d::Vector3 rpDir(dirN.x, dirN.y, dirN.z);
-
-    reactphysics3d::Ray rpRay(rpOrigin, rpDir);
-    RaycastCallbackRp callback(maxDistance);
-    m_world->raycast(rpRay, &callback, true);
+    m_world->raycast(rpRay, &callback);
 
     if (callback.m_hasHit) {
+        callback.m_hit.distance = glm::distance(origin, callback.m_hit.point);
         outHit = callback.m_hit;
         return true;
     }

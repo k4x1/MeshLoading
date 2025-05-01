@@ -18,6 +18,7 @@ void Rigidbody::Start() {
     body =  Physics::PhysicsEngine::Instance().GetWorld()->createRigidBody(xform);
     body->setUserData(static_cast<void*>(owner));
     body->enableGravity(useGravity);
+    body->setIsDebugEnabled(true);
     if (isKinematic) {
         body->setType(BodyType::KINEMATIC);
     }
@@ -30,17 +31,18 @@ void Rigidbody::Start() {
 
 void Rigidbody::FixedUpdate(float fixedDt) {
     if (!body) return;
-    if (body->getType() == rp3d::BodyType::KINEMATIC) {
-        rp3d::Transform newXf(
-            rp3d::Vector3{ owner->transform.position.x,
-                           owner->transform.position.y,
-                           owner->transform.position.z },
-            rp3d::Quaternion{ owner->transform.rotation.x,
-                              owner->transform.rotation.y,
-                              owner->transform.rotation.z,
-                              owner->transform.rotation.w }
-        );
-        body->setTransform(newXf);  
+    reactphysics3d::Transform newXf{
+        { owner->transform.position.x,
+          owner->transform.position.y,
+          owner->transform.position.z },
+        { owner->transform.rotation.x,
+          owner->transform.rotation.y,
+          owner->transform.rotation.z,
+          owner->transform.rotation.w }
+    };
+
+    if (body->getType() == reactphysics3d::BodyType::KINEMATIC) {
+        body->setTransform(newXf);
     }
     else{
         auto rp3dTransform = body->getTransform();

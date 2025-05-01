@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include <string>
 #include <exception>
 #include <vector>
@@ -8,9 +8,14 @@
 #include <glm.hpp> 
 #include <sstream>
 #include <initializer_list>
+#include <glm/gtx/string_cast.hpp>
 #include "EnginePluginAPI.h"
-class Camera;                  
+class Camera;            
 
+
+inline std::ostream& operator<<(std::ostream& os, glm::vec3 const& v) {
+    return os << glm::to_string(v);
+}
 enum class ENGINE_API DebugLevel { Log, Warning, Error, Exception };
 
 struct ENGINE_API DebugEntry {
@@ -47,6 +52,12 @@ public:
         float length,
         Camera* cam,
         const glm::vec4& color = glm::vec4(0, 1, 0, 1)  
+    );
+    static void DrawLine(
+        const glm::vec3& p1,
+        const glm::vec3& p2,
+        Camera* cam,
+        const glm::vec4& color = glm::vec4(0, 1, 0, 1)
     );
     static const std::vector<DebugEntry>& GetEntries();
     static void ClearEntries();
