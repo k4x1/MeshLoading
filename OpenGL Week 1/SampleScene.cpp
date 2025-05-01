@@ -98,10 +98,15 @@ void SampleScene::Render(FrameBuffer* currentBuffer, Camera* _camera)
 
 
     // this stuff needs to be like thouroughly cleaned
-
-    int w = currentBuffer->GetWidth();
-    int h = currentBuffer->GetHeight();
-    glViewport(0, 0, w, h);
+    if (currentBuffer)
+    {       
+        int w = currentBuffer->GetWidth();
+        int h = currentBuffer->GetHeight();
+        glViewport(0, 0, w, h);
+    }
+    else {
+        glViewport(0, 0, 1920, 1080);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Camera* cam = _camera ? _camera : camera;

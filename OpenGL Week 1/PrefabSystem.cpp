@@ -1,5 +1,4 @@
-// PrefabSystem.cpp
-#include "PrefabSystem.h"
+﻿#include "PrefabSystem.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "ComponentFactory.h"
@@ -11,66 +10,62 @@
 #include <filesystem>  
 namespace fs = std::filesystem;
 
+static std::unordered_map<std::string, nlohmann::json> jsonCache;
+static std::unordered_map<std::string, GameObject*>   protoCache;
+
 GameObject* PrefabSystem::Instantiate(const std::string& prefabPath) {
-    std::ifstream in(prefabPath);
-    if (!in.is_open()) {
-        std::cerr << "PrefabSystem: Failed to open prefab: " << prefabPath << std::endl;
-        return nullptr;
+    auto it = jsonCache.find(prefabPath);
+    if (it == jsonCache.end()) {
+        std::ifstream in(prefabPath);
+        if (!in) {
+            DEBUG_ERR("PrefabSystem: Failed to open prefab: " << prefabPath);
+            return nullptr;
+        }
+        nlohmann::json j; in >> j;
+        jsonCache[prefabPath] = j;
+        it = jsonCache.find(prefabPath);
     }
-    nlohmann::json j;
-    in >> j;
-    in.close();
 
-    std::function<GameObject* (const nlohmann::json&)> deserialize =
-        [&](const nlohmann::json& objJson) -> GameObject*
-        {
-            std::string name = objJson.value("name", "PrefabObject");
-            GameObject* go = new GameObject(name);
-
-            if (objJson.contains("transform")) {
-                const auto& t = objJson["transform"];
-                go->transform.position = {
-                    t["position"][0].get<float>(),
-                    t["position"][1].get<float>(),
-                    t["position"][2].get<float>()
-                };
-                go->transform.scale = {
-                    t["scale"][0].get<float>(),
-                    t["scale"][1].get<float>(),
-                    t["scale"][2].get<float>()
-                };
-                auto rot = t["rotation"];
-                go->transform.rotation = glm::quat(
-                    rot[0].get<float>(),
-                    rot[1].get<float>(),
-                    rot[2].get<float>(),
-                    rot[3].get<float>()
-                );
-            }
-
-            if (objJson.contains("components")) {
-                for (auto& compJson : objJson["components"]) {
-                    std::string type = compJson.value("type", "");
-                    Component* c = ComponentFactory::Instance()
-                        .Create(type, compJson, go);
-                    if (!c)
-                        std::cerr << "Unknown component type: " << type << "\n";
-                }
-            }
-
-
-            if (objJson.contains("children")) {
-                for (auto& childJson : objJson["children"]) {
-                    GameObject* child = deserialize(childJson);
-                    go->AddChild(child);
-                }
-            }
-
-            return go;
-        };
-
-    return deserialize(j);
+    return cloneFromJson(it->second);
 }
+
+GameObject* PrefabSystem::cloneFromJson(const nlohmann::json& objJson) {
+    std::string name = objJson.value("name", "PrefabObject");
+    GameObject* go = new GameObject(name);
+
+    // transform
+    if (auto t = objJson.find("transform"); t != objJson.end()) {
+        const auto& tt = *t;
+        go->transform.position = {
+            tt["position"][0], tt["position"][1], tt["position"][2]
+        };
+        go->transform.scale = {
+            tt["scale"][0], tt["scale"][1], tt["scale"][2]
+        };
+        auto& rot = tt["rotation"];
+        go->transform.rotation = glm::quat(rot[0], rot[1], rot[2], rot[3]);
+    }
+
+    // components
+    if (auto comps = objJson.find("components"); comps != objJson.end()) {
+        for (auto& cj : *comps) {
+            std::string type = cj.value("type", "");
+            Component* c = ComponentFactory::Instance().Create(type, cj, go);
+            if (!c) DEBUG_ERR("Unknown component type: " << type);
+        }
+    }
+
+    // children
+    if (auto kids = objJson.find("children"); kids != objJson.end()) {
+        for (auto& cj : *kids) {
+            GameObject* child = cloneFromJson(cj);
+            go->AddChild(child);
+        }
+    }
+
+    return go;
+}
+
 
 
 bool PrefabSystem::SavePrefab(GameObject* root, const std::string& filepath) {

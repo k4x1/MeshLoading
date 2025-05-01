@@ -124,10 +124,12 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
+xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameRelease"
 xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
 
 
 xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameEditor\"
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameRelease\"
 xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
 </Command>
     </PostBuildEvent>
@@ -152,10 +154,12 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameEditor"
+xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameRelease"
 xcopy /Y /R "$(TargetPath)" "$(SolutionDir)GameComponents"
 
 
 xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameEditor\"
+xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameRelease\"
 xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
 </Command>
     </PostBuildEvent>

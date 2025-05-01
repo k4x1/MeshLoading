@@ -186,7 +186,7 @@
                 {
                     "maxEnemies": 10,
                     "prefabPath": "Assets/Prefabs/Enemy.prefab",
-                    "spawnInterval": 2.0,
+                    "spawnInterval": 100.0,
                     "type": "EnemySpawner"
                 }
             ],
@@ -253,7 +253,7 @@
             "transform": {
                 "position": [
                     0.0,
-                    500.0,
+                    10.0,
                     0.0
                 ],
                 "rotation": [

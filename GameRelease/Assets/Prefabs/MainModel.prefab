@@ -1,0 +1,31 @@
+{
+    "children": [],
+    "components": [
+        {
+            "fragShaderPath": "Resources/Shaders/Texture.frag",
+            "modelFilePath": "Resources/Models/AncientEmpire/SM_Prop_Statue_01.obj",
+            "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+            "type": "MeshRenderer",
+            "vertShaderPath": "Resources/Shaders/Texture.vert"
+        }
+    ],
+    "name": "MainModel",
+    "transform": {
+        "position": [
+            0.0,
+            500.0,
+            0.0
+        ],
+        "rotation": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            0.05000000074505806,
+            0.05000000074505806,
+            0.05000000074505806
+        ]
+    }
+}

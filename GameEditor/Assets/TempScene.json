@@ -186,7 +186,7 @@
                 {
                     "maxEnemies": 10,
                     "prefabPath": "Assets/Prefabs/Enemy.prefab",
-                    "spawnInterval": 2.0,
+                    "spawnInterval": 60.0,
                     "type": "EnemySpawner"
                 }
             ],

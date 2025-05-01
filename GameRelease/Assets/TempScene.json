@@ -1,0 +1,273 @@
+{
+    "gameObjects": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets/Models/Cube.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": true,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": false
+                }
+            ],
+            "name": "Cube",
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.9999143481254578,
+                    0.0,
+                    -0.013089596293866634,
+                    0.0
+                ],
+                "scale": [
+                    10.0,
+                    1.0,
+                    10.0
+                ]
+            }
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "FOV": 90.0,
+                            "height": 525.0,
+                            "type": "Camera",
+                            "width": 933.3333129882813
+                        }
+                    ],
+                    "name": "CameraObject",
+                    "transform": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    }
+                }
+            ],
+            "components": [
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": true,
+                    "lockRotY": true,
+                    "lockRotZ": true,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                },
+                {
+                    "groundCheckDistance": 1.100000023841858,
+                    "jumpForce": 5.0,
+                    "mouseSensitivity": 0.10000000149011612,
+                    "moveSpeed": 5.0,
+                    "type": "PlayerController"
+                }
+            ],
+            "name": "Player",
+            "transform": {
+                "position": [
+                    7.199275842140196e-08,
+                    9.497809410095215,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    -0.0,
+                    -3.789967006895267e-09
+                ],
+                "scale": [
+                    1.0000028610229492,
+                    1.0000008344650269,
+                    1.0000011920928955
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "radius": 1.0,
+                    "type": "SphereCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "name": "Sphere",
+            "transform": {
+                "position": [
+                    0.0,
+                    500.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "maxEnemies": 10,
+                    "prefabPath": "Assets/Prefabs/Enemy.prefab",
+                    "spawnInterval": 60.0,
+                    "type": "EnemySpawner"
+                }
+            ],
+            "name": "EnemySpawner",
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": false
+                },
+                {
+                    "speed": 3.0,
+                    "type": "Enemy"
+                },
+                {
+                    "tag": "Enemy",
+                    "type": "TagComponent"
+                }
+            ],
+            "name": "Enemy",
+            "transform": {
+                "position": [
+                    0.0,
+                    500.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}
