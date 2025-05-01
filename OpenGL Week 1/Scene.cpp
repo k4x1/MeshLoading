@@ -30,6 +30,20 @@ void Scene::FixedUpdate(float fixedDt) {
     Physics::PhysicsEngine::Instance().FixedUpdate(fixedDt);
     for (auto* go : gameObjects)
         go->FixedUpdate(fixedDt);
+
+    for (auto* r : goToRemove) {
+        auto it = std::find(gameObjects.begin(), gameObjects.end(), r);
+        if (it != gameObjects.end()) {
+            delete* it;
+            gameObjects.erase(it);
+        }
+    }
+    goToRemove.clear();
+    for (auto* a : goToAdd) {
+        gameObjects.push_back(a);
+        a->Start();         
+    }
+    goToAdd.clear();
 }
 
 void Scene::Render(FrameBuffer* currentBuffer, Camera* _camera) {
@@ -81,6 +95,11 @@ FrameBuffer* Scene::GetFrameBuffer()
 void Scene::AddGameObject(GameObject* obj) {
     obj->SetScene(this);
     gameObjects.push_back(obj);
+
+}
+void Scene::Instantiate(GameObject* obj) {
+    obj->SetScene(this);
+    goToAdd.push_back(obj);
 }
 
 
@@ -94,6 +113,11 @@ void Scene::RemoveGameObject(GameObject* obj) {
         gameObjects.end()
     );
     delete obj;
+}
+
+void Scene::Destroy(GameObject* obj)
+{
+    goToRemove.push_back(obj);
 }
 
 

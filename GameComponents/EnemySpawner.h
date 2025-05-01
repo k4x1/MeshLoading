@@ -5,7 +5,7 @@
 class EnemySpawner : public ISerializableComponent {
 public:
     std::string prefabPath = "Assets/Prefabs/Enemy.prefab";
-    float       spawnInterval = 2.0f;
+    float       spawnInterval = 100.0f;
     int         maxEnemies = 10;
 
     EnemySpawner() = default;

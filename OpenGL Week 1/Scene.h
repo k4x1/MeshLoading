@@ -25,7 +25,10 @@ public:
     Scene() = default;
     GLFWwindow* Window = nullptr;
     Camera* camera = nullptr;
-    std::vector<GameObject*> gameObjects;
+    std::vector<GameObject*>   gameObjects;
+    std::vector<GameObject*>   goToAdd;
+    std::vector<GameObject*>   goToRemove;
+
     FrameBuffer* gameFrameBuffer = nullptr;
 
     std::string sceneName = "scene";
@@ -47,7 +50,9 @@ public:
 
 
     void AddGameObject(GameObject* obj);
+    void Instantiate(GameObject* obj);
     void RemoveGameObject(GameObject* obj);
+    void Destroy(GameObject* obj);
 
     void SaveToFile(const std::string& filePath);
     void LoadFromFile(const std::string& filePath);

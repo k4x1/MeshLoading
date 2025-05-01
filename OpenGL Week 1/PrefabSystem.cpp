@@ -79,13 +79,11 @@ bool PrefabSystem::SavePrefab(GameObject* root, const std::string& filepath) {
         return false;
     }
 
-    std::cout << "[PrefabSystem] Saving prefab for GameObject \""
-        << root->name << "\" to " << filepath << "\n";
+
 
     fs::path filePathObj(filepath);
     fs::path dir = filePathObj.parent_path();
     if (!dir.empty() && !fs::exists(dir)) {
-        std::cout << "[PrefabSystem] Creating directory: " << dir.string() << "\n";
         std::error_code ec;
         if (!fs::create_directories(dir, ec)) {
             std::cerr << "[PrefabSystem] ERROR: Failed to create directory "
@@ -105,6 +103,5 @@ bool PrefabSystem::SavePrefab(GameObject* root, const std::string& filepath) {
     out << j.dump(4);
     out.close();
 
-    std::cout << "[PrefabSystem] Successfully wrote prefab JSON\n";
     return true;
 }

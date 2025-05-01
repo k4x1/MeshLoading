@@ -24,8 +24,7 @@ void EnemySpawner::Update(float dt) {
             return;
         }
         if (owner->GetScene()) {
-            owner->GetScene()->AddGameObject(enemy);
-        //    enemy->Start();
+            owner->GetScene()->Instantiate(enemy);
             DEBUG_LOG("EnemySpawner: spawned \"" << enemy->name << "\"");
             spawnedCount++;
         }
