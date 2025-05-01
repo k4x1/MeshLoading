@@ -15,6 +15,8 @@
 #include "Component.h"
 #include "EnginePluginAPI.h"
 #include "Debug.h"
+
+class Scene;
 class Camera;
 
 struct ENGINE_API Transform {
@@ -46,11 +48,11 @@ public:
     std::string name;
     Transform transform;
     GameObject* parent = nullptr;
+
     std::vector<GameObject*> children;
     std::vector<std::unique_ptr<Component>> components;
     GameObject(const GameObject&) = delete;
     GameObject& operator=(const GameObject&) = delete;
-
     GameObject(GameObject&&) = default;
     GameObject& operator=(GameObject&&) = default;
     GameObject(const std::string& name = "GameObject");
@@ -63,6 +65,8 @@ public:
 
     virtual void OnInspectorGUI() override;
 
+    Scene* GetScene();
+    void SetScene(Scene* _scene);
     template<typename T, typename... Args>
     T* AddComponent(Args&&... args) {
         T* comp = new T(std::forward<Args>(args)...);
@@ -93,11 +97,14 @@ public:
             components.end()
         );
     }
-
+    
     void Update(float dt);
     void FixedUpdate(float fixedDt);
     void Start();
     void Render(Camera* cam);
+
+private:
+    Scene* scene = nullptr;
 };
 
 nlohmann::json SerializeGameObject(GameObject* obj);

@@ -38,4 +38,5 @@ public:
     static bool g_GameViewHovered; 
     static AspectRatio   g_SceneAspect;
     static AspectRatio   g_GameAspect;
+    static bool g_LockMouse;
 };

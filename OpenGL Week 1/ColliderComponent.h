@@ -1,5 +1,4 @@
-#pragma once
-
+﻿#pragma once
 #include "Component.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include <glm.hpp>
@@ -14,11 +13,14 @@ protected:
     virtual void recreateCollider() = 0;
 
 public:
-    virtual ~ColliderComponent();
+    ColliderComponent();
 
     void OnAttach() override;
     void Update(float dt) override;
 
-    virtual void OnInspectorGUI() override = 0;
-    virtual void OnDrawGizmos(Camera* cam) override = 0;
+    nlohmann::json Serialize() const override { return nullptr; }
+    void            Deserialize(const nlohmann::json&) override {}
+
+    virtual void OnInspectorGUI() override {}
+    virtual void OnDrawGizmos(Camera* cam) override {}
 };

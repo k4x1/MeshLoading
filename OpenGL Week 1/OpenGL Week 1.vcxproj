@@ -176,6 +176,8 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="CameraMovement.cpp" />
+    <ClCompile Include="CapsuleCollider.cpp" />
+    <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="EnginePluginAPI.cpp" />
@@ -199,6 +201,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UIHelpers.cpp" />
   </ItemGroup>
@@ -248,6 +251,8 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CameraMovement.h" />
+    <ClInclude Include="CapsuleCollider.h" />
+    <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentFactory.h" />
     <ClInclude Include="Debug.h" />
@@ -274,6 +279,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UIHelpers.h" />
     <ClInclude Include="VertexStandard.h" />

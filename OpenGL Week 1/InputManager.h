@@ -24,6 +24,10 @@ public:
     void GetMousePosition(double& x, double& y) const;
     glm::vec2 GetMouseDelta() const;
 
+    bool GetMouseButton(int button) const;
+    bool GetMouseButtonDown(int button) const;
+    bool GetMouseButtonUp(int button) const;
+
     double GetScrollOffset() const;
 
     void SetCallbacks(GLFWwindow* window);
@@ -38,6 +42,10 @@ private:
 
     std::unordered_map<int, bool> currentKeyStates;
     std::unordered_map<int, bool> previousKeyStates;
+    std::unordered_map<int, bool> currentButtonStates;
+    std::unordered_map<int, bool> previousButtonStates;
+
+
     GLFWwindow* m_window = nullptr;
     double mouseX = 0.0, mouseY = 0.0;
     double previousMouseX = 0.0, previousMouseY = 0.0;
@@ -46,6 +54,8 @@ private:
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
     static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+
 };
 
 #endif 

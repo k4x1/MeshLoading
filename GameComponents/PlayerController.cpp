@@ -3,6 +3,7 @@
 
 
 void PlayerController::Start() {
+    UIHelpers::g_LockMouse = true;
     rb = owner->GetComponent<Rigidbody>();
     if (!rb) {
         DEBUG_ERR("No rb in " << owner->name);
@@ -22,7 +23,6 @@ void PlayerController::FixedUpdate(float fixedDt) {
     if (!rb) return;
 
     auto& inp = InputManager::Instance();
-
     glm::vec2 md = inp.GetMouseDelta();
     yaw += md.x * mouseSensitivity;
     pitch -= md.y * mouseSensitivity;

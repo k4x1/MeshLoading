@@ -5,57 +5,6 @@
             "components": [
                 {
                     "fragShaderPath": "Resources/Shaders/Texture.frag",
-                    "modelFilePath": "Assets\\Models\\sphere.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
-                },
-                {
-                    "isKinematic": false,
-                    "lockPosX": false,
-                    "lockPosY": false,
-                    "lockPosZ": false,
-                    "lockRotX": false,
-                    "lockRotY": false,
-                    "lockRotZ": false,
-                    "mass": 1.0,
-                    "type": "Rigidbody",
-                    "useGravity": true
-                },
-                {
-                    "halfExtents": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "type": "BoxCollider"
-                }
-            ],
-            "name": "Sphere",
-            "transform": {
-                "position": [
-                    4.932482719421387,
-                    4.627190113067627,
-                    0.4600657522678375
-                ],
-                "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "children": [],
-            "components": [
-                {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
                     "modelFilePath": "Assets/Models/Cube.obj",
                     "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
                     "type": "MeshRenderer",
@@ -181,6 +130,142 @@
                     1.0000028610229492,
                     1.0000008344650269,
                     1.0000011920928955
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "radius": 1.0,
+                    "type": "SphereCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": true
+                }
+            ],
+            "name": "Sphere",
+            "transform": {
+                "position": [
+                    0.0,
+                    500.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "maxEnemies": 10,
+                    "prefabPath": "Assets/Prefabs/Enemy.prefab",
+                    "spawnInterval": 2.0,
+                    "type": "EnemySpawner"
+                }
+            ],
+            "name": "EnemySpawner",
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "modelFilePath": "Assets\\Models\\sphere.obj",
+                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
+                    "type": "MeshRenderer",
+                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                },
+                {
+                    "halfExtents": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "isKinematic": false,
+                    "lockPosX": false,
+                    "lockPosY": false,
+                    "lockPosZ": false,
+                    "lockRotX": false,
+                    "lockRotY": false,
+                    "lockRotZ": false,
+                    "mass": 1.0,
+                    "type": "Rigidbody",
+                    "useGravity": false
+                },
+                {
+                    "speed": 3.0,
+                    "type": "Enemy"
+                },
+                {
+                    "tag": "Enemy",
+                    "type": "TagComponent"
+                }
+            ],
+            "name": "Enemy",
+            "transform": {
+                "position": [
+                    0.0,
+                    500.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }

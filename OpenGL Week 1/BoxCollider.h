@@ -1,36 +1,28 @@
 #pragma once
-#include "Component.h"
-#include <reactphysics3d/reactphysics3d.h>
+
+#include "ColliderComponent.h"
+#include "ComponentFactory.h"
 #include <nlohmann/json.hpp>
 #include <glm.hpp>
-#include "GameObject.h"
-#include "ComponentFactory.h"
 #include "EnginePluginAPI.h"
-class ENGINE_API BoxCollider : public ISerializableComponent {
 
-private:
-
-    reactphysics3d::BoxShape* shape = nullptr;
-    reactphysics3d::Collider* collider = nullptr;
-    glm::vec3 lastScale{ 0,0,0 };
-
+class ENGINE_API BoxCollider : public ColliderComponent {
 public:
     glm::vec3 halfExtents{ 1,1,1 };
 
-    void OnAttach() override;
-    void Update(float dt) override;
+    nlohmann::json Serialize() const {
+        return { {"halfExtents", {halfExtents.x, halfExtents.y, halfExtents.z}} };
+    }
+    void Deserialize(const nlohmann::json& j) {
+        auto a = j.value("halfExtents", std::vector<float>{1, 1, 1});
+        halfExtents = { a[0], a[1], a[2] };
+    }
+
     void OnInspectorGUI() override;
-    nlohmann::json Serialize() const override {
-        return {
-            {"halfExtents", {halfExtents.x, halfExtents.y, halfExtents.z}}
-        };
-    }
-    void Deserialize(const nlohmann::json& j) override {
-        auto arr = j.value("halfExtents", std::vector<float>{1, 1, 1});
-        halfExtents = { arr[0], arr[1], arr[2] };
 
-    }
 
+protected:
+    void recreateCollider() override;
 };
 
 REGISTER_SERIALIZABLE_COMPONENT(BoxCollider);

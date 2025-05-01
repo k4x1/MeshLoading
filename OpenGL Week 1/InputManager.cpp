@@ -18,7 +18,7 @@ void InputManager::Update() {
 
     previousKeyStates = currentKeyStates;
     scrollOffset = 0.0;
-
+    previousButtonStates = currentButtonStates;
 }
 
 bool InputManager::GetKey(int key) const {
@@ -68,6 +68,22 @@ glm::vec2 InputManager::GetMouseDelta() const
     return delta;
 }
 
+bool InputManager::GetMouseButton(int button) const {
+    auto it = currentButtonStates.find(button);
+    return it != currentButtonStates.end() && it->second;
+}
+
+bool InputManager::GetMouseButtonDown(int button) const {
+    bool curr = GetMouseButton(button);
+    bool prev = previousButtonStates.count(button) ? previousButtonStates.at(button) : false;
+    return curr && !prev;
+}
+
+bool InputManager::GetMouseButtonUp(int button) const {
+    bool curr = GetMouseButton(button);
+    bool prev = previousButtonStates.count(button) ? previousButtonStates.at(button) : false;
+    return !curr && prev;
+}
 
 double InputManager::GetScrollOffset() const {
     return scrollOffset;
@@ -78,6 +94,7 @@ void InputManager::SetCallbacks(GLFWwindow* window) {
     glfwSetKeyCallback(window, KeyCallback);
     glfwSetCursorPosCallback(window, MouseCallback);
     glfwSetScrollCallback(window, ScrollCallback);
+    glfwSetMouseButtonCallback(window, MouseButtonCallback);
 }
 
 
@@ -97,4 +114,14 @@ void InputManager::MouseCallback(GLFWwindow* window, double xpos, double ypos) {
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     Instance().scrollOffset += yoffset;
+}
+
+void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (action == GLFW_PRESS) {
+        Instance().currentButtonStates[button] = true;
+    }
+    else if (action == GLFW_RELEASE) {
+        Instance().currentButtonStates[button] = false;
+    }
 }

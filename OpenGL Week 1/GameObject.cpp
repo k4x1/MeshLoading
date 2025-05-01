@@ -4,6 +4,7 @@
 #include "ComponentFactory.h"
 #include "Rigidbody.h" 
 #include "Camera.h"
+
 nlohmann::json TransformToJson(const Transform& t)
 {
     return nlohmann::json{
@@ -30,6 +31,21 @@ void TransformFromJson(const nlohmann::json& j, Transform& t)
     t.scale = glm::vec3(scale[0].get<float>(), scale[1].get<float>(), scale[2].get<float>());
 }
 
+
+Scene* GameObject::GetScene()
+{
+    if (!scene)
+    {
+        DEBUG_ERR("Scene is null");
+        return nullptr;
+    }
+    return scene;
+}
+
+void GameObject::SetScene(Scene* _scene)
+{
+    scene = _scene;
+}
 
 GameObject::GameObject(const std::string& name)
     : name(name)

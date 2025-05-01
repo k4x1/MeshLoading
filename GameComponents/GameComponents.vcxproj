@@ -175,8 +175,12 @@
     <ClInclude Include="..\Dependencies\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerShooter.h" />
+    <ClInclude Include="TagComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\IMGUI\imgui.cpp" />
@@ -187,7 +191,10 @@
     <ClCompile Include="..\Dependencies\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\Dependencies\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerShooter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

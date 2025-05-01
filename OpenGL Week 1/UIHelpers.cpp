@@ -24,6 +24,7 @@
 #include "CameraMovement.h"
 bool UIHelpers::g_SceneViewHovered = false;
 bool UIHelpers::g_GameViewHovered = false;
+bool UIHelpers::g_LockMouse = false;
 AspectRatio UIHelpers::g_SceneAspect = AspectRatio::R16_9;
 AspectRatio UIHelpers::g_GameAspect = AspectRatio::R16_9;
 void UIHelpers::Init(GLFWwindow* window, const char* glsl_version)
@@ -224,9 +225,24 @@ void UIHelpers::DrawGameViewWindow(FrameBuffer* gameFB,
             g_GameAspect = (AspectRatio)idx;
         }
     }
-    if (state == EditorState::Play)
+
+    if (state == EditorState::Play) {
+        ImGui::SameLine();
+        ImGui::Checkbox("Lock Mouse", &g_LockMouse);
         ImGui::TextColored({ 0,1,0,1 }, "PLAY MODE");
 
+        GLFWwindow* window = InputManager::Instance().GetWindow();
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            g_LockMouse = false;
+        }
+
+        if (g_LockMouse) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+    }
     ImVec2 avail = ImGui::GetContentRegionAvail();
     ImVec2 target = avail;
     if (g_GameAspect != AspectRatio::Free) {

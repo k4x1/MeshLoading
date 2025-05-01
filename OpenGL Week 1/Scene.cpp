@@ -12,7 +12,9 @@ void Scene::InitialSetup(GLFWwindow* _window, bool autoLoad) {
 
 void Scene::Start()
 {
+
     for (GameObject* obj : gameObjects) {
+        obj->SetScene(this);
         obj->Start();
     }
 }
@@ -66,7 +68,6 @@ void Scene::DrawGizmos(Camera* cam)
                 };
 
             glm::vec4 col = unpack(L.color1);
-            //DEBUG_LOG("drawing line start ["<<p1 << " | " << p2 << "]");
             Debug::DrawLine(p1, p2, cam, col);
         }
     }
@@ -78,8 +79,10 @@ FrameBuffer* Scene::GetFrameBuffer()
 }
 
 void Scene::AddGameObject(GameObject* obj) {
+    obj->SetScene(this);
     gameObjects.push_back(obj);
 }
+
 
 void Scene::RemoveGameObject(GameObject* obj) {
     if (obj->parent) {
