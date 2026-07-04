@@ -58,9 +58,9 @@
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 525.0,
+                            "height": 412.3125,
                             "type": "Camera",
-                            "width": 933.3333129882813
+                            "width": 733.0
                         }
                     ],
                     "name": "CameraObject",
@@ -186,7 +186,7 @@
                 {
                     "maxEnemies": 10,
                     "prefabPath": "Assets/Prefabs/Enemy.prefab",
-                    "spawnInterval": 60.0,
+                    "spawnInterval": 100.0,
                     "type": "EnemySpawner"
                 }
             ],
@@ -253,7 +253,7 @@
             "transform": {
                 "position": [
                     0.0,
-                    500.0,
+                    10.0,
                     0.0
                 ],
                 "rotation": [

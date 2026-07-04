@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Debug.h"
+#include "Utils/Debug.h"
 #include "EnginePluginAPI.h"
 #include <Windows.h>
 #include <imgui.h>  

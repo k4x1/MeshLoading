@@ -1,9 +1,9 @@
 #include "PlayerShooter.h"
-#include "InputManager.h"
-#include "PhysicsEngine.h"
+#include "Input/InputManager.h"
+#include "Physics/PhysicsEngine.h"
 #include "TagComponent.h"
-#include "GameObject.h"
-#include "Debug.h"
+#include "ObjectSystem/GameObject.h"
+#include "Utils/Debug.h"
 
 void PlayerShooter::Update(float dt) {
     if (InputManager::Instance().GetMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
