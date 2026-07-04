@@ -10,6 +10,8 @@ public:
     virtual void Start() override;
     virtual void Update(float dt) override;
     virtual void OnInspectorGUI() override;
+    void SetCanCaptureMouse(bool value);
+    
     float lastX;
     float lastY;
     float yaw;
@@ -20,6 +22,8 @@ private:
     float mouseSensitivity;
 
     bool  firstMouse;
+    
     bool  capturingMouse = false;
+    bool  canCaptureMouse = false;
 };
 

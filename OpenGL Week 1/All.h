@@ -27,4 +27,4 @@
 #include "Rendering/Light.h"
 #include "Rendering/MeshModel.h"
 #include "ObjectSystem/PrefabSystem.h"
-#include "Editor/UIHelpers.h"
+#include "Editor/EditorUI.h"

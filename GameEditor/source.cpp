@@ -1,6 +1,7 @@
 ﻿#include "All.h"
 #include "EnginePluginAPI.h" 
 #include "PluginLoader.h"
+#include "Editor/EditorContext.h"
 
 constexpr float FIXED_DT = 1.0f / 60.0f;
 
@@ -29,12 +30,12 @@ int main() {
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     
 
-    UIHelpers::Init(Window, "#version 460");
+    EditorUI::Init(Window, "#version 460");
     PluginLoader componentLoader("GameComponents.dll");
     if (!componentLoader.Load()) {
         return -1;
     }
-    UIHelpers::InitializeUI();
+    EditorUI::InitializeUI();
 
     editScene = std::make_unique<SampleScene>();
     editScene->InitialSetup(Window, true);
@@ -85,35 +86,32 @@ int main() {
             played = false;
         }
 
-        UIHelpers::NewFrame();
-        UIHelpers::ShowDockSpace();
+        EditorUI::NewFrame();
+        EditorUI::ShowDockSpace();
         Scene* activeScene = (state == EditorState::Play && runtimeScene)
             ? runtimeScene.get()
             : editScene.get();
-        UIHelpers::DrawSceneViewWindow(
-            editorFrameBuffer,
-            editorCamera,
-            activeScene,
-            selectedGameObject,
-            frameDt);
 
-        UIHelpers::DrawGameViewWindow(
-            gameFrameBuffer, 
-            activeScene,
-            state);
+        EditorContext context;
+        context.scene = activeScene;
+        context.selectedGameObject = selectedGameObject;
+        context.editorCamera = editorCamera;
+        context.editorFrameBuffer = editorFrameBuffer;
+        context.gameFrameBuffer = gameFrameBuffer;
+        context.editorState = &state;
+        context.deltaTime = frameDt;
+        context.window = Window;
 
-        UIHelpers::DrawInspectorWindow(selectedGameObject);
-        UIHelpers::DrawHierarchyWindow(activeScene, selectedGameObject, editorCamera);
-        UIHelpers::DrawProjectWindow();
-        UIHelpers::DrawDebugWindow(nullptr);
-        UIHelpers::Render();
+        
+        EditorUI::DrawWindows(context);
+        EditorUI::Render();
         Engine::SwapBuffers(Window);
     }
 
     delete editorFrameBuffer;
     delete gameFrameBuffer;
     delete editorCamera;
-    UIHelpers::Shutdown();
+    EditorUI::Shutdown();
     Engine::TerminateGLFW();
     return 0;
 }

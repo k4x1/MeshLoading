@@ -3,7 +3,7 @@
 
 
 void PlayerController::Start() {
-    UIHelpers::g_LockMouse = true;
+   // EditorUI::g_LockMouse = true;
     rb = owner->GetComponent<Rigidbody>();
     if (!rb) {
         DEBUG_ERR("No rb in " << owner->name);

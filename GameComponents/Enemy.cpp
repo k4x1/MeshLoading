@@ -1,7 +1,7 @@
 #include "Enemy.h"
-#include "GameObject.h"
+#include "ObjectSystem/GameObject.h"
 #include "PlayerShooter.h"
-#include "Debug.h"
+#include "Utils/Debug.h"
 
 void Enemy::Start()
 {

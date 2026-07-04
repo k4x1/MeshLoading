@@ -3,10 +3,7 @@
 #include "../Input/InputManager.h"  
 #include <iostream>
 #include <gtc/matrix_transform.hpp>
-#include <gtc/constants.hpp>
-#include <gtx/quaternion.hpp>  
 #include "../ObjectSystem/GameObject.h"
-#include "UIHelpers.h"
 
 CameraMovement::CameraMovement()
     : movementSpeed(20.0f),
@@ -34,8 +31,7 @@ void CameraMovement::Update(float dt) {
 
     bool rightDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 
-    if (!capturingMouse && rightDown &&
-        (UIHelpers::g_SceneViewHovered || UIHelpers::g_GameViewHovered))
+    if (!capturingMouse && rightDown && canCaptureMouse)
     {
         capturingMouse = true;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -84,4 +80,9 @@ void CameraMovement::Update(float dt) {
  void CameraMovement::OnInspectorGUI() {
     ImGui::DragFloat("Movement Speed", &movementSpeed, 0.1f);
     ImGui::DragFloat("Mouse Sensitivity", &mouseSensitivity, 0.01f);
+}
+
+void CameraMovement::SetCanCaptureMouse(bool value)
+{
+    canCaptureMouse = value;
 }

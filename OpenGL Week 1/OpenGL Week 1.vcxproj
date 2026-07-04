@@ -254,6 +254,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Editor\EditorWindowRegistry.cpp" />
     <ClCompile Include="Editor\InspectorSlotRegistry.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -331,7 +332,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Editor\UIHelpers.cpp">
+    <ClCompile Include="Editor\EditorUI.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -485,6 +486,88 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Editor\Windows\DebugWindow.cpp" />
+    <ClCompile Include="Editor\Windows\GameWindow.cpp" />
+    <ClCompile Include="Editor\Windows\HierarchyWindow.cpp" />
+    <ClCompile Include="Editor\Windows\InspectorWindow.cpp" />
+    <ClCompile Include="Editor\Windows\ProjectWindow.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\OpenGLassignment1.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\OpenGLas.464a3e92.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDLL;_UNICODE;UNICODE;;ENGINE_EXPORTS</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
+    <ClCompile Include="Editor\Windows\SceneWindow.cpp" />
     <ClCompile Include="Input\InputManager.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -639,6 +722,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="ObjectSystem\AssetTemplates.cpp" />
     <ClCompile Include="ObjectSystem\ComponentFactory.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -2413,6 +2497,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\ComputeParticles.comp" />
@@ -2458,12 +2543,22 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
     <ClInclude Include="All.h" />
     <ClInclude Include="Editor\CameraMovement.h" />
+    <ClInclude Include="Editor\EditorContext.h" />
+    <ClInclude Include="Editor\EditorWindowRegistry.h" />
+    <ClInclude Include="Editor\IEditorWindow.h" />
     <ClInclude Include="Editor\IInspectable.h" />
     <ClInclude Include="Editor\InspectorSlotRegistry.h" />
-    <ClInclude Include="Editor\UIHelpers.h" />
+    <ClInclude Include="Editor\EditorUI.h" />
     <ClInclude Include="Editor\UITheme.h" />
+    <ClInclude Include="Editor\Windows\DebugWindow.h" />
+    <ClInclude Include="Editor\Windows\GameWindow.h" />
+    <ClInclude Include="Editor\Windows\HierarchyWindow.h" />
+    <ClInclude Include="Editor\Windows\InspectorWindow.h" />
+    <ClInclude Include="Editor\Windows\ProjectWindow.h" />
+    <ClInclude Include="Editor\Windows\SceneWindow.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="ObjectSystem\AssetManager.h" />
+    <ClInclude Include="ObjectSystem\AssetTemplates.h" />
     <ClInclude Include="ObjectSystem\Component.h" />
     <ClInclude Include="ObjectSystem\ComponentFactory.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
@@ -2493,6 +2588,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="Scene\SampleScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Utils\Debug.h" />
+    <ClInclude Include="Utils\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

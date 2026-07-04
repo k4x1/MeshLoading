@@ -1,7 +1,7 @@
 ﻿#include "EnemySpawner.h"
-#include "GameObject.h"
-#include "PrefabSystem.h"
-#include "Debug.h"
+#include "ObjectSystem/GameObject.h"
+#include "ObjectSystem/PrefabSystem.h"
+#include "Utils/Debug.h"
 
 
 void EnemySpawner::Start() {
