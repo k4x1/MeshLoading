@@ -91,7 +91,10 @@ void ProjectWindow::DrawFolder(EditorContext& context, const fs::path& directory
                     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
                     ImGui::PushID(entry.path().string().c_str());
                     bool open = ImGui::TreeNodeEx(name.c_str(), flags, "%s/", name.c_str());
-
+                    
+                    DrawFolderDragSource(entry.path());
+                    DrawFolderDropTarget(context, entry.path());
+                    
                     if (ImGui::BeginPopupContextItem()) {
                         
                         if (ImGui::MenuItem("Open in Explorer"))
@@ -143,12 +146,13 @@ void ProjectWindow::DrawFolder(EditorContext& context, const fs::path& directory
                             *context.selectedAssetPath = entry.path().string();
                         }
 
+                        /*
                         if (context.selectedGameObject != nullptr)
                         {
                             *context.selectedGameObject = nullptr;
-                        }
+                        }*/
                     }
-
+                    
                     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                         const auto& assets = AssetManager::GetAssets();
                         for (int i = 0; i < (int)assets.size(); ++i) {
@@ -465,6 +469,261 @@ void ProjectWindow::OpenCreateAssetPopup(const fs::path& directoryPath, AssetTyp
     ImGui::OpenPopup("Create Project Asset");
 }
 
+int ProjectWindow::FindAssetIndexByPath(const fs::path& path) const
+{
+    std::string pathString = path.string();
+
+    const std::vector<Asset>& assets = AssetManager::GetAssets();
+
+    for (int assetIndex = 0; assetIndex < static_cast<int>(assets.size()); assetIndex++)
+    {
+        if (assets[assetIndex].path == pathString)
+        {
+            return assetIndex;
+        }
+    }
+
+    return -1;
+}
+
+void ProjectWindow::DrawFolderDragSource(const fs::path& folderPath)
+{
+    std::string folderPathString = folderPath.string();
+
+    if (ImGui::BeginDragDropSource())
+    {
+        ImGui::SetDragDropPayload(
+            "PROJECT_FOLDER_PATH",
+            folderPathString.c_str(),
+            folderPathString.size() + 1
+        );
+
+        ImGui::Text("Move folder:");
+        ImGui::TextUnformatted(folderPath.filename().string().c_str());
+
+        ImGui::EndDragDropSource();
+    }
+}
+void ProjectWindow::DrawFolderDropTarget(
+    EditorContext& context,
+    const fs::path& targetDirectory
+)
+{
+    if (ImGui::BeginDragDropTarget() == false)
+    {
+        return;
+    }
+
+    const ImGuiPayload* assetPayload =
+        ImGui::AcceptDragDropPayload("ASSET_PAYLOAD");
+
+    if (assetPayload != nullptr)
+    {
+        int assetIndex = *static_cast<int*>(assetPayload->Data);
+
+        const std::vector<Asset>& assets = AssetManager::GetAssets();
+
+        if (assetIndex >= 0 && assetIndex < static_cast<int>(assets.size()))
+        {
+            const Asset& asset = assets[assetIndex];
+
+            MovePathIntoDirectory(
+                context,
+                asset.path,
+                targetDirectory
+            );
+        }
+    }
+
+    const ImGuiPayload* folderPayload =
+        ImGui::AcceptDragDropPayload("PROJECT_FOLDER_PATH");
+
+    if (folderPayload != nullptr)
+    {
+        const char* sourceFolderPath =
+            static_cast<const char*>(folderPayload->Data);
+
+        if (sourceFolderPath != nullptr)
+        {
+            MovePathIntoDirectory(
+                context,
+                sourceFolderPath,
+                targetDirectory
+            );
+        }
+    }
+
+    ImGui::EndDragDropTarget();
+}
+bool ProjectWindow::MovePathIntoDirectory(
+    EditorContext& context,
+    const fs::path& sourcePath,
+    const fs::path& targetDirectory
+)
+{
+    if (sourcePath.empty())
+    {
+        return false;
+    }
+
+    if (targetDirectory.empty())
+    {
+        return false;
+    }
+
+    if (fs::exists(sourcePath) == false)
+    {
+        DEBUG_WARN("Cannot move missing path: " << sourcePath.string());
+        return false;
+    }
+
+    if (fs::exists(targetDirectory) == false)
+    {
+        DEBUG_WARN("Cannot move into missing folder: " << targetDirectory.string());
+        return false;
+    }
+
+    if (fs::is_directory(targetDirectory) == false)
+    {
+        DEBUG_WARN("Move target is not a folder: " << targetDirectory.string());
+        return false;
+    }
+
+    fs::path sourceAbsolute = fs::weakly_canonical(fs::absolute(sourcePath));
+    fs::path targetAbsolute = fs::weakly_canonical(fs::absolute(targetDirectory));
+
+    if (sourceAbsolute == targetAbsolute)
+    {
+        return false;
+    }
+
+    if (fs::is_directory(sourceAbsolute))
+    {
+        if (IsPathInsideDirectory(targetAbsolute, sourceAbsolute))
+        {
+            DEBUG_WARN("Cannot move a folder into itself or one of its children.");
+            return false;
+        }
+    }
+
+    fs::path newPath = targetDirectory / sourcePath.filename();
+
+    if (fs::exists(newPath))
+    {
+        DEBUG_WARN("Cannot move. Target already exists: " << newPath.string());
+        return false;
+    }
+
+    std::error_code errorCode;
+    fs::rename(sourcePath, newPath, errorCode);
+
+    if (errorCode)
+    {
+        DEBUG_ERR(
+            "Failed to move: "
+            << sourcePath.string()
+            << " to "
+            << newPath.string()
+            << " error: "
+            << errorCode.message()
+        );
+
+        return false;
+    }
+
+    UpdateSelectedAssetAfterMove(
+        context,
+        sourcePath,
+        newPath
+    );
+
+    AssetManager::LoadAssets("Assets");
+
+    DEBUG_LOG(
+        "Moved: "
+        << sourcePath.string()
+        << " to "
+        << newPath.string()
+    );
+
+    return true;
+}
+bool ProjectWindow::IsPathInsideDirectory(
+    const fs::path& childPath,
+    const fs::path& directoryPath
+) const
+{
+    fs::path childAbsolute = fs::weakly_canonical(fs::absolute(childPath));
+    fs::path directoryAbsolute = fs::weakly_canonical(fs::absolute(directoryPath));
+
+    fs::path relativePath = fs::relative(
+        childAbsolute,
+        directoryAbsolute
+    );
+
+    if (relativePath.empty())
+    {
+        return true;
+    }
+
+    std::string relativeString = relativePath.string();
+
+    if (relativeString == ".")
+    {
+        return true;
+    }
+
+    if (relativeString.size() >= 2 &&
+        relativeString[0] == '.' &&
+        relativeString[1] == '.')
+    {
+        return false;
+    }
+
+    return true;
+}
+void ProjectWindow::UpdateSelectedAssetAfterMove(
+    EditorContext& context,
+    const fs::path& oldPath,
+    const fs::path& newPath
+)
+{
+    if (context.selectedAssetPath == nullptr)
+    {
+        return;
+    }
+
+    if (context.selectedAssetPath->empty())
+    {
+        return;
+    }
+
+    fs::path selectedPath = *context.selectedAssetPath;
+
+    fs::path selectedAbsolute = fs::weakly_canonical(fs::absolute(selectedPath));
+    fs::path oldAbsolute = fs::weakly_canonical(fs::absolute(oldPath));
+
+    if (selectedAbsolute == oldAbsolute)
+    {
+        *context.selectedAssetPath = newPath.string();
+        return;
+    }
+
+    if (fs::is_directory(oldPath))
+    {
+        if (IsPathInsideDirectory(selectedAbsolute, oldAbsolute))
+        {
+            fs::path relativePath = fs::relative(
+                selectedAbsolute,
+                oldAbsolute
+            );
+
+            fs::path updatedPath = newPath / relativePath;
+
+            *context.selectedAssetPath = updatedPath.string();
+        }
+    }
+}
 const char* ProjectWindow::GetWindowName() const
 {
     return "Project";

@@ -1,0 +1,27 @@
+{
+    "fragShaderPath": "Resources/Shaders/Texture.frag",
+    "name": "New Material",
+    "properties": {
+        "_AmbientColor": {
+            "type": "Vec3",
+            "value": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "_AmbientStrength": {
+            "type": "Float",
+            "value": 0.6299999952316284
+        },
+        "_ObjectShininess": {
+            "type": "Float",
+            "value": 1.0
+        },
+        "_Texture0": {
+            "type": "Texture2D",
+            "value": "Assets\\Textures\\PolygonAncientWorlds_Statue_01.png"
+        }
+    },
+    "vertShaderPath": "Resources/Shaders/Texture.vert"
+}

@@ -113,7 +113,7 @@ void MeshRenderer::Reload()
     }
     else
     {
-        DEBUG_WARN("[MeshRenderer] Invalid model path: " << modelFilePath);
+        DEBUG_WARN("Invalid model path: " << modelFilePath);
     }
 
     ReloadMaterial();
@@ -130,13 +130,13 @@ void MeshRenderer::ReloadMaterial()
 
     if (materialFilePath.empty())
     {
-        DEBUG_WARN("[MeshRenderer] No material assigned.");
+        DEBUG_WARN("No material assigned.");
         return;
     }
 
     if (fs::exists(materialFilePath) == false)
     {
-        DEBUG_ERR("[MeshRenderer] Material file does not exist: " << materialFilePath);
+        DEBUG_ERR("Material file does not exist: " << materialFilePath);
         return;
     }
 
@@ -156,7 +156,7 @@ void MeshRenderer::ReloadMaterial()
 
     if (shaderProgram == 0)
     {
-        DEBUG_ERR("[MeshRenderer] Failed to create shader from material: " << materialFilePath);
+        DEBUG_ERR("Failed to create shader from material: " << materialFilePath);
         return;
     }
 

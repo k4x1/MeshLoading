@@ -46,10 +46,8 @@ private:
     void OpenCreateFolderPopup(const fs::path& directoryPath);
     void OpenCreateAssetPopup(const fs::path& directoryPath, AssetType assetType);
 
-    /*int FindAssetIndexByPath(const fs::path& path) const;
+    int FindAssetIndexByPath(const fs::path& path) const;
 
-    void DrawFileDragSource(const fs::path& filePath);
-    
     void DrawFolderDragSource(const fs::path& folderPath);
 
     void DrawFolderDropTarget(EditorContext& context, const fs::path& targetDirectory);
@@ -58,5 +56,5 @@ private:
 
     bool IsPathInsideDirectory(const fs::path& childPath, const fs::path& directoryPath) const;
 
-    void UpdateSelectedAssetAfterMove(EditorContext& context, const fs::path& oldPath,const fs::path& newPath);*/
+    void UpdateSelectedAssetAfterMove(EditorContext& context, const fs::path& oldPath,const fs::path& newPath);
 };
