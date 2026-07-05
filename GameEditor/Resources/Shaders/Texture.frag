@@ -48,7 +48,7 @@ in vec2 FragTexCoords;
 in vec3 FragNormal;
 in vec3 FragPos;
 
-uniform sampler2D Texture0;
+uniform sampler2D _Texture0;
 layout(binding =5) uniform samplerCube skybox;
 
 uniform vec3 CameraPos;
@@ -168,7 +168,7 @@ void main()
     vec3 ViewDir = normalize(FragPos - CameraPos);
     vec3 ReflectDir = reflect(ViewDir, Normal);
     
-    vec4 BaseTexture = texture(Texture0, FragTexCoords);
+    vec4 BaseTexture = texture(_Texture0, FragTexCoords);
     vec4 ReflectionTexture = texture(skybox, ReflectDir);
     
     FinalColor = Light * mix(BaseTexture, ReflectionTexture, 0.5f);

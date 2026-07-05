@@ -114,14 +114,16 @@ bool InspectorPropertyDrawer::DrawAssetPathProperty(const InspectorProperty& pro
 {
     std::string* value = static_cast<std::string*>(property.value);
 
-    ImGui::Text("%s", property.label.c_str());
-    ImGui::SameLine();
+    ImGui::TextUnformatted(property.label.c_str());
 
     const char* buttonText = value->empty()
         ? "<none>"
         : value->c_str();
 
-    ImGui::Button(buttonText, ImVec2(-1, 0));
+    ImGui::Button(
+        buttonText,
+        ImVec2(-1.0f, 0.0f)
+    );
 
     bool changed = false;
 
@@ -158,6 +160,17 @@ bool InspectorPropertyDrawer::DrawAssetPathProperty(const InspectorProperty& pro
         }
 
         ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::MenuItem("Clear"))
+        {
+            value->clear();
+            changed = true;
+        }
+
+        ImGui::EndPopup();
     }
 
     return changed;

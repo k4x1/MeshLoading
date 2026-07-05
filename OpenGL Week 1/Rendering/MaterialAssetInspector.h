@@ -2,7 +2,7 @@
 
 #include "../EnginePluginAPI.h"
 #include "../Editor/Inspector/IAssetInspector.h"
-
+#include "../Editor/Preview/MaterialSpherePreviewRenderer.h"
 #include <glew.h>
 
 #include <string>
@@ -22,7 +22,9 @@ private:
     std::string cachedMaterialPath = "";
     std::string cachedVertShaderPath = "";
     std::string cachedFragShaderPath = "";
-
+    
+    MaterialSpherePreviewRenderer materialPreviewRenderer;
+    
     GLuint GetShaderProgram(Material* material);
     void ClearShaderProgram();
 

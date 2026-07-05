@@ -7,11 +7,12 @@
 #include "Material.h"
 #include "MaterialManager.h"
 
-#include "../Rendering/ShaderLoader.h"
+#include "ShaderLoader.h"
 
 #include "../Utils/Debug.h"
-
 #include <imgui.h>
+
+#include "Editor/Inspector/InspectorPreview.h"
 
 void MaterialAssetInspector::Draw(EditorContext& context, const Asset& asset)
 {
@@ -27,7 +28,7 @@ void MaterialAssetInspector::Draw(EditorContext& context, const Asset& asset)
     GLuint shaderProgram = GetShaderProgram(material);
 
     DrawHeader(material);
-
+    
     std::string previousVertShaderPath = material->vertShaderPath;
     std::string previousFragShaderPath = material->fragShaderPath;
 
@@ -48,8 +49,19 @@ void MaterialAssetInspector::Draw(EditorContext& context, const Asset& asset)
     {
         ImGui::TextWrapped("Shader failed to compile or could not be loaded.");
     }
-
+    ImGui::Separator();
     DrawSaveControls(material);
+    ImGui::Separator();
+    materialPreviewRenderer.SetMaterial(
+          material,
+          shaderProgram
+      );
+    
+    InspectorPreview::DrawPreview(
+        "Preview",
+        materialPreviewRenderer,
+        context
+    );
 }
 void MaterialAssetInspector::DrawHeader(Material* material)
 {

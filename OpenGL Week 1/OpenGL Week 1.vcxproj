@@ -410,9 +410,12 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Editor\Inspector\AssetInspectorRegistry.cpp" />
+    <ClCompile Include="Editor\Inspector\InspectorPreview.cpp" />
     <ClCompile Include="Editor\Inspector\InspectorProperty.cpp" />
     <ClCompile Include="Editor\Inspector\InspectorPropertyDrawer.cpp" />
     <ClCompile Include="Editor\Inspector\InspectorPropertyList.cpp" />
+    <ClCompile Include="Editor\Preview\MaterialSpherePreviewRenderer.cpp" />
+    <ClCompile Include="Editor\Preview\PreviewRenderTarget.cpp" />
     <ClCompile Include="Editor\UITheme.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -2559,9 +2562,13 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="Editor\EditorUI.h" />
     <ClInclude Include="Editor\Inspector\AssetInspectorRegistry.h" />
     <ClInclude Include="Editor\Inspector\IAssetInspector.h" />
+    <ClInclude Include="Editor\Inspector\IInspectorPreviewRenderer.h" />
+    <ClInclude Include="Editor\Inspector\InspectorPreview.h" />
     <ClInclude Include="Editor\Inspector\InspectorProperty.h" />
     <ClInclude Include="Editor\Inspector\InspectorPropertyDrawer.h" />
     <ClInclude Include="Editor\Inspector\InspectorPropertyList.h" />
+    <ClInclude Include="Editor\Preview\MaterialSpherePreviewRenderer.h" />
+    <ClInclude Include="Editor\Preview\PreviewRenderTarget.h" />
     <ClInclude Include="Editor\UITheme.h" />
     <ClInclude Include="Editor\Windows\DebugWindow.h" />
     <ClInclude Include="Editor\Windows\GameWindow.h" />
