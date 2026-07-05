@@ -30,6 +30,7 @@ public:
         const fs::path& directoryPath,
         const std::string& folderName
     );
+    static const Asset* FindAssetByPath(const std::string& assetPath);
 
 private:
     static std::vector<Asset> assets;

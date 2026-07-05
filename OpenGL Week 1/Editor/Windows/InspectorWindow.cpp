@@ -4,15 +4,27 @@
 #include "../InspectorSlotRegistry.h"
 #include "../../ObjectSystem/ComponentFactory.h"
 #include "../../Utils/Debug.h"
+#include "../../Utils/Utils.h"
 #include <gtc/type_ptr.hpp>
 #include "../EditorWindowRegistry.h"
-
+#include "../Inspector/AssetInspectorRegistry.h"
+#include "../../ObjectSystem/AssetManager.h"
 REGISTER_EDITOR_WINDOW(InspectorWindow);
 
 void InspectorWindow::Draw(EditorContext& context)
 {
-    GameObject*& selected =  context.selectedGameObject;
-    
+    GameObject* selected = nullptr;
+
+    if (context.selectedGameObject != nullptr)
+    {
+        selected = *context.selectedGameObject;
+    }
+    std::string selectedAssetPath = "";
+
+    if (context.selectedAssetPath != nullptr)
+    {
+        selectedAssetPath = *context.selectedAssetPath;
+    }
     ImGui::Begin("Inspector");
 
     ImGui::TextWrapped("Drag a script asset (*.script) here to add it to this GameObject:");
@@ -34,7 +46,32 @@ void InspectorWindow::Draw(EditorContext& context)
         }
         ImGui::EndDragDropTarget();
     }
+    if (selectedAssetPath.empty() == false)
+    {
+        const Asset* selectedAsset = AssetManager::FindAssetByPath(selectedAssetPath);
 
+        if (selectedAsset == nullptr)
+        {
+            ImGui::TextUnformatted("Selected asset not found.");
+            ImGui::TextWrapped("%s", selectedAssetPath.c_str());
+            ImGui::End();
+            return;
+        }
+
+        bool handled = AssetInspectorRegistry::DrawInspectorForAsset(
+            context,
+            *selectedAsset
+        );
+
+        if (handled == false)
+        {
+            ImGui::TextUnformatted("No inspector registered for asset:");
+            ImGui::TextWrapped("%s", selectedAsset->path.c_str());
+        }
+
+        ImGui::End();
+        return;
+    }
     if (!selected) {
         ImGui::Text("Nothing selected.");
         ImGui::End();

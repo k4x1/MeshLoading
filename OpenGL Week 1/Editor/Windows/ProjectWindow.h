@@ -15,21 +15,31 @@ public:
     void Draw(EditorContext& context) override;
     const char* GetWindowName() const override;
 private:
-    enum class CreatePopupMode
+    enum class PopupMode
     {
         None,
         Folder,
         Asset
     };
 
-    CreatePopupMode createPopupMode = CreatePopupMode::None;
+    PopupMode createPopupMode = PopupMode::None;
     AssetType createAssetType = AssetType::Script;
     fs::path createDirectory = "Assets";
     char createName[128] = "";
     bool shouldOpenCreatePopup = false;
     
-    void DrawFolder(const fs::path& directoryPath);
+    PopupMode renamePopupMode = PopupMode::None;
+    fs::path renamePath;
+    char renameName[128] = "";
+    bool shouldOpenRenamePopup = false;
+
+    
+    void DrawFolder(EditorContext& context, const fs::path& directoryPath);
     void OpenInExplorer(const fs::path& path);
+
+
+    void DrawRenamePopup();
+    void OpenRenamePopup(const fs::path& path);
     void DrawCreateMenu(const fs::path& directoryPath);
     void DrawCreatePopup();
 

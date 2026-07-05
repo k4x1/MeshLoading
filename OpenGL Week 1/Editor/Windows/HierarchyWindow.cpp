@@ -11,7 +11,12 @@ REGISTER_EDITOR_WINDOW(HierarchyWindow);
 void HierarchyWindow::Draw(EditorContext& context)
 {
     Scene* scene = context.scene;
-    GameObject*& selected = context.selectedGameObject;
+    GameObject* selected = nullptr;
+
+    if (context.selectedGameObject != nullptr)
+    {
+        selected = *context.selectedGameObject;
+    }
     GameObject* editorCamera = context.editorCamera;
      
     ImGui::Begin("Hierarchy");
@@ -48,7 +53,8 @@ void HierarchyWindow::Draw(EditorContext& context)
         ImGui::EndDragDropTarget();
     }
 
-    std::function<void(GameObject*)> drawNode = [&](GameObject* obj) {
+    std::function<void(GameObject*)> drawNode = [&](GameObject* obj)
+    {
         ImGui::PushID(obj);
         ImGuiTreeNodeFlags flags = obj->children.empty()
             ? ImGuiTreeNodeFlags_Leaf
@@ -58,9 +64,19 @@ void HierarchyWindow::Draw(EditorContext& context)
         bool open = ImGui::TreeNodeEx(obj->name.c_str(), flags);
 
         if (ImGui::IsItemClicked())
-            selected = obj;
+        {
+            if (context.selectedGameObject != nullptr)
+            {
+                *context.selectedGameObject = obj;
+            }
+            if (context.selectedAssetPath != nullptr)
+            {
+                context.selectedAssetPath->clear();
+            }
+        }
 
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+            {
             glm::vec3 target = obj->transform.position;
             float     dist = 10.0f;
 
@@ -83,12 +99,20 @@ void HierarchyWindow::Draw(EditorContext& context)
         }
 
         if (ImGui::BeginPopupContextItem()) {
-            if (ImGui::MenuItem("Delete")) {
-                if (selected == obj) selected = nullptr;
+            if (ImGui::MenuItem("Delete"))
+            {
+                
+                if (context.selectedGameObject != nullptr && *context.selectedGameObject == obj)
+                {
+                    *context.selectedGameObject = nullptr;
+                }
+                
                 scene->RemoveGameObject(obj);
                 ImGui::EndPopup();
                 if (open)
+                {
                     ImGui::TreePop();
+                }
                 ImGui::PopID();
                 return;
             }

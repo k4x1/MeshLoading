@@ -25,7 +25,12 @@ void SceneWindow::Draw(EditorContext& context)
     FrameBuffer* editorFB = context.editorFrameBuffer;
     GameObject* editorCamera = context.editorCamera;
     Scene* scene = context.scene;
-    GameObject* selected = context.selectedGameObject;
+    GameObject* selected = nullptr;
+    if (context.selectedGameObject != nullptr)
+    {
+        selected = *context.selectedGameObject;
+    }
+    
     float       deltaTime = context.deltaTime;
 
     ImGui::Begin("Scene View");

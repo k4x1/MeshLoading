@@ -1,16 +1,24 @@
 ﻿#pragma once
+
 #include "MeshModel.h"
 #include "../ObjectSystem/Component.h"
+#include "Material.h"
+#include "Texture.h"
+
 #include <filesystem>
 #include <memory>
 #include <string>
-#include "Texture.h"
-#include <glm.hpp>  
+#include <unordered_map>
+
+#include <glm.hpp>
+
+#include "Material.h"
+
 namespace fs = std::filesystem;
 
-class ENGINE_API MeshRenderer : public ISerializableComponent {
+class ENGINE_API MeshRenderer : public ISerializableComponent
+{
 public:
-  //  MeshRenderer() = default;
     MeshRenderer(
         const glm::vec3& pos = glm::vec3(0),
         const glm::vec3& rot = glm::vec3(0),
@@ -21,38 +29,45 @@ public:
     void Update(float dt) override;
     void Render(Camera* cam) override;
     void OnInspectorGUI() override;
-    nlohmann::json Serialize() const override {
+
+    nlohmann::json Serialize() const override
+    {
         return {
-            { "modelFilePath",   modelFilePath   },
-            { "textureFilePath", textureFilePath },
-            { "vertShaderPath",  vertShaderPath  },
-            { "fragShaderPath",  fragShaderPath  }
+                { "modelFilePath", modelFilePath },
+                { "materialFilePath", materialFilePath },
         };
     }
-    void Deserialize(const nlohmann::json& j) override {
-        modelFilePath = j.value("modelFilePath", modelFilePath);
-        textureFilePath = j.value("textureFilePath", textureFilePath);
-        vertShaderPath = j.value("vertShaderPath", vertShaderPath);
-        fragShaderPath = j.value("fragShaderPath", fragShaderPath);
+
+    void Deserialize(const nlohmann::json& json) override
+    {
+        modelFilePath = json.value("modelFilePath", modelFilePath);
+        materialFilePath = json.value("materialFilePath", materialFilePath);
+
         Reload();
     }
 
     std::string modelFilePath;
-    std::string textureFilePath;
-    std::string vertShaderPath;
-    std::string fragShaderPath;
-    Texture texture;
-    void Reload();  
+    std::string materialFilePath = "Assets/Materials/Default.mat";
+
+    void Reload();
 
 private:
     std::unique_ptr<MeshModel> mesh;
+
+    Material* material = nullptr;
+
     GLuint shaderProgram = 0;
-    GLuint textureID = 0;
 
-    fs::file_time_type _modelTime;
-    fs::file_time_type _texTime;
-    fs::file_time_type _vertTime;
-    fs::file_time_type _fragTime;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> loadedTextures;
 
-    void _checkFileUpdates();
+    fs::file_time_type modelTime;
+    fs::file_time_type materialTime;
+    fs::file_time_type vertShaderTime;
+    fs::file_time_type fragShaderTime;
+
+    void CheckFileUpdates();
+
+    void ReloadMaterial();
+    Texture* GetOrLoadTexture(const std::string& texturePath);
+    void BindMaterialTextures();
 };

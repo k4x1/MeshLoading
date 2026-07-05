@@ -51,6 +51,31 @@
     <ClInclude Include="..\Dependencies\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\IMGUI\imstb_truetype.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Shaders\ComputeParticles.comp" />
+    <Content Include="Resources\Shaders\GeometryPass.frag" />
+    <Content Include="Resources\Shaders\GeometryPass.vert" />
+    <Content Include="Resources\Shaders\InstanceTexture.frag" />
+    <Content Include="Resources\Shaders\InstanceTexture.vert" />
+    <Content Include="Resources\Shaders\LightingPass.frag" />
+    <Content Include="Resources\Shaders\LightingPass.vert" />
+    <Content Include="Resources\Shaders\LightSource.frag" />
+    <Content Include="Resources\Shaders\LightSource.vert" />
+    <Content Include="Resources\Shaders\MainRendering.frag" />
+    <Content Include="Resources\Shaders\MainRendering.vert" />
+    <Content Include="Resources\Shaders\Particle.frag" />
+    <Content Include="Resources\Shaders\Particle.vert" />
+    <Content Include="Resources\Shaders\Quad.vert" />
+    <Content Include="Resources\Shaders\ShadowMapping.frag" />
+    <Content Include="Resources\Shaders\ShadowMapping.vert" />
+    <Content Include="Resources\Shaders\ShadowMappingInstance.vert" />
+    <Content Include="Resources\Shaders\Skybox.frag" />
+    <Content Include="Resources\Shaders\Skybox.vert" />
+    <Content Include="Resources\Shaders\Terrain.frag" />
+    <Content Include="Resources\Shaders\Terrain.vert" />
+    <Content Include="Resources\Shaders\Texture.frag" />
+    <Content Include="Resources\Shaders\Texture.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

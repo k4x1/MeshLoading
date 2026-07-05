@@ -4,11 +4,9 @@
             "children": [],
             "components": [
                 {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "materialFilePath": "",
                     "modelFilePath": "Assets/Models/Cube.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                    "type": "MeshRenderer"
                 },
                 {
                     "halfExtents": [
@@ -58,9 +56,9 @@
                     "components": [
                         {
                             "FOV": 90.0,
-                            "height": 542.0,
+                            "height": 418.5,
                             "type": "Camera",
-                            "width": 963.5555419921875
+                            "width": 744.0
                         }
                     ],
                     "name": "CameraObject",
@@ -137,11 +135,9 @@
             "children": [],
             "components": [
                 {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "materialFilePath": "Assets\\texture.mat",
                     "modelFilePath": "Assets\\Models\\sphere.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                    "type": "MeshRenderer"
                 },
                 {
                     "radius": 1.0,
@@ -214,11 +210,9 @@
             "children": [],
             "components": [
                 {
-                    "fragShaderPath": "Resources/Shaders/Texture.frag",
+                    "materialFilePath": "",
                     "modelFilePath": "Assets\\Models\\sphere.obj",
-                    "textureFilePath": "Resources/Textures/PolygonAncientWorlds_Texture_01_A.png",
-                    "type": "MeshRenderer",
-                    "vertShaderPath": "Resources/Shaders/Texture.vert"
+                    "type": "MeshRenderer"
                 },
                 {
                     "halfExtents": [

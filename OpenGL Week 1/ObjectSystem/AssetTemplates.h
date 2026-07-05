@@ -8,9 +8,17 @@ public:
     static std::string GetMaterialTemplate()
     {
         return R"({
+    "name": "New Material",
     "textureFilePath": "Resources/Textures/blankTex.png",
     "vertShaderPath": "Resources/Shaders/Texture.vert",
-    "fragShaderPath": "Resources/Shaders/Texture.frag"
+    "fragShaderPath": "Resources/Shaders/Texture.frag",
+    "floatProperties": {
+        "_Metallic": 0.0,
+        "_Roughness": 0.5
+    },
+    "colorProperties": {
+        "_BaseColor": [1.0, 1.0, 1.0, 1.0]
+    }
 }
 )";
     }

@@ -13,6 +13,7 @@ FrameBuffer* editorFrameBuffer = nullptr;
 FrameBuffer* gameFrameBuffer = nullptr;
 GameObject* editorCamera = nullptr;
 GameObject* selectedGameObject = nullptr;
+std::string selectedAssetPath = "";
 bool played = false;
 int main() {
    
@@ -94,14 +95,14 @@ int main() {
 
         EditorContext context;
         context.scene = activeScene;
-        context.selectedGameObject = selectedGameObject;
+        context.selectedGameObject = &selectedGameObject;
+        context.selectedAssetPath = &selectedAssetPath;
         context.editorCamera = editorCamera;
         context.editorFrameBuffer = editorFrameBuffer;
         context.gameFrameBuffer = gameFrameBuffer;
         context.editorState = &state;
         context.deltaTime = frameDt;
         context.window = Window;
-
         
         EditorUI::DrawWindows(context);
         EditorUI::Render();

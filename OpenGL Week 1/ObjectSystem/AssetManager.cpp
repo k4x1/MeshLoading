@@ -234,6 +234,23 @@ bool AssetManager::CreateFolder(
     LoadAssets("Assets");
     return true;
 }
+
+const Asset* AssetManager::FindAssetByPath(const std::string& assetPath)
+{
+    const std::vector<Asset>& assets = AssetManager::GetAssets();
+
+    for (const Asset& asset : assets)
+    {
+        if (asset.path == assetPath)
+        {
+            return &asset;
+        }
+    }
+
+    return nullptr;
+
+}
+
 fs::path AssetManager::GetUniqueAssetPath(
     const fs::path& directoryPath,
     const std::string& baseName,

@@ -52,11 +52,11 @@ uniform sampler2D Texture0;
 layout(binding =5) uniform samplerCube skybox;
 
 uniform vec3 CameraPos;
-uniform float LightSpecularStrength = 1.0f;
-uniform float ObjectShininess = 32.0f;
+uniform float _LightSpecularStrength = 1.0f;
+uniform float _ObjectShininess = 32.0f;
 
-uniform float AmbientStrength = 0.85f;
-uniform vec3 AmbientColor = vec3(1.0f, 1.0f, 1.0f);
+uniform float _AmbientStrength = 0.85f;
+uniform vec3 _AmbientColor = vec3(1.0f, 1.0f, 1.0f);
 
 
 uniform vec3 LightColor = vec3(1.0f, 1.0f, 1.0f);
@@ -82,7 +82,7 @@ vec3 CalculateLightPoint(uint index){
 	vec3 ReverseViewDir = normalize(CameraPos - FragPos);
 	vec3 HalfwayVector = normalize(-LightDir + ReverseViewDir);
 
-	float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
+	float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), _ObjectShininess);
 	vec3 Specular = PointLightArray[index].specularStrength * SpecularReflectivity * PointLightArray[index].color;
 
 	vec3 Light = Diffuse + Specular;
@@ -109,7 +109,7 @@ vec3 CalculateLightSpot() {
     // Specular component
     vec3 ViewDir = normalize(  FragPos - CameraPos);
     vec3 HalfwayVector = normalize(LightDir - ViewDir);
-    float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
+    float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), _ObjectShininess);
     vec3 Specular = SptLight.specularStrength * SpecularReflectivity * SptLight.color;
 
     // Apply spotlight intensity
@@ -139,7 +139,7 @@ vec3 CalculateLightDirection() {
     vec3 ReverseViewDir = normalize(CameraPos - FragPos);
     vec3 HalfwayVector = normalize(LightDir + ReverseViewDir);
 
-    float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), ObjectShininess);
+    float SpecularReflectivity = pow(max(dot(Normal, HalfwayVector), 0.0f), _ObjectShininess);
     vec3 Specular = DirLight.specularStrength * SpecularReflectivity * DirLight.color;
 
     return Specular + Diffuse;
@@ -148,7 +148,7 @@ void main()
 {
 
 
-	vec3 Ambient = AmbientStrength * AmbientColor;
+	vec3 Ambient = _AmbientStrength * _AmbientColor;
 
 	// Specular Component
 	

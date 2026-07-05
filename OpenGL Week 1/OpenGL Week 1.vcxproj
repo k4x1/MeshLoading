@@ -409,6 +409,10 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Editor\Inspector\AssetInspectorRegistry.cpp" />
+    <ClCompile Include="Editor\Inspector\InspectorProperty.cpp" />
+    <ClCompile Include="Editor\Inspector\InspectorPropertyDrawer.cpp" />
+    <ClCompile Include="Editor\Inspector\InspectorPropertyList.cpp" />
     <ClCompile Include="Editor\UITheme.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -1727,6 +1731,9 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Rendering\Material.cpp" />
+    <ClCompile Include="Rendering\MaterialAssetInspector.cpp" />
+    <ClCompile Include="Rendering\MaterialManager.cpp" />
     <ClCompile Include="Rendering\MeshModel.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -2035,6 +2042,7 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
       <AdditionalIncludeDirectories>D:\forkRepos\MeshLoading\OpenGL Week 1\;D:\forkRepos\MeshLoading\Dependencies;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Rendering\ShaderPropertyInfo.cpp" />
     <ClCompile Include="Rendering\ShadowMap.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -2549,6 +2557,11 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="Editor\IInspectable.h" />
     <ClInclude Include="Editor\InspectorSlotRegistry.h" />
     <ClInclude Include="Editor\EditorUI.h" />
+    <ClInclude Include="Editor\Inspector\AssetInspectorRegistry.h" />
+    <ClInclude Include="Editor\Inspector\IAssetInspector.h" />
+    <ClInclude Include="Editor\Inspector\InspectorProperty.h" />
+    <ClInclude Include="Editor\Inspector\InspectorPropertyDrawer.h" />
+    <ClInclude Include="Editor\Inspector\InspectorPropertyList.h" />
     <ClInclude Include="Editor\UITheme.h" />
     <ClInclude Include="Editor\Windows\DebugWindow.h" />
     <ClInclude Include="Editor\Windows\GameWindow.h" />
@@ -2577,10 +2590,15 @@ xcopy /Y /R "$(TargetDir)$(ProjectName).lib"  "$(SolutionDir)GameComponents\"
     <ClInclude Include="Rendering\GeometryBuffer.h" />
     <ClInclude Include="Rendering\Light.h" />
     <ClInclude Include="Rendering\LightSystem.h" />
+    <ClInclude Include="Rendering\Material.h" />
+    <ClInclude Include="Rendering\MaterialAssetInspector.h" />
+    <ClInclude Include="Rendering\MaterialManager.h" />
+    <ClInclude Include="Rendering\MaterialPropertyValue.h" />
     <ClInclude Include="Rendering\MeshModel.h" />
     <ClInclude Include="Rendering\MeshRenderer.h" />
     <ClInclude Include="Rendering\ParticleSystem.h" />
     <ClInclude Include="Rendering\ShaderLoader.h" />
+    <ClInclude Include="Rendering\ShaderPropertyInfo.h" />
     <ClInclude Include="Rendering\ShadowMap.h" />
     <ClInclude Include="Rendering\Skybox.h" />
     <ClInclude Include="Rendering\Texture.h" />

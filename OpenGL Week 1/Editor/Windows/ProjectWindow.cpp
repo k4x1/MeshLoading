@@ -59,7 +59,7 @@ void ProjectWindow::Draw(EditorContext& context) {
 
     ImGui::Separator();
     
-    DrawFolder(fs::path("Assets"));
+    DrawFolder(context, fs::path("Assets"));
 
     if (shouldOpenCreatePopup)
     {
@@ -67,13 +67,22 @@ void ProjectWindow::Draw(EditorContext& context) {
         shouldOpenCreatePopup = false;
     }
 
-    
     DrawCreatePopup();
+    
+    if (shouldOpenRenamePopup)
+    {
+        ImGui::OpenPopup("Rename Project Item");
+        shouldOpenRenamePopup = false;
+    }
+
+    DrawRenamePopup();
+
+    
 
     ImGui::End();
 }
 
-void ProjectWindow::DrawFolder(const fs::path& directoryPath)
+void ProjectWindow::DrawFolder(EditorContext& context, const fs::path& directoryPath)
 {
     for (auto& entry : fs::directory_iterator(directoryPath)) {
                 const auto name = entry.path().filename().string();
@@ -85,8 +94,6 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
 
                     if (ImGui::BeginPopupContextItem()) {
                         
-                        DrawCreateMenu(entry.path());
-                        ImGui::Separator();
                         if (ImGui::MenuItem("Open in Explorer"))
                         {
                             OpenInExplorer(entry.path());
@@ -94,7 +101,7 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
 
                         ImGui::Separator();
                         if (ImGui::MenuItem("Rename Folder")) {
-                            // TODO: implement rename-folder logic
+                                OpenRenamePopup(entry.path());
                         }
                         if (ImGui::MenuItem("Delete Folder")) {
                             std::error_code ec;
@@ -108,7 +115,7 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
                     }
 
                     if (open) {
-                        DrawFolder(entry.path());
+                        DrawFolder(context, entry.path());
                         ImGui::TreePop();
                     }
                     ImGui::PopID();
@@ -120,7 +127,27 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
                         ImGui::PopID();
                         continue;
                     }
-                    ImGui::Selectable(name.c_str(), false);
+                    
+                    bool isSelected = false;
+
+                    if (context.selectedAssetPath != nullptr)
+                    {
+                        isSelected = *context.selectedAssetPath == entry.path().string();
+                    }
+                    
+                    if (ImGui::Selectable(name.c_str(), isSelected))
+                    {
+                        DEBUG_LOG("Selected Asset: " << entry.path().string() << "\n");
+                        if (context.selectedAssetPath != nullptr)
+                        {
+                            *context.selectedAssetPath = entry.path().string();
+                        }
+
+                        if (context.selectedGameObject != nullptr)
+                        {
+                            *context.selectedGameObject = nullptr;
+                        }
+                    }
 
                     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                         const auto& assets = AssetManager::GetAssets();
@@ -139,18 +166,11 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
                         {
                             OpenInExplorer(entry.path());
                         }
-
-                      
-                        ImGui::EndPopup();
-                        
-                        ImGui::Separator();
-                        
-                        DrawCreateMenu(entry.path());
                         
                         ImGui::Separator();
                         
                         if (ImGui::MenuItem("Rename File")) {
-                            // TODO: implement rename-file logic
+                            OpenRenamePopup(entry.path());
                         }
                         if (ImGui::MenuItem("Delete File")) {
                             std::error_code ec;
@@ -166,6 +186,123 @@ void ProjectWindow::DrawFolder(const fs::path& directoryPath)
                     ImGui::PopID();
                 }
             }
+}
+void ProjectWindow::OpenRenamePopup(const fs::path& path)
+{
+    renamePath = path;
+
+    if (fs::is_directory(path))
+    {
+        renamePopupMode = PopupMode::Folder;
+    }
+    else
+    {
+        renamePopupMode = PopupMode::Asset;
+    }
+
+    std::string currentName;
+
+    if (renamePopupMode == PopupMode::Asset)
+    {
+        currentName = path.stem().string();
+    }
+    else
+    {
+        currentName = path.filename().string();
+    }
+
+    strncpy_s(renameName, currentName.c_str(), sizeof(renameName));
+    renameName[sizeof(renameName) - 1] = '\0';
+
+    shouldOpenRenamePopup = true;
+}
+
+void ProjectWindow::DrawRenamePopup()
+{
+    if (ImGui::BeginPopupModal("Rename Project Item", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Rename:");
+        ImGui::SameLine();
+        ImGui::TextUnformatted(renamePath.filename().string().c_str());
+
+        ImGui::InputText("Name", renameName, sizeof(renameName));
+
+        if (ImGui::Button("Rename", ImVec2(80, 0)))
+        {
+            std::string finalName = renameName;
+
+            if (finalName.empty() == false)
+            {
+                fs::path targetPath;
+
+                if (renamePopupMode == PopupMode::Asset)
+                {
+                    fs::path typedPath = finalName;
+
+                    if (typedPath.extension().empty())
+                    {
+                        targetPath = renamePath.parent_path() /
+                            (finalName + renamePath.extension().string());
+                    }
+                    else
+                    {
+                        targetPath = renamePath.parent_path() / typedPath.filename();
+                    }
+                }
+                else
+                {
+                    targetPath = renamePath.parent_path() / finalName;
+                }
+
+                if (targetPath == renamePath)
+                {
+                    renamePopupMode = PopupMode::None;
+                    renameName[0] = '\0';
+                    ImGui::CloseCurrentPopup();
+                }
+                else if (fs::exists(targetPath))
+                {
+                    DEBUG_WARN("Cannot rename. Target already exists: " << targetPath.string());
+                }
+                else
+                {
+                    std::error_code ec;
+                    fs::rename(renamePath, targetPath, ec);
+
+                    if (ec)
+                    {
+                        DEBUG_ERR("Failed to rename: " << renamePath.string()
+                            << " to " << targetPath.string()
+                            << " error: " << ec.message());
+                    }
+                    else
+                    {
+                        DEBUG_LOG("Renamed: " << renamePath.string()
+                            << " to " << targetPath.string());
+
+                        AssetManager::LoadAssets("Assets");
+
+                        renamePopupMode = PopupMode::None;
+                        renameName[0] = '\0';
+
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(80, 0)))
+        {
+            renamePopupMode = PopupMode::None;
+            renameName[0] = '\0';
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 }
 
 void ProjectWindow::OpenInExplorer(const fs::path& path)
@@ -260,7 +397,7 @@ void ProjectWindow::DrawCreatePopup()
 
             if (finalName.empty())
             {
-                if (createPopupMode == CreatePopupMode::Folder)
+                if (createPopupMode == PopupMode::Folder)
                 {
                     finalName = "NewFolder";
                 }
@@ -278,16 +415,16 @@ void ProjectWindow::DrawCreatePopup()
                 }
             }
 
-            if (createPopupMode == CreatePopupMode::Folder)
+            if (createPopupMode == PopupMode::Folder)
             {
                 AssetManager::CreateFolder(createDirectory, finalName);
             }
-            else if (createPopupMode == CreatePopupMode::Asset)
+            else if (createPopupMode == PopupMode::Asset)
             {
                 AssetManager::CreateAsset(createAssetType, createDirectory, finalName);
             }
 
-            createPopupMode = CreatePopupMode::None;
+            createPopupMode = PopupMode::None;
             createName[0] = '\0';
 
             ImGui::CloseCurrentPopup();
@@ -297,7 +434,7 @@ void ProjectWindow::DrawCreatePopup()
 
         if (ImGui::Button("Cancel", ImVec2(80, 0)))
         {
-            createPopupMode = CreatePopupMode::None;
+            createPopupMode = PopupMode::None;
             createName[0] = '\0';
 
             ImGui::CloseCurrentPopup();
@@ -309,7 +446,7 @@ void ProjectWindow::DrawCreatePopup()
 
 void ProjectWindow::OpenCreateFolderPopup(const fs::path& directoryPath)
 {
-    createPopupMode = CreatePopupMode::Folder;
+    createPopupMode = PopupMode::Folder;
     createDirectory = directoryPath;
     createName[0] = '\0';
     shouldOpenCreatePopup = true;
@@ -319,7 +456,7 @@ void ProjectWindow::OpenCreateFolderPopup(const fs::path& directoryPath)
 
 void ProjectWindow::OpenCreateAssetPopup(const fs::path& directoryPath, AssetType assetType)
 {
-    createPopupMode = CreatePopupMode::Asset;
+    createPopupMode = PopupMode::Asset;
     createAssetType = assetType;
     createDirectory = directoryPath;
     createName[0] = '\0';
